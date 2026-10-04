@@ -10,6 +10,8 @@ What was verified while building the mod, how, and what still needs a real heads
 | "It isn't using the webpage" | The first build's website engine (UnityWebBrowser) wasn't in the release zip — it needs a separate Unity build — so the mod fell back to the native version. | New default engine: the PC's own Microsoft Edge/Chrome, started hidden and streamed in. Nothing to install. |
 | "I can't see the UI unless I put my hand in front of it" | Draw-order bug: the screen's black backing was drawn *after* the game picture and covered it, while the menu text used Unity's text shader, which draws on top of everything — so text only showed where a hand blocked the backing. | The screen is now one solid picture (website stream or native image), drawn with a solid depth-tested shader; text is drawn into textures with a pixel font. No text shader is used anywhere. |
 | "The screen is too big" | 1.0 m wide at 1.6 m ≈ 35° × 43° of your view. | 0.55 m at 1.3 m ≈ 24° × 30°, deck − / + buttons, and a one-time config upgrade so old configs get the new size. |
+| Third test: "it's not connecting to the web" (the site's offline mode) | (1) The mod counted the live site as started only at the page's `load` event — every image/sound/script downloaded — and gave it 12 s from game start, then switched to the packaged copy, which is offline by design. (2) The site marks itself offline when its first `/robots.txt` check takes over 5 s (likely while the rest of the page is downloading) and only re-checks when a tab becomes visible, which never happens in a hidden browser. | Ready as soon as the game's code has run; 30 s to *start* loading (from browser start), then unlimited; the bridge re-triggers the site's own online check every 6 s while it says offline; the reason is shown on screen and logged, and the mod returns to the live site by itself when it can. `tools/live-harness` 9/9. |
+| Third test: "I have to use my palm to press the buttons" | Presses were measured at the controller's tracked point, which is in your palm. | Presses use Gorilla Tag's own fingertip points (found by reflection, no hard link to the game's code), else a fingertip 8.5 cm ahead of the controller; tighter press zone at the cap, ring glows under a fingertip. |
 | Second test: "it won't work" (no screen at all) | The start-up method called `UwbBrowserGame.IsInstalled`, a member of the optional UnityWebBrowser engine's class. Without that engine's DLLs (the normal install) Mono can't load the class, so it refused to compile the **whole** start-up method: no engine started, and `Update` returned before the screen was ever placed. The earlier checks loaded the DLL *with* the UWB stand-ins present, so they missed it. | The check now only looks for the engine's files; every engine is created in its own `[NoInlining]` method inside a try/catch; the screen is placed and shown before any engine code runs, with a Loading / Could-not-start picture. The new `tools/load-check` reproduces the bug on the old DLL (`TypeLoadException` at engine start-up) and passes on the new one. |
 
 ## 1. Hidden-browser engine, end to end — `tools/engine-harness` (18/18)
@@ -93,6 +95,35 @@ The DLL references only `mscorlib`, `System` and `System.Core` (all shipped with
 UnityEngine. Newer-runtime overloads such as `string.Trim(char)` / `Split(char)` were replaced with the classic
 forms, so it doesn't depend on the game's .NET profile.
 
+## 5. Live site: slow, down, stalled — `tools/live-harness` (9/9)
+
+crixgamingvr.com can't be reached from the build machine, so `live_site.py` stands in for it (served like Vercel
+serves the real site: clean URLs, `/robots.txt`), and the mod's real `EdgeBrowserGame`/`BrowserGame` from
+`FlappyCrix.dll` run against it in a real Chromium, outside Unity:
+
+```
+== 1. slow live site (two images 45 s, first online check 8 s)
+PASS the live site is used, not the packaged copy
+PASS the game is ready long before the page's load event (two images take 45 s)  -- ready 0.4 s after the page started
+PASS the site's first online check timed out (it said offline)
+PASS ...and the bridge got it to check again: back online by itself  -- online 6.0 s later
+PASS still on the live site
+== 2. live site down at start, back later
+PASS live site unreachable -> the packaged copy is shown  -- (net::ERR_CONNECTION_REFUSED)
+PASS when it can be reached again, it switches back to the live site by itself  -- live 7.8 s after the site came back
+== 3. live site stalls (connects, never answers), then recovers
+PASS stalled live site -> packaged copy after RemoteTimeoutSeconds
+PASS ...then back to the live site once it answers  -- live 8.1 s after it recovered
+9/9 passed
+```
+
+A first run found that the stand-in itself was unrealistic: slowing *every* image used up the browser's
+6 connections per site, so the site's online check queued behind them. The real site is served over HTTP/2,
+where that can't happen; the stand-in now slows only two images (enough to hold up the `load` event).
+
+`tools/test_links.py --inject` (13/13) also runs against this stand-in: the site's sign-in/social links work
+online and are sent to the desktop.
+
 ## Still needs a real headset
 
 - The hidden **Microsoft Edge** engine (tested here with Chromium on Linux; Edge is Chromium-based and uses the same
@@ -101,7 +132,10 @@ forms, so it doesn't depend on the game's .NET profile.
 - Which **shader** Gorilla Tag provides for the screen/deck (logged as `Rendering with shader: ...`).
 - **Audio** from the hidden browser (it plays through Windows' default output; the test machine had no sound card,
   but the browser did try to open the audio device).
-- Deck buttons/joystick with real hands, laser alignment, Y/B, and `Application.OpenURL` opening the desktop browser.
+- Deck buttons with real fingertips: whether Gorilla Tag's fingertip points are found (the log says
+  `Deck buttons: pressed with Gorilla Tag's own fingertip points` or that it uses `FingertipOffset`), the joystick,
+  laser alignment, Y/B, and `Application.OpenURL` opening the desktop browser.
+- The real crixgamingvr.com over the player's own connection (the stand-in covers slow, down and stalled).
 
 ## In-game self test (every launch)
 

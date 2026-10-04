@@ -33,6 +33,9 @@ jobs:
       - name: Start-up check (loads the DLL like a normal install, without UnityWebBrowser)
         run: tools/load-check/run.sh
 
+      - name: Live-site behaviour (the mod's website engine vs a slow / down / stalled stand-in site)
+        run: tools/live-harness/run.sh "$(command -v google-chrome || command -v chromium)"
+
       - name: Unity API audit (every Unity call checked against Unity's own source)
         run: |
           tools/api-audit/run.sh mod/FlappyCrix/FlappyCrix.dll 2022.3

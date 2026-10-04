@@ -51,7 +51,9 @@ That's it — Microsoft Edge is already on every Windows 10/11 PC. Settings live
 | Screen smaller / bigger | Deck **−** / **+** | − / = |
 | Click on the screen | Laser + trigger | Mouse |
 
-Press deck buttons by putting your hand down on them (you'll feel a buzz).
+Press deck buttons with your **index fingertip**, like Gorilla Tag's own buttons. A button's ring lights up
+while your fingertip is over it, and you feel a buzz when it presses. (The mod uses the game's own fingertip
+points; if a game update moves them, it works the fingertip out from your controller instead.)
 
 ## How it works
 
@@ -82,13 +84,17 @@ Gorilla Tag ─ BepInEx ─ FlappyCrix.dll
 |---|---|---|
 | `Width` / `Distance` / `HeightOffset` | 0.55 m / 1.3 m / −0.1 m | Screen size and placement (about 24° × 30° of your view). The deck's − / + change `Width`. |
 | `UseRemoteWebsite` | `true` | Live page; `false` = packaged copy (offline). |
+| `RemoteTimeoutSeconds` | 30 | How long crixgamingvr.com gets to *start* loading before the packaged copy is shown. Once it has started, it gets as long as it needs. |
+| `ReconnectSeconds` | 45 | While the packaged copy is showing because the live site couldn't be reached, how often to check again; it switches back by itself between runs. |
+| `UseGameFingertips` / `FingertipOffset` | `true` / (0, −0.02, 0.085) | Deck buttons use Gorilla Tag's fingertip points; the offset (metres from the controller) is the backup. |
 | `Engine` | `Auto` | `Auto` = hidden Edge/Chrome → UnityWebBrowser (if installed) → native version. |
 | `BrowserPath` | empty | Use a specific Chromium browser instead of finding Edge/Chrome automatically. |
 | `BrowserFrameRate` / `StreamQuality` | 30 / 80 | Screen updates per second and picture quality. Lower these if Gorilla Tag's frame rate drops. |
 | `OpenLinksOnDesktop` | `true` | Sign-in/socials/other pages open in your desktop browser. |
 | `ShaderOverride` | empty | Advanced: if the screen or deck is invisible, a shader name to use instead (see the log). |
 
-Settings files from the first test build are reset to the new screen size once.
+Settings files from the first test build are reset to the new screen size once, and older settings files get
+the longer live-site time once.
 
 ## If something's wrong
 
@@ -105,6 +111,8 @@ is ready (usually a few seconds). If no screen appears at all, open `BepInEx/Log
 | Log says | What to do |
 |---|---|
 | `Still waiting for the player's camera` | The game hasn't created the player yet; the screen opens as soon as it does. |
+| `Couldn't load the live site (...)` | The reason is in brackets, and the screen shows it too. The packaged copy (the site's offline mode) plays meanwhile, and the mod switches back to crixgamingvr.com by itself when it can. |
+| `The website says it is offline` while on the live site | The site's own connection check failed; the mod asks it to check again every 6 s. If it never says `online`, something on the PC is blocking crixgamingvr.com for the hidden browser (firewall, antivirus, VPN). |
 | `No Microsoft Edge or Chrome found` | Install Edge or Chrome, or set `BrowserPath`. The native version runs meanwhile. |
 | `DevTools port did not appear` | Something blocked the hidden browser (antivirus, or a work/school policy that disables browser debugging). |
 | `Screen stream: ... ms per frame to decode` is high | Lower `BrowserFrameRate` (e.g. 20) or `StreamQuality`. |
@@ -119,7 +127,7 @@ src/FlappyCrix/        C# source of the BepInEx plugin
   VR/                  XR input, screen, arcade deck, joystick, laser
   Native/              native fallback: rules + renderer (no Unity code) + Unity glue
 mod/FlappyCrix/        the plugin folder as shipped (Web/ = packaged website + bridge.js)
-tools/                 tests (engine-harness, native-harness, load-check, api-audit, Playwright suites),
+tools/                 tests (engine-harness, native-harness, live-harness, load-check, api-audit, Playwright suites),
                        packaging, build scripts
 docs/screenshots/      screenshots and mock-ups
 .github/workflows/     builds FlappyCrix.dll and the release zip on every push / tag
@@ -141,6 +149,7 @@ tools/get_bepinex.sh
 tools/refs/build_dll.sh        # -> mod/FlappyCrix/FlappyCrix.dll
 tools/load-check/run.sh        # loads it like a normal install and runs the start-up
 tools/api-audit/run.sh         # checks every Unity call against Unity's own source
+tools/live-harness/run.sh      # the website engine vs a slow / down / stalled stand-in live site
 ```
 GitHub Actions does this automatically; pushing a version tag (e.g. `v1.0.0`) publishes a release with the zip attached.
 

@@ -84,6 +84,10 @@ namespace FlappyCrix
                 }
                 catch (Exception e) { Logger.LogError("Could not build the arcade deck: " + e); deck = null; }
             }
+            // Deck buttons are pressed with the index fingertip
+            rig.TipOffset = Config.FingertipOffset.Value;
+            if (Config.UseGameFingertips.Value) rig.GameTips = new GameFingertips { Log = m => Logger.LogInfo(m) };
+
             try { laser = new LaserPointer { PitchDegrees = Config.LaserPitch.Value }; }
             catch (Exception e) { Logger.LogError("Could not build the laser pointer: " + e); laser = null; }
 

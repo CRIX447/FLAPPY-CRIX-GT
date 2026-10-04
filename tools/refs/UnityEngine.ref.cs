@@ -31,12 +31,14 @@ namespace UnityEngine
     {
         public float x, y;
         public Vector2(float x, float y) { this.x = x; this.y = y; }
-        public float sqrMagnitude { get { return 0; } }
-        public static Vector2 one { get { return default(Vector2); } }
+        public float sqrMagnitude { get { return x * x + y * y; } }
+        public static Vector2 one { get { return new Vector2(1, 1); } }
         public static Vector2 zero { get { return default(Vector2); } }
-        public static Vector2 operator -(Vector2 a, Vector2 b) { return a; }
-        public static bool operator ==(Vector2 lhs, Vector2 rhs) { return false; }
-        public static bool operator !=(Vector2 lhs, Vector2 rhs) { return false; }
+        public static Vector2 operator -(Vector2 a, Vector2 b) { return new Vector2(a.x - b.x, a.y - b.y); }
+        public static bool operator ==(Vector2 lhs, Vector2 rhs) { return lhs.x == rhs.x && lhs.y == rhs.y; }
+        public static bool operator !=(Vector2 lhs, Vector2 rhs) { return !(lhs == rhs); }
+        public override bool Equals(object o) { return o is Vector2 && (Vector2)o == this; }
+        public override int GetHashCode() { return x.GetHashCode() ^ y.GetHashCode(); }
     }
     public struct Vector3
     {
@@ -105,29 +107,32 @@ namespace UnityEngine
         public Plane(Vector3 inNormal, Vector3 inPoint) { }
         public bool Raycast(Ray ray, out float enter) { enter = 0; return false; }
     }
+    // Bodies below behave like Unity's so the Unity-free test harnesses (tools/live-harness)
+    // can run the mod's website logic; only the signatures matter for building the DLL.
     public struct Mathf
     {
         public const float Rad2Deg = 57.29578f;
-        public static float Clamp01(float value) { return value; }
-        public static float Clamp(float value, float min, float max) { return value; }
-        public static int Clamp(int value, int min, int max) { return value; }
-        public static float Max(float a, float b) { return a; }
-        public static float Min(float a, float b) { return a; }
-        public static float Abs(float f) { return f; }
-        public static float Sqrt(float f) { return f; }
-        public static float Round(float f) { return f; }
-        public static int RoundToInt(float f) { return 0; }
-        public static int FloorToInt(float f) { return 0; }
-        public static float Lerp(float a, float b, float t) { return a; }
-        public static float InverseLerp(float a, float b, float value) { return 0; }
-        public static float Cos(float f) { return 0; }
-        public static float Atan2(float y, float x) { return 0; }
+        public static float Clamp01(float value) { return value < 0 ? 0 : value > 1 ? 1 : value; }
+        public static float Clamp(float value, float min, float max) { return value < min ? min : value > max ? max : value; }
+        public static int Clamp(int value, int min, int max) { return value < min ? min : value > max ? max : value; }
+        public static float Max(float a, float b) { return a > b ? a : b; }
+        public static float Min(float a, float b) { return a < b ? a : b; }
+        public static float Abs(float f) { return Math.Abs(f); }
+        public static float Sqrt(float f) { return (float)Math.Sqrt(f); }
+        public static float Round(float f) { return (float)Math.Round(f); }
+        public static int RoundToInt(float f) { return (int)Math.Round(f); }
+        public static int FloorToInt(float f) { return (int)Math.Floor(f); }
+        public static float Lerp(float a, float b, float t) { return a + (b - a) * Clamp01(t); }
+        public static float InverseLerp(float a, float b, float value) { return a != b ? Clamp01((value - a) / (b - a)) : 0; }
+        public static float Cos(float f) { return (float)Math.Cos(f); }
+        public static float Atan2(float y, float x) { return (float)Math.Atan2(y, x); }
     }
     public class Time
     {
         public static float deltaTime { get { return 0; } }
         public static float unscaledDeltaTime { get { return 0; } }
-        public static float realtimeSinceStartup { get { return 0; } }
+        private static readonly System.Diagnostics.Stopwatch clock = System.Diagnostics.Stopwatch.StartNew();
+        public static float realtimeSinceStartup { get { return (float)clock.Elapsed.TotalSeconds; } }
     }
     public class ColorUtility { public static bool TryParseHtmlString(string htmlString, out Color color) { color = default(Color); return false; } public static string ToHtmlStringRGBA(Color color) { return "000000FF"; } }
     public enum RuntimePlatform { OSXEditor = 0, OSXPlayer = 1, WindowsPlayer = 2, WindowsEditor = 7, Android = 11, LinuxPlayer = 13 }

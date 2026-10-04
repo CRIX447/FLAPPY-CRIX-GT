@@ -40,3 +40,23 @@ The version stays at 1.0.0 until CRIX decides to change it.
 - New checks run on every build: `tools/load-check` (loads the DLL the way a normal install has it and runs the
   start-up — it reproduces this bug on the old DLL) and `tools/api-audit` (every Unity call checked against Unity's
   own source for 2021.3, 2022.3 and Unity 6).
+
+### Fixed after the third in-game test
+
+- **The website showed its offline mode.** Two causes, both fixed:
+  - The mod only counted the live site as started at the page's `load` event, which waits for every image,
+    sound and script to download. Over the internet that could run past the 12 s the mod allowed (counted from
+    game start), so it switched to the packaged copy, which is always offline. Now the game counts as started
+    as soon as its own code has run (a fraction of a second after the page arrives). The live site gets
+    30 s just to *start* loading, counted from when the hidden browser is up, then as long as it needs.
+  - The site decides it's offline if its first quick check (`/robots.txt`, 5 s limit) is slow — likely while
+    everything else is still downloading — and in a hidden browser it never checked again. The mod now asks
+    it to check again every 6 s (through the site's own `online` handler) until it is back online.
+- If the live site really can't be reached, the screen says why ("Playing the offline copy — couldn't load
+  crixgamingvr.com (reason)"), and the mod **switches back to the live site by itself** when it can be reached,
+  never in the middle of a run.
+- **Deck buttons are pressed with your fingertip**, not your palm: the mod uses Gorilla Tag's own fingertip
+  points (worked out from the controller if a game update moves them). Each button's ring lights up while a
+  fingertip is over it.
+- New `tools/live-harness`: the mod's real website engine against a real browser and a stand-in for
+  crixgamingvr.com that is slow, down or stalled — 9/9.

@@ -21,6 +21,10 @@ namespace FlappyCrix.VR
             public float Trigger, Grip;
             public Vector2 Stick;
             public InputDevice Device;
+            /// <summary>Index fingertip in world space - what presses the deck's buttons.</summary>
+            public Vector3 Tip;
+            /// <summary>True when Tip is Gorilla Tag's own fingertip point (not worked out from the controller).</summary>
+            public bool TipFromGame;
             public Vector3 Forward => Rotation * Vector3.forward;
         }
 
@@ -30,17 +34,23 @@ namespace FlappyCrix.VR
 
         private readonly List<InputDevice> scratch = new List<InputDevice>();
 
+        /// <summary>Gorilla Tag's fingertip points, when found (null = don't use them).</summary>
+        public GameFingertips GameTips;
+        /// <summary>Fingertip relative to the controller pose (right, up, forward), when the game's points aren't used.</summary>
+        public Vector3 TipOffset = new Vector3(0f, -0.02f, 0.085f);
+
         public void Update()
         {
             var cam = Camera.main;
             Head = cam != null ? cam.transform : null;
             Transform origin = Head != null ? Head.parent : null;
-            Left = Read(XRNode.LeftHand, origin);
-            Right = Read(XRNode.RightHand, origin);
+            if (GameTips != null) GameTips.Refresh();
+            Left = Read(XRNode.LeftHand, origin, GameTips != null ? GameTips.Left : null);
+            Right = Read(XRNode.RightHand, origin, GameTips != null ? GameTips.Right : null);
             AnyXR = Left.Valid || Right.Valid;
         }
 
-        private Hand Read(XRNode node, Transform origin)
+        private Hand Read(XRNode node, Transform origin, Transform gameTip)
         {
             var h = new Hand();
             scratch.Clear();
@@ -56,6 +66,13 @@ namespace FlappyCrix.VR
                 h.Valid = true;
                 h.Position = origin != null ? origin.TransformPoint(p) : p;
                 h.Rotation = origin != null ? origin.rotation * r : r;
+                h.Tip = h.Position + h.Rotation * TipOffset;
+                // The game's own fingertip point, if it's really on this hand (not left somewhere else)
+                if (gameTip != null)
+                {
+                    Vector3 t = gameTip.position;
+                    if (Vector3.Distance(t, h.Position) < 0.45f) { h.Tip = t; h.TipFromGame = true; }
+                }
             }
             d.TryGetFeatureValue(CommonUsages.primaryButton, out h.Primary);
             d.TryGetFeatureValue(CommonUsages.secondaryButton, out h.Secondary);

@@ -6,8 +6,9 @@ namespace FlappyCrix.VR
     /// <summary>
     /// The arcade control deck in front of the screen: a joystick for menu navigation, the
     /// FLAP, SELECT, START and PAUSE buttons, and small - / + buttons for the screen size.
-    /// Press a button by pushing your hand down onto it. No colliders: presses are measured
-    /// from the controller positions.
+    /// Press a button with your index fingertip (Gorilla Tag's own fingertip point when it can
+    /// be found, else the fingertip worked out from the controller). A button's ring lights up
+    /// while your fingertip is over it. No colliders: presses are measured from those points.
     /// Part of Flappy Crix for Gorilla Tag - made with AI (Claude by Anthropic).
     /// </summary>
     public sealed class ArcadeDeck
@@ -21,6 +22,7 @@ namespace FlappyCrix.VR
             public float Radius;
             public Transform Cap;
             public Material CapMat;
+            public Material RingMat;
             public Color Colour;
             public bool Down;
         }
@@ -31,6 +33,11 @@ namespace FlappyCrix.VR
         private readonly List<Button> buttons = new List<Button>();
 
         const float CapHeight = 0.018f;
+        static readonly Color RingIdle = Visuals.Hex("#0D0D12"), RingHover = Visuals.Hex("#F2F2FF");
+        // Fingertip press zone: over the cap (a little wider than it) and down at the cap's top.
+        const float PressMargin = 0.012f, PressAbove = 0.008f, PressBelow = 0.04f;
+        // Re-arm once the fingertip has come away; ring lights up while the fingertip is over the button.
+        const float NearMargin = 0.035f, NearAbove = 0.06f, HoverMargin = 0.02f, HoverAbove = 0.09f;
         const string Plate = "#2B2140";
 
         public ArcadeDeck(Transform parent)
@@ -72,7 +79,8 @@ namespace FlappyCrix.VR
 
         private void AddButton(DeckButton action, string label, Vector3 at, float radius, Color colour, bool labelBelow = true)
         {
-            var ring = Visuals.Primitive(PrimitiveType.Cylinder, label + "Ring", surface, Visuals.Hex("#0D0D12"), 3).transform;
+            var ringGo = Visuals.Primitive(PrimitiveType.Cylinder, label + "Ring", surface, RingIdle, 3);
+            var ring = ringGo.transform;
             ring.localScale = new Vector3(radius * 2.5f, 0.004f, radius * 2.5f);
             ring.localPosition = at + new Vector3(0, 0.004f, 0);
 
@@ -90,7 +98,8 @@ namespace FlappyCrix.VR
                 sym.localScale = new Vector3(sym.localScale.x * 0.5f, sym.localScale.y * 0.5f, 1);
             }
             buttons.Add(new Button { Action = action, Local = at, Radius = radius, Cap = cap,
-                                     CapMat = capGo.GetComponent<MeshRenderer>().sharedMaterial, Colour = colour });
+                                     CapMat = capGo.GetComponent<MeshRenderer>().sharedMaterial,
+                                     RingMat = ringGo.GetComponent<MeshRenderer>().sharedMaterial, Colour = colour });
         }
 
         public bool Visible
@@ -99,45 +108,47 @@ namespace FlappyCrix.VR
             set => Root.gameObject.SetActive(value);
         }
 
-        /// <summary>Checks both hands against every button; calls onPress once per press.</summary>
+        /// <summary>Checks both fingertips against every button; calls onPress once per press.</summary>
         public void Update(XRRig rig, System.Action<DeckButton> onPress)
         {
             foreach (var b in buttons)
             {
-                bool touching = Touching(rig.Left, b) || Touching(rig.Right, b);
-                bool releasedFar = !Near(rig.Left, b) && !Near(rig.Right, b);
-                if (touching && !b.Down)
+                bool leftIn = InZone(rig.Left, b, PressMargin, CapHeight + 0.004f + PressAbove, PressBelow);
+                bool rightIn = InZone(rig.Right, b, PressMargin, CapHeight + 0.004f + PressAbove, PressBelow);
+                bool releasedFar = !InZone(rig.Left, b, NearMargin, NearAbove, 0.08f) && !InZone(rig.Right, b, NearMargin, NearAbove, 0.08f);
+                bool hover = InZone(rig.Left, b, HoverMargin, HoverAbove, 0.08f) || InZone(rig.Right, b, HoverMargin, HoverAbove, 0.08f);
+                if ((leftIn || rightIn) && !b.Down)
                 {
                     b.Down = true;
-                    var hand = Touching(rig.Left, b) ? rig.Left : rig.Right;
-                    XRRig.Buzz(hand, 0.4f, 0.04f);
+                    XRRig.Buzz(leftIn ? rig.Left : rig.Right, 0.4f, 0.04f);
                     onPress(b.Action);
                 }
                 else if (b.Down && releasedFar) b.Down = false;
 
-                // Visual: cap sinks while held, brightens
+                // Visual: cap sinks while held and brightens; the ring lights up under a fingertip
                 b.Cap.localPosition = b.Local + new Vector3(0, (b.Down ? 0.004f : CapHeight / 2f + 0.004f), 0);
-                b.CapMat.color = b.Down ? Color.Lerp(b.Colour, Color.white, 0.45f) : b.Colour;
-                if (b.CapMat.HasProperty("_BaseColor")) b.CapMat.SetColor("_BaseColor", b.CapMat.color);
+                SetColour(b.CapMat, b.Down ? Color.Lerp(b.Colour, Color.white, 0.45f) : b.Colour);
+                SetColour(b.RingMat, hover || b.Down ? RingHover : RingIdle);
             }
         }
 
-        // Hand pushed onto the cap: within the button's footprint and down at cap height.
-        private bool Touching(XRRig.Hand h, Button b)
+        private static void SetColour(Material m, Color c)
         {
-            if (!h.Valid) return false;
-            Vector3 p = surface.InverseTransformPoint(h.Position) - b.Local;
-            float flat = Mathf.Sqrt(p.x * p.x + p.z * p.z);
-            return flat < b.Radius + 0.02f && p.y < CapHeight + 0.025f && p.y > -0.06f;
+            if (m == null) return;
+            m.color = c;
+            if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
         }
 
-        // Re-arm only once the hand has clearly come away.
-        private bool Near(XRRig.Hand h, Button b)
+        /// <summary>
+        /// Fingertip within (radius + margin) of the button's centre line, and between `below` under
+        /// and `above` over the deck surface at the button.
+        /// </summary>
+        private bool InZone(XRRig.Hand h, Button b, float margin, float above, float below)
         {
             if (!h.Valid) return false;
-            Vector3 p = surface.InverseTransformPoint(h.Position) - b.Local;
+            Vector3 p = surface.InverseTransformPoint(h.Tip) - b.Local;
             float flat = Mathf.Sqrt(p.x * p.x + p.z * p.z);
-            return flat < b.Radius + 0.045f && p.y < 0.07f && p.y > -0.08f;
+            return flat < b.Radius + margin && p.y < above && p.y > -below;
         }
     }
 }

@@ -289,6 +289,9 @@
 
         state: function () { return JSON.stringify(state()); },
         reportSelfTest: function () { send('SelfTest', api.selfTest()); return 'sent'; },
+
+        // A message from the mod, shown with the site's own toast (e.g. "playing the offline copy").
+        notice: function (kind, title, body) { siteToast(kind || 'info', String(title || ''), String(body || '')); return 'shown'; },
         drain: function () { var q = queue.slice(); queue.length = 0; return q; },
 
         // ---- self test: what the plugin reports in the BepInEx log ----
@@ -378,7 +381,60 @@
         }
     }, 100);
 
-    function ready() { send('BridgeReady', VERSION); }
-    if (document.readyState === 'complete') ready();
-    else window.addEventListener('load', ready);
+    // ---- ready ----
+    // As soon as the page's HTML has run and the game's own functions exist - NOT at the
+    // window "load" event: on the live site that waits for every image, sound and script
+    // to finish downloading, which over the internet can take far longer than the game
+    // itself needs to start.
+    var readySent = false;
+    function gamePresent() { return !!(fn('jump') || fn('startGame') || el('startGameBtn')); }
+    function ready() {
+        if (readySent) return;
+        if (!gamePresent()) return;
+        readySent = true;
+        send('BridgeReady', VERSION);
+        watchConnection();
+    }
+    function whenParsed() {
+        ready();
+        var tries = 0;
+        var t = setInterval(function () {
+            if (readySent || ++tries > 300) { clearInterval(t); return; }   // up to 60 s
+            ready();
+        }, 200);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', whenParsed);
+    else whenParsed();
+    window.addEventListener('load', ready);
+
+    // ---- the site's online / offline state (live site only) ----
+    // The site decides it is offline when one quick request (/robots.txt, 5 s limit, sent
+    // about a second after the page starts) fails, and only checks again when a tab
+    // becomes visible or the network comes back. Inside Gorilla Tag the page starts while
+    // it is still downloading everything else, and a hidden browser never "becomes
+    // visible", so a single slow answer could leave it offline for good. While it says
+    // offline, the bridge asks it to check again (the site's own 'online' handler).
+    function onLiveSite() {
+        var a = location.hostname.toLowerCase().replace(/^www\./, '');
+        var b = '';
+        try { b = new URL(SITE).hostname.toLowerCase().replace(/^www\./, ''); } catch (e) {}
+        return a !== '' && a === b;
+    }
+    function siteOffline() {
+        try { return typeof window.isOffline === 'function' ? !!window.isOffline() : false; } catch (e) { return false; }
+    }
+    function watchConnection() {
+        var lastReported = null, checks = 0;
+        setInterval(function () {
+            var off = siteOffline();
+            if (off !== lastReported) { lastReported = off; send('NetOffline', off ? '1' : '0'); }
+            if (off && onLiveSite() && checks < 40) {          // every 6 s for up to 4 minutes
+                checks++;
+                try { window.dispatchEvent(new Event('online')); } catch (e) {}
+            }
+        }, 6000);
+    }
+
+    // The new page has started (the mod knows the live site is loading, not stuck).
+    send('PageStart', location.href);
 })();

@@ -26,6 +26,7 @@ namespace FlappyCrix
         public readonly ConfigEntry<bool> UseRemoteWebsite;
         public readonly ConfigEntry<string> RemoteUrl;
         public readonly ConfigEntry<float> RemoteTimeoutSeconds;
+        public readonly ConfigEntry<float> ReconnectSeconds;
         public readonly ConfigEntry<bool> AutoFallbackToNative;
         public readonly ConfigEntry<bool> ShowOnStart;
         public readonly ConfigEntry<KeyCode> ToggleKey;
@@ -54,6 +55,8 @@ namespace FlappyCrix
         public readonly ConfigEntry<bool> DeckEnabled;
         public readonly ConfigEntry<Vector3> DeckOffset;
         public readonly ConfigEntry<float> JoystickNavAngle;
+        public readonly ConfigEntry<bool> UseGameFingertips;
+        public readonly ConfigEntry<Vector3> FingertipOffset;
 
         public readonly ConfigEntry<bool> OpenLinksOnDesktop;
 
@@ -78,7 +81,12 @@ namespace FlappyCrix
             UseRemoteWebsite = cfg.Bind(G, "UseRemoteWebsite", true,
                 "true = play the live page at RemoteUrl (crixgamingvr.com/flappycrix). false = the copy packaged with the mod (works offline). The live page falls back to the packaged copy if it can't load.");
             RemoteUrl = cfg.Bind(G, "RemoteUrl", "https://crixgamingvr.com/flappycrix", "Live site used when UseRemoteWebsite = true.");
-            RemoteTimeoutSeconds = cfg.Bind(G, "RemoteTimeoutSeconds", 12f, "How long the live site gets to load before falling back to the local copy.");
+            RemoteTimeoutSeconds = cfg.Bind(G, "RemoteTimeoutSeconds", 30f, new ConfigDescription(
+                "How long the live site gets to START loading (counted from when the hidden browser is up) before the packaged copy is used. Once the live page has started loading it gets as long as it needs.",
+                new AcceptableValueRange<float>(5f, 120f)));
+            ReconnectSeconds = cfg.Bind(G, "ReconnectSeconds", 45f, new ConfigDescription(
+                "If the live site couldn't be reached and the packaged (offline) copy is showing, check this often whether crixgamingvr.com can be reached again, and switch back to it when you're not mid-run. 0 = never.",
+                new AcceptableValueRange<float>(0f, 600f)));
             AutoFallbackToNative = cfg.Bind(G, "AutoFallbackToNative", true,
                 "If the embedded browser is missing or fails its self test, switch to the native Unity version automatically.");
             ShowOnStart = cfg.Bind(G, "ShowOnStart", true, "Open the screen in front of you when you load in.");
@@ -107,8 +115,12 @@ namespace FlappyCrix
             DeckEnabled = cfg.Bind(J, "Enabled", true,
                 "Arcade control deck in front of the screen: joystick (menu navigation) + FLAP, SELECT, START, PAUSE buttons. It opens with the screen and stays put until you press Y again.");
             DeckOffset = cfg.Bind(J, "Offset", new Vector3(0f, -0.5f, 0.42f),
-                "Deck position relative to you when the screen opens, metres (right, up, forward). Push buttons by putting your hand down on them.");
+                "Deck position relative to you when the screen opens, metres (right, up, forward). Press buttons with your index fingertip.");
             JoystickNavAngle = cfg.Bind(J, "JoystickNavAngle", 18f, new ConfigDescription("Degrees the joystick must tilt to move the menu highlight.", new AcceptableValueRange<float>(8f, 30f)));
+            UseGameFingertips = cfg.Bind(J, "UseGameFingertips", true,
+                "Press deck buttons with the same fingertip points Gorilla Tag's own buttons use. false (or if the game's points can't be found) = FingertipOffset from the controller.");
+            FingertipOffset = cfg.Bind(J, "FingertipOffset", new Vector3(0f, -0.02f, 0.085f),
+                "Where your index fingertip is relative to the controller, metres (right, up, forward). Used when the game's own fingertip points aren't available.");
 
             LocalPort = cfg.Bind(W, "LocalPort", 47321,
                 "Loopback port for the packaged site (127.0.0.1 only). Keep it fixed: your saved progress belongs to this address. The browser IPC uses the next two ports.");
@@ -136,6 +148,12 @@ namespace FlappyCrix
                 EngineStartupTimeoutMs.Value = (int)EngineStartupTimeoutMs.DefaultValue;
                 revision.Value = 2;
                 UpgradedFromOlderConfig = true;
+            }
+            // Revision 3: the live site got only 12 s (counted from game start) before the offline copy took over.
+            if (revision.Value < 3)
+            {
+                if (RemoteTimeoutSeconds.Value < (float)RemoteTimeoutSeconds.DefaultValue) RemoteTimeoutSeconds.Value = (float)RemoteTimeoutSeconds.DefaultValue;
+                revision.Value = 3;
             }
         }
     }

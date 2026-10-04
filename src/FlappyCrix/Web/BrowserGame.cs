@@ -7,6 +7,9 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Net.Sockets;
+using System.Threading;
+using FlappyCrix.Web.Cdp;
 using UnityEngine;
 
 namespace FlappyCrix.Web
@@ -38,6 +41,16 @@ namespace FlappyCrix.Web
         private readonly ConcurrentQueue<Action> mainThread = new ConcurrentQueue<Action>();
         private bool bridgeReady, engineConnected;
         private float remoteDeadline = -1f, readyDeadline;
+
+        // Live site -> packaged copy -> live site again
+        private bool remoteCommitted;          // the live page has started loading (it isn't stuck)
+        private string fellBackBecause;        // why the packaged copy is showing (null = it isn't, or by choice)
+        private bool fallbackNoticeShown;
+        private float noticeAt = -1f, reconnectAt = -1f, goLiveAt = -1f;
+        private int reconnects;
+        private volatile bool probing;
+        private string lastNet;
+        private const int MaxReconnects = 5;
 
         protected BrowserGame(FlappyCrixConfig config, string modFolder)
         {
@@ -99,7 +112,9 @@ namespace FlappyCrix.Web
             {
                 startUrl = config.RemoteUrl.Value;
                 remoteActive = true;
-                remoteDeadline = startTime + config.EngineStartupTimeoutMs.Value / 1000f + config.RemoteTimeoutSeconds.Value;
+                // The live site's clock starts when the hidden browser is up (EngineConnected), so a
+                // slow browser start doesn't eat into it; until then readyDeadline covers the start.
+                remoteDeadline = -1f;
             }
 
             try { StartEngine(startUrl); }
@@ -112,7 +127,13 @@ namespace FlappyCrix.Web
         protected void EngineConnected() => OnMain(() =>
         {
             engineConnected = true;
-            Emit(EngineName + " connected after " + (Time.realtimeSinceStartup - startTime).ToString("0.0") + " s");
+            float now = Time.realtimeSinceStartup;
+            Emit(EngineName + " connected after " + (now - startTime).ToString("0.0") + " s");
+            if (remoteActive && !remoteCommitted)
+            {
+                remoteDeadline = now + config.RemoteTimeoutSeconds.Value;
+                readyDeadline = Mathf.Max(readyDeadline, remoteDeadline + 30f);
+            }
         });
         protected void EngineFailed(string why) => OnMain(() => Fail(why));
         protected void BridgeMessage(string msg) => OnMain(() => OnBridgeEvent(msg));
@@ -196,6 +217,7 @@ namespace FlappyCrix.Web
                     remoteDeadline = -1f;
                     Emit("Bridge " + arg + " ready - " + ModeName + " - after " + (Time.realtimeSinceStartup - startTime).ToString("0.0") + " s");
                     if (config.RunSelfTest.Value && report == null) selfTestAt = Time.realtimeSinceStartup + 3f;
+                    if (!remoteActive && fellBackBecause != null && !fallbackNoticeShown) noticeAt = Time.realtimeSinceStartup + 2.5f;
                     break;
                 case "ScoreChanged": int s; if (int.TryParse(arg, out s)) Score = s; break;
                 case "Screen": Screen = arg; break;
@@ -203,6 +225,15 @@ namespace FlappyCrix.Web
                 case "GameOver": Emit("Game over, score " + arg); break;
                 case "OpenExternal": OpenOnDesktop(arg); break;
                 case "SelfTest": FinishSelfTest(arg); break;
+                case "PageStart": PageStarted(arg); break;
+                case "NetOffline":
+                    string net = arg == "1" ? "offline" : "online";
+                    if (net != lastNet)
+                    {
+                        lastNet = net;
+                        Emit("The website says it is " + net + (remoteActive ? "" : " (the packaged copy is always offline)"));
+                    }
+                    break;
             }
         }
 
@@ -216,11 +247,16 @@ namespace FlappyCrix.Web
             Safe(EngineTick);
 
             float now = Time.realtimeSinceStartup;
-            if (remoteActive && remoteDeadline > 0 && now > remoteDeadline && !bridgeReady)
-                FallBackToLocal("the live site did not load within " + config.RemoteTimeoutSeconds.Value + " s");
+            if (remoteActive && !remoteCommitted && remoteDeadline > 0 && now > remoteDeadline && !bridgeReady)
+                FallBackToLocal("it didn't start loading within " + config.RemoteTimeoutSeconds.Value.ToString("0") + " s");
             if (!bridgeReady && now > readyDeadline)
-                Fail(engineConnected ? "The page loaded but the game never reported ready (JavaScript/bridge problem)."
-                                     : "The browser engine did not connect.");
+            {
+                if (remoteActive && engineConnected) FallBackToLocal("the page started loading but the game on it didn't start");
+                else Fail(engineConnected ? "The page loaded but the game never reported ready (JavaScript/bridge problem)."
+                                          : "The browser engine did not connect.");
+            }
+            if (HasFailed) return;
+            TickReconnect(now);
             if (selfTestAt > 0 && now >= selfTestAt) BeginSelfTest();
             if (selfTestCollectAt > 0 && now >= selfTestCollectAt) { selfTestCollectAt = -1f; Exec("FlappyCrixBridge.reportSelfTest()"); }
         }
@@ -228,13 +264,105 @@ namespace FlappyCrix.Web
         private void FallBackToLocal(string why)
         {
             if (!remoteActive) return;
-            Emit("Live site unavailable (" + why + "); loading the packaged copy instead.");
+            Emit("Couldn't load the live site (" + why + "); playing the packaged copy (offline) instead.");
             remoteActive = false;
+            remoteCommitted = false;
             remoteDeadline = -1f;
             bridgeReady = false;
             IsReady = false;
-            readyDeadline = Time.realtimeSinceStartup + 25f;
+            fellBackBecause = why;
+            fallbackNoticeShown = false;
+            float now = Time.realtimeSinceStartup;
+            readyDeadline = now + 25f;
+            reconnectAt = config.ReconnectSeconds.Value > 0 && reconnects < MaxReconnects ? now + config.ReconnectSeconds.Value : -1f;
             Safe(() => EngineNavigate(server.EntryUrl));
+        }
+
+        /// <summary>A new page has started in the engine (sent by the bridge as the page begins).</summary>
+        private void PageStarted(string url)
+        {
+            if (remoteActive && SameSite(url, config.RemoteUrl.Value))
+            {
+                if (!remoteCommitted) Emit("Live site is loading: " + url + " (after " + (Time.realtimeSinceStartup - startTime).ToString("0.0") + " s)");
+                remoteCommitted = true;
+                remoteDeadline = -1f;
+                // It is coming: give the game on it as long as a slow connection needs.
+                readyDeadline = Mathf.Max(readyDeadline, Time.realtimeSinceStartup + 90f);
+            }
+        }
+
+        // ------------------------------------------------------------------ back to the live site
+
+        /// <summary>
+        /// While the packaged copy is showing because the live site couldn't be loaded, check now and
+        /// then whether crixgamingvr.com can be reached, and switch back between runs.
+        /// </summary>
+        private void TickReconnect(float now)
+        {
+            if (noticeAt > 0 && now >= noticeAt)
+            {
+                noticeAt = -1f;
+                fallbackNoticeShown = true;
+                Notice("warn", "\U0001F310 Playing the offline copy",
+                       "Couldn't load crixgamingvr.com (" + fellBackBecause + ")." +
+                       (reconnectAt > 0 ? " It switches to the live site by itself when it can." : ""));
+            }
+            if (goLiveAt > 0 && now >= goLiveAt) { goLiveAt = -1f; GoLive(); return; }
+            if (remoteActive || fellBackBecause == null || reconnectAt < 0 || probing || goLiveAt > 0) return;
+            if (now < reconnectAt) return;
+            if (Screen == "playing" || Screen == "paused") return;        // never in the middle of a run
+
+            Uri u;
+            if (!Uri.TryCreate(config.RemoteUrl.Value, UriKind.Absolute, out u)) { reconnectAt = -1f; return; }
+            probing = true;
+            string host = u.Host; int port = u.Port;
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                bool reachable = false;
+                try
+                {
+                    using (var c = new TcpClient())
+                    {
+                        var ar = c.BeginConnect(host, port, null, null);
+                        if (ar.AsyncWaitHandle.WaitOne(4000)) { c.EndConnect(ar); reachable = true; }
+                    }
+                }
+                catch { reachable = false; }
+                OnMain(() =>
+                {
+                    probing = false;
+                    if (remoteActive || fellBackBecause == null) return;
+                    if (!reachable) { reconnectAt = Time.realtimeSinceStartup + config.ReconnectSeconds.Value; return; }
+                    Emit(host + " can be reached again; switching back to the live site.");
+                    Notice("info", "\U0001F4F6 Back online", "Switching to the live site at crixgamingvr.com...");
+                    goLiveAt = Time.realtimeSinceStartup + 3f;
+                });
+            });
+        }
+
+        private void GoLive()
+        {
+            if (remoteActive) return;
+            if (Screen == "playing" || Screen == "paused") { goLiveAt = Time.realtimeSinceStartup + 2f; return; }
+            reconnects++;
+            float now = Time.realtimeSinceStartup;
+            remoteActive = true;
+            remoteCommitted = false;
+            bridgeReady = false;
+            IsReady = false;
+            fellBackBecause = null;
+            reconnectAt = -1f;
+            remoteDeadline = now + config.RemoteTimeoutSeconds.Value;
+            readyDeadline = remoteDeadline + 30f;
+            Emit("Loading the live site again (attempt " + reconnects + " of " + MaxReconnects + "): " + config.RemoteUrl.Value);
+            Safe(() => EngineNavigate(config.RemoteUrl.Value));
+        }
+
+        /// <summary>Shows a message on the page with the site's own toast.</summary>
+        private void Notice(string kind, string title, string body)
+        {
+            Emit("On screen: " + body);
+            Exec("FlappyCrixBridge.notice(" + MiniJson.Quote(kind) + "," + MiniJson.Quote(title) + "," + MiniJson.Quote(body) + ")");
         }
 
         // ------------------------------------------------------------------ input (IFlappyGame)
