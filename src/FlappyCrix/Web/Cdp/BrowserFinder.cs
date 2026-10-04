@@ -134,7 +134,7 @@ namespace FlappyCrix.Web.Cdp
 
         // ------------------------------------------------------------------ browsers that didn't start
 
-        static string FailuresFile(string dataRoot) => Path.Combine(dataRoot, "browsers-that-failed.txt");
+        static string FailuresFile(string dataRoot) => Path.Combine(dataRoot, "browsers-that-failed-v2.txt");
         static string Stamp(string exe) { try { return File.GetLastWriteTimeUtc(exe).Ticks.ToString(); } catch { return "0"; } }
 
         /// <summary>This exact browser (same file version on disk) failed to start before: skip it.</summary>

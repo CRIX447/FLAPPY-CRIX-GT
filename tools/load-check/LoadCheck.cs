@@ -57,7 +57,7 @@ static class LoadCheck
         {
             var cfgFile = new BepInEx.Configuration.ConfigFile(cfgPath, true);
             config = Activator.CreateInstance(asm.GetType("FlappyCrix.FlappyCrixConfig"), cfgFile);
-            Check(File.Exists(cfgPath) && File.ReadAllText(cfgPath).Contains("SettingsRevision = 4"), "settings bind against the real BepInEx ConfigFile and are written");
+            Check(File.Exists(cfgPath) && File.ReadAllText(cfgPath).Contains("SettingsRevision = 5"), "settings bind against the real BepInEx ConfigFile and are written");
         }
         catch (Exception e) { Check(false, "settings bind against the real BepInEx ConfigFile", (e.InnerException ?? e).ToString()); }
         finally { try { File.Delete(cfgPath); } catch { } }

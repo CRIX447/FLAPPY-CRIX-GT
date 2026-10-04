@@ -112,9 +112,9 @@ namespace FlappyCrix.Native
         public void TogglePause() { sim.TogglePause(); dirty = true; }
         public void Back() { if (sim.Screen == "paused") TogglePause(); }
 
-        // The native version has no menus: SELECT acts like FLAP, a click on the screen too.
+        // The native version has no menus: SELECT does nothing; a click on the screen flaps.
         public void Navigate(int dx, int dy) { }
-        public void Select() => Flap();
+        public void Select() { }                       // menus only; the remake has none
         public void StartButton()
         {
             if (sim.Screen == "paused") sim.TogglePause();

@@ -79,7 +79,7 @@ namespace FlappyCrix.Web
             bridgeSource = EmbeddedBridge();
             string bridgeFile = Path.Combine(WebRoot, "__flappycrix", "bridge.js");
             if (bridgeSource == null && File.Exists(bridgeFile)) bridgeSource = File.ReadAllText(bridgeFile);
-            PackagedCopyInstalled = File.Exists(Path.Combine(WebRoot, "flappycrix.html"));
+            PackagedCopyInstalled = config.UseOfflineCopy.Value && File.Exists(Path.Combine(WebRoot, "flappycrix.html"));
             configJson = "{\"skipIntro\":" + Js(config.SkipIntro.Value) +
                          ",\"disableServiceWorker\":true" +
                          ",\"flapStartsGame\":" + Js(config.FlapStartsGame.Value) +
@@ -173,7 +173,31 @@ namespace FlappyCrix.Web
                 readyDeadline = Mathf.Max(readyDeadline, remoteDeadline + 30f);
             }
         });
-        protected void EngineFailed(string why) => OnMain(() => Fail(why));
+        protected void EngineFailed(string why) => OnMain(() => { if (!engineConnected) EngineStartFailed = true; Fail(why); });
+
+        /// <summary>The browser itself couldn't start or connect (not a page or network problem).</summary>
+        public bool EngineStartFailed { get; private set; }
+
+        private bool liveOnlyWaiting;
+
+        /// <summary>
+        /// Live site only: it couldn't be loaded, so the screen says so (a page drawn by the hidden
+        /// browser itself) and the mod keeps trying again - it never swaps in a copy or a remake.
+        /// </summary>
+        private void WaitForLiveSite(string why)
+        {
+            Emit("Couldn't load " + config.RemoteUrl.Value + " (" + why + "); trying again shortly.");
+            remoteActive = false; remoteCommitted = false; remoteDeadline = -1f;
+            bridgeReady = false; IsReady = false; Screen = "menu";
+            fellBackBecause = why; fallbackNoticeShown = true; liveOnlyWaiting = true;
+            float now = Time.realtimeSinceStartup;
+            readyDeadline = float.MaxValue;
+            reconnectAt = now + 10f;
+            string html = "<html><body style=\"margin:0;background:#0a0a0f;color:#fff;font:28px sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center\">" +
+                          "<div><div style=\"color:#ff6b35;font-size:48px;font-weight:bold\">FLAPPY CRIX</div><p>Can't reach crixgamingvr.com</p>" +
+                          "<p style=\"color:#a8a8c0;font-size:20px\">" + System.Net.WebUtility.HtmlEncode(why) + "<br>Trying again...</p></div></body></html>";
+            Safe(() => EngineNavigate("data:text/html;charset=utf-8," + Uri.EscapeDataString(html)));
+        }
         protected void BridgeMessage(string msg) => OnMain(() => OnBridgeEvent(msg));
         /// <summary>A page the engine blocked (or saw) that isn't the game: open it on the desktop.</summary>
         protected void LeftTheGame(string url) => OnMain(() => OpenOnDesktop(DesktopUrl(url)));
@@ -302,11 +326,7 @@ namespace FlappyCrix.Web
         private void FallBackToLocal(string why)
         {
             if (!remoteActive) return;
-            if (!PackagedCopyInstalled)
-            {
-                Fail("Couldn't load the live site (" + why + ") and the offline copy isn't installed (unzip the whole FlappyCrix folder, including Web).");
-                return;
-            }
+            if (!PackagedCopyInstalled) { WaitForLiveSite(why); return; }
             Emit("Couldn't load the live site (" + why + "); playing the packaged copy (offline) instead.");
             remoteActive = false;
             remoteCommitted = false;
@@ -375,7 +395,7 @@ namespace FlappyCrix.Web
                 {
                     probing = false;
                     if (remoteActive || fellBackBecause == null) return;
-                    if (!reachable) { reconnectAt = Time.realtimeSinceStartup + config.ReconnectSeconds.Value; return; }
+                    if (!reachable) { reconnectAt = Time.realtimeSinceStartup + (liveOnlyWaiting ? 10f : config.ReconnectSeconds.Value); return; }
                     Emit(host + " can be reached again; switching back to the live site.");
                     Notice("info", "\U0001F4F6 Back online", "Switching to the live site at crixgamingvr.com...");
                     goLiveAt = Time.realtimeSinceStartup + 3f;
@@ -388,6 +408,7 @@ namespace FlappyCrix.Web
             if (remoteActive) return;
             if (Screen == "playing" || Screen == "paused") { goLiveAt = Time.realtimeSinceStartup + 2f; return; }
             reconnects++;
+            liveOnlyWaiting = false;
             float now = Time.realtimeSinceStartup;
             remoteActive = true;
             remoteCommitted = false;
@@ -397,7 +418,7 @@ namespace FlappyCrix.Web
             reconnectAt = -1f;
             remoteDeadline = now + config.RemoteTimeoutSeconds.Value;
             readyDeadline = remoteDeadline + 30f;
-            Emit("Loading the live site again (attempt " + reconnects + " of " + MaxReconnects + "): " + config.RemoteUrl.Value);
+            Emit("Loading the live site again (attempt " + reconnects + "): " + config.RemoteUrl.Value);
             Safe(() => EngineNavigate(config.RemoteUrl.Value));
         }
 

@@ -82,3 +82,15 @@ The version stays at 1.0.0 until CRIX decides to change it.
   is open).
 - **The screen stands just behind the deck**, like an arcade cabinet: 0.75 m away (was 1.3 m), 0.36 m wide,
   bottom edge just above the deck. − / + resize it upwards in 4 cm steps.
+
+### Changed after the fifth in-game test
+
+- **Only the real crixgamingvr.com/flappycrix**, exactly as in a desktop browser: no Unity remake and no
+  packaged offline copy by default (`AutoFallbackToNative = false`, `UseOfflineCopy = false`). If the site
+  can't be reached, the screen says so and the mod keeps retrying until the real page loads.
+- **Desktop layout**: the hidden browser window is 1280×800, like a desktop browser, so the page looks the same
+  as on the PC (screen 0.6 m wide). `ResolutionWidth/Height = 768/960` gives the old tablet layout.
+- **SELECT is for menus only**: it presses what the joystick highlighted (or highlights the first item); it
+  never flaps.
+- Fixed: a missing `Web` folder made the previous build wrongly mark working browsers as "can't run hidden";
+  only real browser start-up failures are remembered now (old list ignored).

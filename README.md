@@ -51,7 +51,7 @@ with a percentage while it downloads (one time). Settings live in `BepInEx/confi
 | Hide (pauses a run) | **B** | F8 |
 | Flap | Deck **FLAP**, or **X** / **A** | Space |
 | Move the menu highlight | Deck **joystick** (hold grip on the red knob, push) | Arrow keys |
-| Flap / start / retry, or press the highlighted item | Deck **SELECT** (like FLAP unless the joystick highlighted something) | Enter |
+| Press the highlighted menu item | Deck **SELECT** (menus only, never flaps) | Enter |
 | Start / retry / resume | Deck **START** | F5 |
 | Pause / resume | Deck **PAUSE** | P |
 | Screen smaller / bigger | Deck **−** / **+** | − / = |
@@ -89,8 +89,10 @@ Gorilla Tag ─ BepInEx ─ FlappyCrix.dll
 
 | Setting | Default | |
 |---|---|---|
-| `Width` / `Distance` / `HeightOffset` | 0.36 m / 0.75 m / −0.43 m | Screen size, distance, and its **bottom edge** height (just above the deck, like an arcade cabinet; about 27° × 33° of your view). The deck's − / + change `Width`; the screen grows upwards. |
+| `Width` / `Distance` / `HeightOffset` | 0.6 m / 0.75 m / −0.43 m | Screen size, distance, and its **bottom edge** height (just above the deck, like an arcade cabinet; about 27° × 33° of your view). The deck's − / + change `Width`; the screen grows upwards. |
 | `UseRemoteWebsite` | `true` | Live page; `false` = packaged copy (offline). |
+| `UseOfflineCopy` / `AutoFallbackToNative` | `false` / `false` | By default only the real crixgamingvr.com/flappycrix is ever shown; if it can't be reached the screen says so and retries. Turn these on to fall back to the packaged copy / the Unity remake. |
+| `ResolutionWidth` / `ResolutionHeight` | 1280 / 800 | The hidden browser's window: the site's desktop layout, same as a desktop browser. 768 / 960 = tablet layout. |
 | `RemoteTimeoutSeconds` | 30 | How long crixgamingvr.com gets to *start* loading before the packaged copy is shown. Once it has started, it gets as long as it needs. |
 | `ReconnectSeconds` | 45 | While the packaged copy is showing because the live site couldn't be reached, how often to check again; it switches back by itself between runs. |
 | `UseGameFingertips` / `FingertipOffset` | `true` / (0, −0.02, 0.085) | Deck buttons use Gorilla Tag's fingertip points; the offset (metres from the controller) is the backup. |

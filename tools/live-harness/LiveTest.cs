@@ -118,6 +118,7 @@ static class LiveTest
         cfg.RunSelfTest.Value = false;
         cfg.MuteWebAudio.Value = true;
         cfg.LocalPort.Value = 47391;
+        cfg.UseOfflineCopy.Value = true;          // scenarios 2-3 test the opt-in offline copy; 6-7 turn it off
         return cfg;
     }
 
@@ -153,6 +154,7 @@ static class LiveTest
             if (only == "" || only == "4") FindBrowsers();
             if (only == "" || only == "5") DownloadEngine();
             if (only == "" || only == "6") DllOnlyInstall();
+            if (only == "" || only == "7") LiveOnly();
         }
         finally { StopSite(); }
 
@@ -349,16 +351,30 @@ static class LiveTest
             {
                 bool live = r.PumpUntil(() => r.LiveReady, 40);
                 Check("the live site works with just the DLL (bridge built in)", live, r.Game.ModeName);
-                Check("...and the log says the offline copy isn't installed", r.When("offline copy of the site isn't installed").HasValue);
-            }
-            StopSite();
-            using (var r = new Run(NewConfig()))
-            {
-                r.PumpUntil(() => r.Game.HasFailed, 40);
-                Check("live site down + no offline copy -> a clear failure (then the next engine), not an empty page",
-                      r.Game.HasFailed && (r.Game.FailureReason ?? "").Contains("offline copy isn't installed"), r.Game.FailureReason ?? "");
             }
         }
         finally { modFolder = saved; StopSite(); try { Directory.Delete(bare, true); } catch { } }
+    }
+
+    static void LiveOnly()
+    {
+        Console.WriteLine("== 7. default: live site only (no offline copy, no remake); site down, then back");
+        StopSite();
+        var cfg = NewConfig();
+        cfg.UseOfflineCopy.Value = false;
+        using (var r = new Run(cfg))
+        {
+            bool waiting = r.PumpUntil(() => r.When("trying again shortly").HasValue, 40);
+            Check("live site unreachable -> says so and keeps trying (no packaged copy, engine not failed)",
+                  waiting && !r.Game.HasFailed && r.When("packaged copy") == null && !r.Game.IsReady);
+            r.PumpUntil(() => false, 3);
+            Check("...and is still waiting a few seconds later, not failed", !r.Game.HasFailed);
+            StartSite("");
+            double up = r.Now;
+            bool back = r.PumpUntil(() => r.LiveReady, 40);
+            Check("when the site is reachable the real page loads by itself", back,
+                  back ? "live " + (r.Now - up).ToString("0.0") + " s after the site came back" : r.Game.ModeName);
+        }
+        StopSite();
     }
 }

@@ -35,8 +35,8 @@ async def main():
         await pg.screenshot(path=os.path.join(SHOTS, "09-start-highlighted.png"))
         await pg.evaluate("FlappyCrixBridge.select()"); await pg.wait_for_timeout(400)
         check("joystick to START + SELECT starts a run", found and await st()=="playing")
-        y=await pg.evaluate("bird.velocity"); await pg.evaluate("FlappyCrixBridge.select()")
-        check("SELECT while playing flaps", await pg.evaluate("bird.velocity")<-5)
+        r=await pg.evaluate("FlappyCrixBridge.select()")
+        check("SELECT while playing does nothing (menus only)", r=="ignored:playing", r)
         r=await pg.evaluate("FlappyCrixBridge.navigate(0,1)"); check("joystick ignored while playing", r=="ignored:playing")
         await pg.evaluate("FlappyCrixBridge.togglePause()"); await pg.wait_for_timeout(200)
         check("PAUSE pauses", await st()=="paused")
@@ -48,27 +48,9 @@ async def main():
         await pg.wait_for_timeout(500)
         await pg.evaluate("FlappyCrixBridge.startButton()"); await pg.wait_for_timeout(400)
         check("START retries from game over", await st()=="playing")
-        # SELECT works as FLAP: after a game over it retries...
-        for _ in range(40):
-            await pg.wait_for_timeout(300)
-            if await st()=="dead": break
-        await pg.wait_for_timeout(500)
-        r=await pg.evaluate("FlappyCrixBridge.select()"); await pg.wait_for_timeout(400)
-        check("SELECT retries from game over (like FLAP)", await st()=="playing", r)
-        # ...and on the main menu, with nothing highlighted, it starts a run
-        await pg.reload(wait_until="domcontentloaded"); await pg.wait_for_timeout(2500)
-        # (the site shows its tutorial again on a fresh load: with a window open, SELECT highlights
-        #  its first item instead - close it the way a player would: SELECT, SELECT)
-        r1=await pg.evaluate("FlappyCrixBridge.select()"); await pg.wait_for_timeout(200)
-        r2=await pg.evaluate("FlappyCrixBridge.select()"); await pg.wait_for_timeout(400)
-        check("with the tutorial open: SELECT highlights its button, SELECT again closes it",
-              not await pg.evaluate("document.getElementById('tutorialModal')?.classList.contains('active')"), f"{r1}, {r2}")
-        await pg.evaluate("document.querySelectorAll('.pad-focus').forEach(e=>e.classList.remove('pad-focus'))")
-        for _ in range(5):                                      # the site's own toasts can be up; let them go
-            if not await pg.evaluate("!!document.querySelector('.toast')"): break
-            await pg.wait_for_timeout(1000)
-        r=await pg.evaluate("FlappyCrixBridge.select()"); await pg.wait_for_timeout(500)
-        check("SELECT on the main menu (nothing highlighted) starts a run, like FLAP", await st()=="playing", r)
+        # SELECT is for menus only: it never flaps or starts a run by itself
+        r=await pg.evaluate("FlappyCrixBridge.select()")
+        check("SELECT never flaps while playing", r=="ignored:playing" or await st()!="playing", r)
         await b.close()
     print(f"{sum(res)}/{len(res)} passed")
 asyncio.run(main())

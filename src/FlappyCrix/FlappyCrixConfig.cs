@@ -28,6 +28,7 @@ namespace FlappyCrix
         public readonly ConfigEntry<float> RemoteTimeoutSeconds;
         public readonly ConfigEntry<float> ReconnectSeconds;
         public readonly ConfigEntry<bool> AutoFallbackToNative;
+        public readonly ConfigEntry<bool> UseOfflineCopy;
         public readonly ConfigEntry<bool> ShowOnStart;
         public readonly ConfigEntry<KeyCode> ToggleKey;
         public readonly ConfigEntry<KeyCode> RecenterKey;
@@ -83,22 +84,24 @@ namespace FlappyCrix
                 "true = play the live page at RemoteUrl (crixgamingvr.com/flappycrix). false = the copy packaged with the mod (works offline). The live page falls back to the packaged copy if it can't load.");
             RemoteUrl = cfg.Bind(G, "RemoteUrl", "https://crixgamingvr.com/flappycrix", "Live site used when UseRemoteWebsite = true.");
             RemoteTimeoutSeconds = cfg.Bind(G, "RemoteTimeoutSeconds", 30f, new ConfigDescription(
-                "How long the live site gets to START loading (counted from when the hidden browser is up) before the packaged copy is used. Once the live page has started loading it gets as long as it needs.",
+                "How long the live site gets to START loading (counted from when the hidden browser is up) before it counts as unreachable (then it retries, or shows the packaged copy if UseOfflineCopy = true). Once the live page has started loading it gets as long as it needs.",
                 new AcceptableValueRange<float>(5f, 120f)));
             ReconnectSeconds = cfg.Bind(G, "ReconnectSeconds", 45f, new ConfigDescription(
                 "If the live site couldn't be reached and the packaged (offline) copy is showing, check this often whether crixgamingvr.com can be reached again, and switch back to it when you're not mid-run. 0 = never.",
                 new AcceptableValueRange<float>(0f, 600f)));
-            AutoFallbackToNative = cfg.Bind(G, "AutoFallbackToNative", true,
-                "If the embedded browser is missing or fails its self test, switch to the native Unity version automatically.");
+            AutoFallbackToNative = cfg.Bind(G, "AutoFallbackToNative", false,
+                "false (default) = only ever show the real crixgamingvr.com/flappycrix. true = if no website engine can run at all, play the mod's own Unity remake instead.");
+            UseOfflineCopy = cfg.Bind(G, "UseOfflineCopy", false,
+                "false (default) = only the live page; if it can't be reached the screen says so and keeps retrying. true = show the copy packaged with the mod (the site's offline mode) meanwhile.");
             ShowOnStart = cfg.Bind(G, "ShowOnStart", true, "Open the screen in front of you when you load in.");
             ToggleKey = cfg.Bind(G, "ToggleKey", KeyCode.F8, "Keyboard: show/hide. In VR: B hides, Y opens it in front of you.");
             RecenterKey = cfg.Bind(G, "RecenterKey", KeyCode.F9, "Keyboard: bring the screen and deck in front of you (same as Y in VR).");
 
             Distance = cfg.Bind(D, "Distance", 0.75f, new ConfigDescription("How far in front of you the screen stands, metres. 0.75 = just behind the deck, like an arcade cabinet.", new AcceptableValueRange<float>(0.4f, 6f)));
-            Width = cfg.Bind(D, "Width", 0.36f, new ConfigDescription("Screen width in metres (height follows: 0.36 wide = 0.45 tall). Also changed in-game with the deck's - / + buttons.", new AcceptableValueRange<float>(0.2f, 2.5f)));
+            Width = cfg.Bind(D, "Width", 0.6f, new ConfigDescription("Screen width in metres (height follows the page shape: 0.6 wide = 0.375 tall at 1280x800). Also changed in-game with the deck's - / + buttons.", new AcceptableValueRange<float>(0.2f, 2.5f)));
             HeightOffset = cfg.Bind(D, "HeightOffset", -0.43f, "Height of the screen's BOTTOM edge relative to your eyes, metres (-0.43 = just above the deck). Making the screen bigger grows it upwards.");
-            ResolutionWidth = cfg.Bind(D, "ResolutionWidth", 768, new ConfigDescription("Browser pixels. 768x960 gives the site's tablet layout with text large enough for VR; 1024x1280 is sharper but smaller; below ~700 wide the site switches to its cramped phone layout.", new AcceptableValueRange<int>(320, 2560)));
-            ResolutionHeight = cfg.Bind(D, "ResolutionHeight", 960, new ConfigDescription("Browser pixels.", new AcceptableValueRange<int>(320, 2560)));
+            ResolutionWidth = cfg.Bind(D, "ResolutionWidth", 1280, new ConfigDescription("Browser window size in pixels. 1280x800 = the site's normal desktop layout, the same as in a desktop browser window. 768x960 = its tablet layout (bigger text, portrait).", new AcceptableValueRange<int>(320, 2560)));
+            ResolutionHeight = cfg.Bind(D, "ResolutionHeight", 800, new ConfigDescription("Browser pixels.", new AcceptableValueRange<int>(320, 2560)));
             BrowserFrameRate = cfg.Bind(D, "BrowserFrameRate", 30, new ConfigDescription("Most screen updates per second from the website. 30 is smooth and light on VR performance; up to 60.", new AcceptableValueRange<int>(10, 60)));
             JpegQuality = cfg.Bind(D, "StreamQuality", 80, new ConfigDescription("Picture quality of the website stream (hidden Edge engine), 50-95.", new AcceptableValueRange<int>(50, 95)));
             ShaderOverride = cfg.Bind(D, "ShaderOverride", "", "Advanced: a shader name to draw the screen and deck with, if the default doesn't show up.");
@@ -166,7 +169,16 @@ namespace FlappyCrix
             {
                 if (RemoteTimeoutSeconds.Value < (float)RemoteTimeoutSeconds.DefaultValue) RemoteTimeoutSeconds.Value = (float)RemoteTimeoutSeconds.DefaultValue;
             }
-            if (revision.Value < 4) revision.Value = 4;
+            // Revision 5: the real site only (no remake, no offline copy), in its desktop layout.
+            if (revision.Value < 5)
+            {
+                AutoFallbackToNative.Value = false;
+                UseOfflineCopy.Value = false;
+                ResolutionWidth.Value = 1280; ResolutionHeight.Value = 800;
+                Width.Value = (float)Width.DefaultValue;
+                UpgradedFromOlderConfig = true;
+            }
+            if (revision.Value < 5) revision.Value = 5;
         }
     }
 }

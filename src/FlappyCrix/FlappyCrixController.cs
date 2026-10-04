@@ -116,7 +116,7 @@ namespace FlappyCrix
             {
                 // A browser that never even started is skipped next time (until it's updated)
                 var web = game as Web.EdgeBrowserGame;
-                if (web != null && whyPreviousFailed != null && !web.EngineEverConnected)
+                if (web != null && whyPreviousFailed != null && web.EngineStartFailed)
                 {
                     Web.Cdp.BrowserFinder.RecordFailure(DataRoot, web.BrowserExe);
                     Logger.LogWarning("This browser couldn't run hidden; it won't be tried again until it's updated: " + web.BrowserExe);
