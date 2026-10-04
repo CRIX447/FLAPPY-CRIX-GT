@@ -12,12 +12,15 @@ on a screen inside Gorilla Tag, with an arcade control deck in front of it.
 
 ## Features
 
-- **The actual website game, nothing extra to install.** The mod uses the Microsoft Edge that comes with
-  Windows 10/11 (or Chrome/Brave if you have them) as a **hidden engine**: it runs headless — no window, nothing
-  appears on your desktop — and the page is streamed onto the in-game screen. Plays the live page by default
-  and falls back to a copy packaged with the mod if it can't load.
-- **Arcade control deck**: joystick to move through the menus, **FLAP**, **SELECT**, **START**, **PAUSE**,
-  and **− / +** to resize the screen.
+- **The actual website game, whatever browser you use.** The website runs in a **hidden engine** — headless:
+  no window, nothing appears on your desktop — and the page is streamed onto the in-game screen. The engine is
+  a browser already on your PC that can run hidden (Edge, Chrome, Brave, Vivaldi, Chromium..., even Edge's
+  leftover engine on PCs where Edge was removed). If you only have browsers that can't (Opera / Opera GX,
+  Firefox), the mod downloads Google's official Chrome for Testing headless shell once (about 100 MB).
+  Plays the live page by default and falls back to a copy packaged with the mod if it can't load.
+- **Arcade cabinet**: the screen stands just behind the control deck. Joystick to move through the menus,
+  **FLAP**, **SELECT** (works as FLAP, or presses what the joystick highlighted), **START**, **PAUSE**, and
+  **− / +** to resize the screen. Press the buttons with your fingertip.
 - **Portable**: opens in front of you when you load in. **B** hides it, **Y** brings it back in front of you.
 - **Sign-in, Discord, YouTube, TikTok, the shop and other site pages open in your PC's normal browser**, never in-game.
 - Laser pointer (right hand + trigger) to click anything on the screen.
@@ -34,8 +37,10 @@ More pictures in [`docs/screenshots`](docs/screenshots): a real frame from the w
    so you have `BepInEx/plugins/FlappyCrix/FlappyCrix.dll`.
 3. Start Gorilla Tag. The screen appears in front of you once you've loaded in.
 
-That's it — Microsoft Edge is already on every Windows 10/11 PC. Settings live in
-`BepInEx/config/com.crix.flappycrix.cfg` (created on first run).
+That's it. If your PC has no browser that can run hidden, the first start shows **Getting the website engine**
+with a percentage while it downloads (one time). Settings live in `BepInEx/config/com.crix.flappycrix.cfg`
+(created on first run); browser profiles, the downloaded engine and `selftest.txt` live in
+`%LOCALAPPDATA%\FlappyCrix`.
 
 ## Controls
 
@@ -45,7 +50,7 @@ That's it — Microsoft Edge is already on every Windows 10/11 PC. Settings live
 | Hide (pauses a run) | **B** | F8 |
 | Flap | Deck **FLAP**, or **X** / **A** | Space |
 | Move the menu highlight | Deck **joystick** (hold grip on the red knob, push) | Arrow keys |
-| Press the highlighted item | Deck **SELECT** (flaps while playing) | Enter |
+| Flap / start / retry, or press the highlighted item | Deck **SELECT** (like FLAP unless the joystick highlighted something) | Enter |
 | Start / retry / resume | Deck **START** | F5 |
 | Pause / resume | Deck **PAUSE** | P |
 | Screen smaller / bigger | Deck **−** / **+** | − / = |
@@ -59,7 +64,8 @@ points; if a game update moves them, it works the fingertip out from your contro
 
 ```
 Gorilla Tag ─ BepInEx ─ FlappyCrix.dll
-                          ├─ hidden Edge/Chrome (headless, own profile in BrowserData/)
+                          ├─ hidden engine: a browser on the PC that can run headless, or the
+                          │  downloaded Chrome for Testing headless shell (profile in %LOCALAPPDATA%\FlappyCrix)
                           │     ├─ loads crixgamingvr.com/flappycrix (or the packaged copy)
                           │     ├─ bridge.js injected before the site's scripts
                           │     └─ frames ──DevTools protocol──► texture on the in-game screen
@@ -75,31 +81,31 @@ Gorilla Tag ─ BepInEx ─ FlappyCrix.dll
 - **Browser dialogs** (`confirm()`, e.g. "Remove friend?") can't be answered in VR, so they answer "no" and
   show the site's own message; `alert()` becomes a site toast.
 - **The hidden browser closes with the game**, even if the game crashes (it is tied to Gorilla Tag's process).
-- **Save data** (coins, cosmetics, best score as a guest) lives in `BepInEx/plugins/FlappyCrix/BrowserData/EdgeProfile`.
+- **Save data** (coins, cosmetics, best score as a guest) lives in `%LOCALAPPDATA%\FlappyCrix\Profile-<browser>`.
   Signing in happens in your desktop browser, not in the panel.
 
 ## Settings worth knowing (`com.crix.flappycrix.cfg`)
 
 | Setting | Default | |
 |---|---|---|
-| `Width` / `Distance` / `HeightOffset` | 0.55 m / 1.3 m / −0.1 m | Screen size and placement (about 24° × 30° of your view). The deck's − / + change `Width`. |
+| `Width` / `Distance` / `HeightOffset` | 0.36 m / 0.75 m / −0.43 m | Screen size, distance, and its **bottom edge** height (just above the deck, like an arcade cabinet; about 27° × 33° of your view). The deck's − / + change `Width`; the screen grows upwards. |
 | `UseRemoteWebsite` | `true` | Live page; `false` = packaged copy (offline). |
 | `RemoteTimeoutSeconds` | 30 | How long crixgamingvr.com gets to *start* loading before the packaged copy is shown. Once it has started, it gets as long as it needs. |
 | `ReconnectSeconds` | 45 | While the packaged copy is showing because the live site couldn't be reached, how often to check again; it switches back by itself between runs. |
 | `UseGameFingertips` / `FingertipOffset` | `true` / (0, −0.02, 0.085) | Deck buttons use Gorilla Tag's fingertip points; the offset (metres from the controller) is the backup. |
-| `Engine` | `Auto` | `Auto` = hidden Edge/Chrome → UnityWebBrowser (if installed) → native version. |
-| `BrowserPath` | empty | Use a specific Chromium browser instead of finding Edge/Chrome automatically. |
+| `Engine` | `Auto` | `Auto` = a hidden browser from the PC → the downloaded engine → UnityWebBrowser (if installed) → native version. |
+| `BrowserPath` | empty | Use a specific browser first. (Opera / Opera GX and Firefox can't run hidden, so they aren't picked automatically.) |
+| `DownloadEngine` | `true` | If no browser on the PC can run hidden, download Google's Chrome for Testing headless shell once (~100 MB). `false` = the built-in version instead. |
 | `BrowserFrameRate` / `StreamQuality` | 30 / 80 | Screen updates per second and picture quality. Lower these if Gorilla Tag's frame rate drops. |
 | `OpenLinksOnDesktop` | `true` | Sign-in/socials/other pages open in your desktop browser. |
 | `ShaderOverride` | empty | Advanced: if the screen or deck is invisible, a shader name to use instead (see the log). |
 
-Settings files from the first test build are reset to the new screen size once, and older settings files get
-the longer live-site time once.
+Older settings files are moved to the current screen placement once (and get the longer live-site time once).
 
 ## If something's wrong
 
-Send `BepInEx/LogOutput.log` and `BepInEx/plugins/FlappyCrix/BrowserData/selftest.txt`. The log says which
-engine was used (`Mode: Website (...) via hidden msedge ...`), which shader draws the screen, the stream's frame
+Send `BepInEx/LogOutput.log` and `%LOCALAPPDATA%\FlappyCrix\selftest.txt`. The log says which
+browsers were found and which engine was used (`Mode: Website (...) via hidden msedge ...`), which shader draws the screen, the stream's frame
 rate and decode time, and why an engine was skipped. The self test checks JavaScript, CSS, images, audio, the
 canvas, frames reaching the screen, key input reaching the page, and the page's frame rate.
 
@@ -113,7 +119,9 @@ is ready (usually a few seconds). If no screen appears at all, open `BepInEx/Log
 | `Still waiting for the player's camera` | The game hasn't created the player yet; the screen opens as soon as it does. |
 | `Couldn't load the live site (...)` | The reason is in brackets, and the screen shows it too. The packaged copy (the site's offline mode) plays meanwhile, and the mod switches back to crixgamingvr.com by itself when it can. |
 | `The website says it is offline` while on the live site | The site's own connection check failed; the mod asks it to check again every 6 s. If it never says `online`, something on the PC is blocking crixgamingvr.com for the hidden browser (firewall, antivirus, VPN). |
-| `No Microsoft Edge or Chrome found` | Install Edge or Chrome, or set `BrowserPath`. The native version runs meanwhile. |
+| `No browser on this PC can run the website hidden` | Normal with only Opera / Opera GX / Firefox: the engine is downloaded once. |
+| `Engine download failed: ...` | The PC couldn't reach Google's download servers (firewall/antivirus?). The built-in version runs; it tries again next start. |
+| `This browser couldn't run hidden; it won't be tried again` | That browser is skipped from now on (until it's updated); the next one, or the downloaded engine, is used. |
 | `DevTools port did not appear` | Something blocked the hidden browser (antivirus, or a work/school policy that disables browser debugging). |
 | `Screen stream: ... ms per frame to decode` is high | Lower `BrowserFrameRate` (e.g. 20) or `StreamQuality`. |
 | Screen/deck invisible | Note the `Rendering with shader:` line and report it; try `ShaderOverride`. |

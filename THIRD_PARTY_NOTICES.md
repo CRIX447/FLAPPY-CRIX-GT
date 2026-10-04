@@ -10,7 +10,13 @@ owner's permission. Changes: none to the website's files; `api.json` is replaced
 **Noto Color Emoji** images (`Web/img/emoji/72/`, credited in the site as "Noto Color Emoji") —
 © Google, Apache License 2.0. <https://github.com/googlefonts/noto-emoji>
 
-## Browser engine (added by `tools/collect_uwb.ps1`)
+## Downloaded website engine (not included)
+Google's **Chrome for Testing headless shell** (Chromium; BSD-3-Clause © The Chromium Authors, plus
+third-party component licences in the download's licence file) is downloaded by the mod from Google's servers
+on PCs with no browser that can run hidden. It is not part of this mod, its releases or this repository.
+See DEPENDENCIES.md.
+
+## Optional browser engine (added by `tools/collect_uwb.ps1`)
 | Component | Licence | Source |
 |---|---|---|
 | UnityWebBrowser, UnityWebBrowser.Shared, CEF engine host | MIT © Voltstro-Studios | github.com/Voltstro-Studios/UnityWebBrowser |

@@ -265,13 +265,21 @@
             return 'unavailable';
         },
 
+        // SELECT works as FLAP (start a run, flap, retry), except when the joystick has
+        // highlighted something in a menu: then it presses that item.
         select: function () {
             var s = screen();
             if (s === 'playing') { var j = fn('jump'); if (j) j(); return 'jump'; }
             var pa = fn('padActivate');
             var focused = document.querySelector('.pad-focus');
-            if (pa && focused) { pa(); return 'activate'; }
-            // nothing highlighted yet: highlight the first item so the next press activates it
+            if (pa && focused && visible(focused)) { pa(); return 'activate'; }
+            if (s === 'paused') return api.resume();
+            var modal = document.querySelector('.mp-modal.active, .store-modal.active, .locker-modal.active, .achievements-modal.active, .modal.active, [class*="-modal"].active');
+            if (!modal) {
+                if (s === 'dead') return api.restart();
+                if (s === 'menu') return api.start();
+            }
+            // a window is open and nothing is highlighted: highlight its first item
             var pm = fn('padMove');
             if (pm) { pm(1); return 'focus-first'; }
             return 'unavailable';

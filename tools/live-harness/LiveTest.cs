@@ -14,6 +14,12 @@
 //      -> the packaged copy is shown at once, then the live site again once it can be reached.
 //   3. live site stalls (accepts, never answers), then recovers
 //      -> packaged copy after RemoteTimeoutSeconds, then the live site again.
+//   4. finding browsers on a PC laid out like CRIX's (no Edge or Chrome; Edge's leftover
+//      EdgeCore engine; Opera GX; a downloaded engine) -> usable ones in the right order,
+//      Opera GX reported as not usable, failed browsers remembered.
+//   5. no usable browser: the engine is downloaded (from a local stand-in for Google's
+//      Chrome for Testing servers), unpacked, found, and runs the website.
+//      Needs HEADLESS_SHELL (a headless shell executable) - skipped otherwise.
 // Part of Flappy Crix for Gorilla Tag - made with AI (Claude by Anthropic).
 
 using System;
@@ -25,6 +31,7 @@ using System.Reflection;
 using System.Threading;
 using FlappyCrix;
 using FlappyCrix.Web;
+using FlappyCrix.Web.Cdp;
 
 static class LiveTest
 {
@@ -140,6 +147,8 @@ static class LiveTest
             if (only == "" || only == "1") SlowLiveSite();
             if (only == "" || only == "2") DownThenUp();
             if (only == "" || only == "3") StallThenRecover();
+            if (only == "" || only == "4") FindBrowsers();
+            if (only == "" || only == "5") DownloadEngine();
         }
         finally { StopSite(); }
 
@@ -203,5 +212,120 @@ static class LiveTest
                   back ? "live " + (r.Now - up).ToString("0.0") + " s after it recovered" : r.Game.ModeName);
         }
         StopSite();
+    }
+
+    // ------------------------------------------------------------------ 4. finding browsers
+
+    static string Touch(string path)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(path));
+        File.WriteAllText(path, "");
+        return path;
+    }
+
+    static void FindBrowsers()
+    {
+        Console.WriteLine("== 4. finding browsers (CRIX's PC: no Edge/Chrome, EdgeCore left over, Opera GX)");
+        string t = Path.Combine(Path.GetTempPath(), "flappycrix-finder-" + Guid.NewGuid().ToString("N"));
+        string pf86 = Path.Combine(t, "Program Files (x86)"), local = Path.Combine(t, "Local"), data = Path.Combine(t, "Data");
+        string sep = Path.DirectorySeparatorChar.ToString();
+        Touch(Path.Combine(pf86, "Microsoft/EdgeCore/99.0.1150.30/msedge.exe".Replace("/", sep)));
+        string coreNew = Touch(Path.Combine(pf86, "Microsoft/EdgeCore/131.0.2903.112/msedge.exe".Replace("/", sep)));
+        Touch(Path.Combine(pf86, "Microsoft/EdgeWebView/Application/131.0.2903.112/msedgewebview2.exe".Replace("/", sep)));
+        Touch(Path.Combine(local, "Programs/Opera GX/launcher.exe".Replace("/", sep)));
+        string vivaldi = Touch(Path.Combine(local, "Vivaldi/Application/vivaldi.exe".Replace("/", sep)));
+        string engine = Touch(Path.Combine(data, "engine/154.0.8037.92/chrome-headless-shell-linux64/chrome-headless-shell".Replace("/", sep)));
+        var log = new List<string>();
+        var found = BrowserFinder.FindAll("", data, log.Add, new[] { pf86, local });
+        string order = string.Join(" > ", found.Select(b => b.Name).ToArray());
+        Check("usable browsers found, best first (newest EdgeCore, Vivaldi, then the downloaded engine)",
+              found.Count == 3 && found[0].Exe == coreNew && found[1].Exe == vivaldi && found[2].Exe == engine && found[2].Downloaded, order);
+        Check("Edge's WebView runtime is not used as a browser", found.All(b => !b.Exe.Contains("msedgewebview2")));
+        Check("Opera GX is reported as installed but not usable hidden", log.Any(l => l.Contains("Opera GX") && l.Contains("can't run hidden")),
+              log.FirstOrDefault(l => l.Contains("Opera")) ?? "");
+        string operaOnly = Path.Combine(t, "OperaOnly");
+        Touch(Path.Combine(operaOnly, "Programs/Opera GX/launcher.exe".Replace("/", sep)));
+        var none = BrowserFinder.FindAll("", Path.Combine(t, "Empty"), log.Add, new[] { operaOnly });
+        Check("only Opera GX installed -> no usable browser (so the engine gets downloaded)", none.Count == 0);
+        BrowserFinder.RecordFailure(data, coreNew);
+        Check("a browser that failed to start is remembered", BrowserFinder.FailedBefore(data, coreNew) && !BrowserFinder.FailedBefore(data, vivaldi));
+        File.SetLastWriteTimeUtc(coreNew, DateTime.UtcNow.AddMinutes(5));
+        Check("...and tried again once it's updated", !BrowserFinder.FailedBefore(data, coreNew));
+        var chosen = BrowserFinder.FindAll(Touch(Path.Combine(local, "Programs/Opera GX/opera.exe".Replace("/", sep))), data, log.Add, new[] { pf86 });
+        Check("BrowserPath is still honoured first (with a warning for Opera)", chosen.Count > 0 && chosen[0].UserChosen && log.Any(l => l.StartsWith("BrowserPath is Opera")));
+        try { Directory.Delete(t, true); } catch { }
+    }
+
+    // ------------------------------------------------------------------ 5. downloading the engine
+
+    static void DownloadEngine()
+    {
+        Console.WriteLine("== 5. no usable browser -> download the engine, unpack, run the website");
+        string shell = Environment.GetEnvironmentVariable("HEADLESS_SHELL");
+        if (string.IsNullOrEmpty(shell) || !File.Exists(shell)) { Console.WriteLine("SKIP (set HEADLESS_SHELL to a headless shell executable)"); return; }
+        string t = Path.Combine(Path.GetTempPath(), "flappycrix-dl-" + Guid.NewGuid().ToString("N"));
+        string site = Path.Combine(t, "google"), data = Path.Combine(t, "Data");
+        const int Port = 47450; const string Ver = "141.0.7390.37";
+        string prefix = "http://127.0.0.1:" + Port + "/chrome-for-testing-public/";
+        // Google's layout: <version>/linux64/chrome-headless-shell-linux64.zip containing chrome-headless-shell-linux64/chrome-headless-shell
+        string pkg = Path.Combine(t, "pkg", "chrome-headless-shell-linux64");
+        Directory.CreateDirectory(pkg);
+        File.WriteAllText(Path.Combine(pkg, "chrome-headless-shell"), "#!/bin/sh\nexec \"" + shell + "\" \"$@\"\n");
+        File.WriteAllText(Path.Combine(pkg, "LICENSE.headless_shell"), "stand-in package for the test");
+        Process.Start("chmod", "+x \"" + Path.Combine(pkg, "chrome-headless-shell") + "\"").WaitForExit();
+        string zipDir = Path.Combine(site, "chrome-for-testing-public", Ver, "linux64");
+        Directory.CreateDirectory(zipDir);
+        var z = Process.Start(new ProcessStartInfo("zip", "-q -r \"" + Path.Combine(zipDir, "chrome-headless-shell-linux64.zip") + "\" chrome-headless-shell-linux64")
+                              { WorkingDirectory = Path.Combine(t, "pkg"), UseShellExecute = false });
+        z.WaitForExit();
+        File.WriteAllText(Path.Combine(site, "cft.json"),
+            "{\"channels\":{\"Stable\":{\"channel\":\"Stable\",\"version\":\"" + Ver + "\",\"downloads\":{\"chrome-headless-shell\":[" +
+            "{\"platform\":\"win64\",\"url\":\"" + prefix + Ver + "/win64/chrome-headless-shell-win64.zip\"}," +
+            "{\"platform\":\"linux64\",\"url\":\"" + prefix + Ver + "/linux64/chrome-headless-shell-linux64.zip\"}]}}}}");
+        File.WriteAllText(Path.Combine(site, "evil.json"),
+            "{\"channels\":{\"Stable\":{\"version\":\"1.2.3\",\"downloads\":{\"chrome-headless-shell\":[{\"platform\":\"linux64\",\"url\":\"http://evil.example/x/chrome-headless-shell-linux64.zip\"}]}}}}");
+        // an older engine version already there (should be cleaned up)
+        Touch(Path.Combine(data, "engine", "120.0.0.1", "chrome-headless-shell-linux64", "chrome-headless-shell"));
+        var srv = Process.Start(new ProcessStartInfo("python3", "-m http.server " + Port + " --bind 127.0.0.1 --directory \"" + site + "\"")
+                                { UseShellExecute = false, RedirectStandardError = true, RedirectStandardOutput = true });
+        Thread.Sleep(1200);
+        try
+        {
+            var evil = new EngineDownloader { JsonUrl = "http://127.0.0.1:" + Port + "/evil.json", UrlPrefix = prefix, Platform = "linux64" };
+            string refused = null;
+            try { evil.Run(BrowserFinder.EngineRoot(data)); } catch (Exception e) { refused = e.Message; }
+            Check("refuses to download from anywhere but Google's Chrome for Testing storage", refused != null && refused.Contains("unexpected address"), refused ?? "downloaded!");
+
+            var logs = new List<string>();
+            var dl = new EngineDownloader { JsonUrl = "http://127.0.0.1:" + Port + "/cft.json", UrlPrefix = prefix, Platform = "linux64" };
+            dl.StartAsync(BrowserFinder.EngineRoot(data), m => { logs.Add(m); Console.WriteLine("      " + m); });
+            var sw = Stopwatch.StartNew();
+            while (!dl.Done && sw.ElapsedMilliseconds < 60000) Thread.Sleep(50);
+            Check("downloads and unpacks the engine", dl.ExePath != null && File.Exists(dl.ExePath), dl.ExePath ?? dl.Error);
+            Check("progress reached 100%", dl.Progress >= 0.999f, (dl.BytesDone) + " of " + dl.BytesTotal + " bytes");
+            Check("older engine versions are removed", !Directory.Exists(Path.Combine(data, "engine", "120.0.0.1")));
+            var found = BrowserFinder.FindAll("", data, null, new string[0]);
+            Check("the finder picks up the downloaded engine", found.Count == 1 && found[0].Downloaded && found[0].Exe == dl.ExePath, found.Count > 0 ? found[0].Name : "none");
+
+            if (dl.ExePath != null)
+            {
+                var cfg = NewConfig();
+                cfg.UseRemoteWebsite.Value = false;               // packaged copy: this test is about the engine
+                cfg.BrowserPath.Value = "";
+                var game = new EdgeBrowserGame(cfg, modFolder, dl.ExePath);
+                var glog = new List<string>();
+                game.Log += m => { lock (glog) glog.Add(m); };
+                game.Start();
+                var w = Stopwatch.StartNew();
+                while (!game.IsReady && !game.HasFailed && w.ElapsedMilliseconds < 40000) { game.Tick(); Thread.Sleep(16); }
+                Check("the downloaded engine runs the website", game.IsReady, game.IsReady ? game.ModeName : (game.FailureReason ?? "timed out"));
+                game.Dispose();
+            }
+        }
+        finally
+        {
+            try { srv.Kill(); } catch { }
+            try { Directory.Delete(t, true); } catch { }
+        }
     }
 }

@@ -60,3 +60,21 @@ The version stays at 1.0.0 until CRIX decides to change it.
   fingertip is over it.
 - New `tools/live-harness`: the mod's real website engine against a real browser and a stand-in for
   crixgamingvr.com that is slow, down or stalled — 9/9.
+
+### Fixed after the fourth in-game test
+
+- **Works with any browser.** CRIX's PC has no Edge or Chrome (only Opera GX), so the website never started
+  ("No Microsoft Edge or Chrome found"). The mod now:
+  - finds every browser that can run hidden — all Edge and Chrome channels, Edge's leftover `EdgeCore` engine,
+    Brave, Chromium, Vivaldi, Thorium, Supermium, and anything in Windows' installed-browsers list — and tries
+    them in turn, remembering any that fail;
+  - lists browsers that can't run hidden (Opera / Opera GX, Firefox) in the log instead of opening them;
+  - if nothing usable is installed, downloads Google's official Chrome for Testing headless shell once (about
+    100 MB, only from Google's servers), with progress on the in-game screen.
+- Browser profiles, the downloaded engine and `selftest.txt` moved to `%LOCALAPPDATA%\FlappyCrix` (always
+  writable; the game can be under Program Files).
+- **SELECT works as FLAP**: it starts a run from the menu, flaps while playing and retries after a game over.
+  It only presses a menu item when you've highlighted one with the joystick (or a window like the tutorial
+  is open).
+- **The screen stands just behind the deck**, like an arcade cabinet: 0.75 m away (was 1.3 m), 0.36 m wide,
+  bottom edge just above the deck. − / + resize it upwards in 4 cm steps.

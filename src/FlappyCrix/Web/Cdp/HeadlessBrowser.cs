@@ -1,7 +1,7 @@
-// Starts the PC's own Chromium browser (Microsoft Edge, which ships with Windows
-// 10/11, or Chrome/Brave) in headless mode: no window, nothing on the desktop, its own
-// private profile inside the mod folder. The page is rendered off-screen and streamed
-// into Gorilla Tag over the DevTools protocol.
+// Starts a Chromium browser in headless mode: no window, nothing on the desktop, its own
+// private profile. The browser is one already on the PC (Edge, Chrome, Brave, Vivaldi...,
+// see BrowserFinder) or the engine the mod downloaded (EngineDownloader). The page is
+// rendered off-screen and streamed into Gorilla Tag over the DevTools protocol.
 // No UnityEngine references (tested outside Unity).
 // Part of Flappy Crix for Gorilla Tag - made with AI (Claude by Anthropic).
 
@@ -28,63 +28,8 @@ namespace FlappyCrix.Web.Cdp
 
         public HeadlessBrowser(Action<string> log) { this.log = log ?? (_ => { }); }
 
-        // ------------------------------------------------------------------ finding a browser
-
-        /// <summary>Edge first (installed with Windows 10/11), then Chrome, Brave, Chromium.</summary>
-        public static string Find(string overridePath, Action<string> log)
-        {
-            if (!string.IsNullOrEmpty(overridePath))
-            {
-                if (File.Exists(overridePath)) return overridePath;
-                log?.Invoke("BrowserPath '" + overridePath + "' not found; searching for Edge/Chrome instead.");
-            }
-
-            var candidates = new List<string>();
-            string pf86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
-            string pf = Environment.GetEnvironmentVariable("ProgramFiles");
-            string pfw = Environment.GetEnvironmentVariable("ProgramW6432");
-            string local = Environment.GetEnvironmentVariable("LOCALAPPDATA");
-            foreach (var root in new[] { pf86, pf, pfw, local })
-            {
-                if (string.IsNullOrEmpty(root)) continue;
-                candidates.Add(Path.Combine(root, "Microsoft", "Edge", "Application", "msedge.exe"));
-            }
-            candidates.AddRange(RegistryAppPaths("msedge.exe"));
-            foreach (var root in new[] { pf, pfw, pf86, local })
-            {
-                if (string.IsNullOrEmpty(root)) continue;
-                candidates.Add(Path.Combine(root, "Google", "Chrome", "Application", "chrome.exe"));
-            }
-            candidates.AddRange(RegistryAppPaths("chrome.exe"));
-            foreach (var root in new[] { pf, pfw, pf86, local })
-            {
-                if (string.IsNullOrEmpty(root)) continue;
-                candidates.Add(Path.Combine(root, "BraveSoftware", "Brave-Browser", "Application", "brave.exe"));
-                candidates.Add(Path.Combine(root, "Chromium", "Application", "chrome.exe"));
-            }
-            foreach (var c in candidates)
-                if (!string.IsNullOrEmpty(c) && File.Exists(c)) return c;
-            return null;
-        }
-
-        private static IEnumerable<string> RegistryAppPaths(string exe)
-        {
-            var found = new List<string>();
-            if (Environment.OSVersion.Platform != PlatformID.Win32NT) return found;
-            try
-            {
-                foreach (var hive in new[] { Microsoft.Win32.Registry.LocalMachine, Microsoft.Win32.Registry.CurrentUser })
-                {
-                    using (var k = hive.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\" + exe))
-                    {
-                        var v = k?.GetValue(null) as string;
-                        if (!string.IsNullOrEmpty(v)) found.Add(v.Trim(new[] { '"' }));
-                    }
-                }
-            }
-            catch { /* registry not available */ }
-            return found;
-        }
+        // Which browser to start is decided by BrowserFinder (installed browsers that can run
+        // hidden, or the engine the mod downloaded - EngineDownloader).
 
         // ------------------------------------------------------------------ launching
 
@@ -179,7 +124,8 @@ namespace FlappyCrix.Web.Cdp
                 if (!int.TryParse(File.ReadAllText(pidFile).Trim(), out pid)) return;
                 var p = Process.GetProcessById(pid);
                 string name = p.ProcessName.ToLowerInvariant();
-                if (name.Contains("msedge") || name.Contains("chrome") || name.Contains("brave") || name.Contains("chromium"))
+                if (name.Contains("msedge") || name.Contains("chrome") || name.Contains("brave") || name.Contains("chromium") ||
+                    name.Contains("vivaldi") || name.Contains("thorium") || name.Contains("headless"))
                 {
                     log("Closing a browser engine left over from last time (pid " + pid + ").");
                     p.Kill();

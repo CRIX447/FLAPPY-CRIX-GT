@@ -57,7 +57,7 @@ static class LoadCheck
         {
             var cfgFile = new BepInEx.Configuration.ConfigFile(cfgPath, true);
             config = Activator.CreateInstance(asm.GetType("FlappyCrix.FlappyCrixConfig"), cfgFile);
-            Check(File.Exists(cfgPath) && File.ReadAllText(cfgPath).Contains("SettingsRevision = 3"), "settings bind against the real BepInEx ConfigFile and are written");
+            Check(File.Exists(cfgPath) && File.ReadAllText(cfgPath).Contains("SettingsRevision = 4"), "settings bind against the real BepInEx ConfigFile and are written");
         }
         catch (Exception e) { Check(false, "settings bind against the real BepInEx ConfigFile", (e.InnerException ?? e).ToString()); }
         finally { try { File.Delete(cfgPath); } catch { } }
@@ -71,7 +71,7 @@ static class LoadCheck
             ct.GetField("Logger").SetValue(c, new BepInEx.Logging.ManualLogSource("load-check"));
             ct.GetField("ModFolder").SetValue(c, dir);
             var queue = (List<string>)ct.GetField("engineQueue", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(c);
-            queue.Add("edge"); queue.Add("uwb");
+            queue.Add("browsers"); queue.Add("uwb");
             try
             {
                 ct.GetMethod("StartNextEngine", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(c, new object[] { null });

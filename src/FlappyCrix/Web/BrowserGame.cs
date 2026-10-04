@@ -21,6 +21,8 @@ namespace FlappyCrix.Web
         public abstract string EngineName { get; }
         public string ModeName => "Website (" + (remoteActive ? config.RemoteUrl.Value : "packaged copy") + ") via " + EngineName;
         public bool IsReady { get; private set; }
+        /// <summary>The engine itself started and connected (a later failure is the page's, not the browser's).</summary>
+        public bool EngineEverConnected => engineConnected;
         public bool HasFailed { get; private set; }
         public string FailureReason { get; private set; }
         public abstract Texture PanelTexture { get; }
@@ -65,7 +67,9 @@ namespace FlappyCrix.Web
         }
 
         protected string WebRoot => Path.Combine(modFolder, "Web");
-        protected string DataFolder => Path.Combine(modFolder, "BrowserData");
+        /// <summary>%LOCALAPPDATA%\FlappyCrix: browser profiles and selftest.txt (see ModPaths).</summary>
+        protected string DataFolder => dataFolder ?? (dataFolder = ModPaths.DataRoot(modFolder));
+        private string dataFolder;
         protected int PageWidth => config.ResolutionWidth.Value;
         protected int PageHeight => config.ResolutionHeight.Value;
         private static string Js(bool b) => b ? "true" : "false";

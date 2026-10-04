@@ -40,6 +40,7 @@ jobs:
         run: |
           tools/api-audit/run.sh mod/FlappyCrix/FlappyCrix.dll 2022.3
           tools/api-audit/run.sh mod/FlappyCrix/FlappyCrix.dll 2021.3
+          tools/api-audit/run.sh mod/FlappyCrix/FlappyCrix.dll 6000.2   # what Gorilla Tag runs on
 
       - name: Package plugin folder
         run: |

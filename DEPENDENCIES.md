@@ -1,11 +1,30 @@
 # Website engine
 
-## Default: the browser already on the PC
+## Default: a hidden Chromium engine
 
-The mod runs the website with **the Chromium browser already installed on the player's PC** — Microsoft Edge,
-which ships with Windows 10 and 11, or Google Chrome / Brave — started **headless** (no window, nothing on the
-desktop, its own private profile in `BrowserData/EdgeProfile`). The page is rendered off-screen and streamed into
-Gorilla Tag over the Chrome DevTools Protocol:
+The mod runs the website in a Chromium engine started **headless** (no window, nothing on the desktop, its own
+private profile in `%LOCALAPPDATA%\FlappyCrix\Profile-<browser>`). The page is rendered off-screen and streamed
+into Gorilla Tag over the Chrome DevTools Protocol. The engine is, in this order (`BrowserFinder`):
+
+1. `BrowserPath`, if set.
+2. **A browser already on the PC that supports headless mode**: Microsoft Edge (stable/beta/dev/canary),
+   Edge's own engine copy in `Microsoft\EdgeCore\<version>` (still present on many PCs where the Edge browser
+   was removed), Google Chrome (all channels), Brave, Chromium, Vivaldi, Thorium, Supermium, and any of those
+   found through Windows' App Paths / installed-browsers registry. A browser that fails to start is remembered
+   and skipped until it is updated.
+3. **Google's Chrome for Testing headless shell**, downloaded once by the mod (`EngineDownloader`) when none of
+   the above exists or works — e.g. a PC with only Opera / Opera GX or Firefox, which can't run hidden:
+   - Version list: <https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json>
+     (Stable, `chrome-headless-shell`, `win64`).
+   - Download: only from `https://storage.googleapis.com/chrome-for-testing-public/<version>/win64/chrome-headless-shell-win64.zip`
+     (any other address is refused), about 100 MB, unpacked with Windows' own `tar` (PowerShell as backup) into
+     `%LOCALAPPDATA%\FlappyCrix\engine\<version>`; older versions are deleted.
+   - What it is: Google's official build of Chromium's headless shell for automated use. Chromium is
+     BSD-3-Clause with third-party components under their own licences (listed in the download's licence file).
+   - **It is not included in the mod or this repository** and is never redistributed: each PC downloads it
+     directly from Google. Set `DownloadEngine = false` to never download it.
+
+The engine's interface:
 
 | Need | How |
 |---|---|
@@ -17,10 +36,10 @@ Gorilla Tag over the Chrome DevTools Protocol:
 | Page size | `Emulation.setDeviceMetricsOverride` 768×960 |
 | No leftover processes | Windows job object with kill-on-close, tied to Gorilla Tag's process |
 
-**Nothing is downloaded or redistributed** for this: the protocol client (`src/FlappyCrix/Web/Cdp/`: launcher,
-WebSocket, JSON, page controller) is part of the mod's own source, and the browser is the player's own.
-Limitations: Windows (Edge/Chrome present); a work/school policy that disables browser remote debugging blocks it
-(the mod then falls back); each frame is decoded on Unity's main thread (logged; `BrowserFrameRate` caps it at 30/s);
+The protocol client (`src/FlappyCrix/Web/Cdp/`: finder, downloader, launcher, WebSocket, JSON, page controller)
+is part of the mod's own source; no third-party library is used for it.
+Limitations: Windows; a work/school policy that disables browser remote debugging blocks an installed browser
+(the mod then tries the next engine); each frame is decoded on Unity's main thread (logged; `BrowserFrameRate` caps it at 30/s);
 audio plays through Windows' default output from the hidden browser.
 
 The rest of this file describes the **optional** UnityWebBrowser engine (`Engine = UnityWebBrowser`), which bundles

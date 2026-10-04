@@ -41,8 +41,10 @@ namespace FlappyCrix.Native
         public NativeFlappyGame(Transform audioAnchor, string modFolder, MonoBehaviour host)
         {
             webFolder = Path.Combine(modFolder, "Web");
-            bestFile = Path.Combine(modFolder, "BrowserData", "native-best.txt");
-            try { int b; if (File.Exists(bestFile) && int.TryParse(File.ReadAllText(bestFile).Trim(), out b)) sim.Best = b; } catch { }
+            bestFile = Path.Combine(ModPaths.DataRoot(modFolder), "native-best.txt");
+            string oldBest = Path.Combine(modFolder, "BrowserData", "native-best.txt");      // where earlier builds kept it
+            foreach (var f in new[] { bestFile, oldBest })
+                try { int b; if (File.Exists(f) && int.TryParse(File.ReadAllText(f).Trim(), out b) && b > sim.Best) sim.Best = b; } catch { }
             sim.NewBest += best =>
             {
                 try { Directory.CreateDirectory(Path.GetDirectoryName(bestFile)); File.WriteAllText(bestFile, best.ToString()); } catch { }

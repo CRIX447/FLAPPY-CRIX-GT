@@ -1,7 +1,8 @@
-// Website mode using the PC's own Microsoft Edge (or Chrome/Brave) as a hidden engine:
-// started headless (no window, nothing on the desktop) with its own profile in the mod
-// folder, and streamed onto the in-game screen over the DevTools protocol (CdpPage).
-// Nothing to install - Edge ships with Windows 10 and 11.
+// Website mode using a Chromium browser as a hidden engine: one already on the PC (Edge,
+// Chrome, Brave, Vivaldi..., see BrowserFinder) or the one the mod downloaded
+// (EngineDownloader). Started headless (no window, nothing on the desktop) with its own
+// profile in %LOCALAPPDATA%\FlappyCrix, and streamed onto the in-game screen over the
+// DevTools protocol (CdpPage).
 // Part of Flappy Crix for Gorilla Tag - made with AI (Claude by Anthropic).
 
 using System;
@@ -34,15 +35,13 @@ namespace FlappyCrix.Web
         }
 
         public override string EngineName => "hidden " + Path.GetFileNameWithoutExtension(browserExe) + " (" + browserExe + ")";
+        public string BrowserExe => browserExe;
         public override Texture PanelTexture => framesUploaded > 0 ? texture : null;
         public override Vector2 TextureScale => uvScale;
         public override Vector2 TextureOffset => uvOffset;
         protected override bool EngineUsable => usable;
         protected override int EngineFrames => framesUploaded;
 
-        /// <summary>The browser the website engine would use, or null (no Edge/Chrome found).</summary>
-        public static string FindBrowser(FlappyCrixConfig config, Action<string> log) =>
-            HeadlessBrowser.Find(config.BrowserPath.Value, log);
 
         protected override void StartEngine(string startUrl)
         {
@@ -50,7 +49,8 @@ namespace FlappyCrix.Web
             page = new CdpPage(new CdpPage.Options
             {
                 BrowserExe = browserExe,
-                ProfileDir = Path.Combine(DataFolder, "EdgeProfile"),
+                // One profile per browser (profiles aren't shared between different browsers)
+                ProfileDir = Path.Combine(DataFolder, "Profile-" + Path.GetFileNameWithoutExtension(browserExe)),
                 Width = PageWidth,
                 Height = PageHeight,
                 JpegQuality = config.JpegQuality.Value,

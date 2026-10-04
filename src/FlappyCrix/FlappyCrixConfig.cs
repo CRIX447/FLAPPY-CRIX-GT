@@ -65,6 +65,7 @@ namespace FlappyCrix
         public readonly ConfigEntry<bool> SkipIntro;
         public readonly ConfigEntry<bool> RunSelfTest;
         public readonly ConfigEntry<int> EngineStartupTimeoutMs;
+        public readonly ConfigEntry<bool> DownloadEngine;
         public readonly ConfigEntry<bool> RemoteDebugging;
 
         /// <summary>True when settings from the first test build were upgraded to the current display defaults this run.</summary>
@@ -93,9 +94,9 @@ namespace FlappyCrix
             ToggleKey = cfg.Bind(G, "ToggleKey", KeyCode.F8, "Keyboard: show/hide. In VR: B hides, Y opens it in front of you.");
             RecenterKey = cfg.Bind(G, "RecenterKey", KeyCode.F9, "Keyboard: bring the screen and deck in front of you (same as Y in VR).");
 
-            Distance = cfg.Bind(D, "Distance", 1.3f, new ConfigDescription("Metres in front of you.", new AcceptableValueRange<float>(0.75f, 6f)));
-            Width = cfg.Bind(D, "Width", 0.55f, new ConfigDescription("Screen width in metres (height follows: 0.55 wide = 0.69 tall). Also changed in-game with the deck's - / + buttons.", new AcceptableValueRange<float>(0.3f, 2.5f)));
-            HeightOffset = cfg.Bind(D, "HeightOffset", -0.1f, "Screen centre relative to eye height, metres.");
+            Distance = cfg.Bind(D, "Distance", 0.75f, new ConfigDescription("How far in front of you the screen stands, metres. 0.75 = just behind the deck, like an arcade cabinet.", new AcceptableValueRange<float>(0.4f, 6f)));
+            Width = cfg.Bind(D, "Width", 0.36f, new ConfigDescription("Screen width in metres (height follows: 0.36 wide = 0.45 tall). Also changed in-game with the deck's - / + buttons.", new AcceptableValueRange<float>(0.2f, 2.5f)));
+            HeightOffset = cfg.Bind(D, "HeightOffset", -0.43f, "Height of the screen's BOTTOM edge relative to your eyes, metres (-0.43 = just above the deck). Making the screen bigger grows it upwards.");
             ResolutionWidth = cfg.Bind(D, "ResolutionWidth", 768, new ConfigDescription("Browser pixels. 768x960 gives the site's tablet layout with text large enough for VR; 1024x1280 is sharper but smaller; below ~700 wide the site switches to its cramped phone layout.", new AcceptableValueRange<int>(320, 2560)));
             ResolutionHeight = cfg.Bind(D, "ResolutionHeight", 960, new ConfigDescription("Browser pixels.", new AcceptableValueRange<int>(320, 2560)));
             BrowserFrameRate = cfg.Bind(D, "BrowserFrameRate", 30, new ConfigDescription("Most screen updates per second from the website. 30 is smooth and light on VR performance; up to 60.", new AcceptableValueRange<int>(10, 60)));
@@ -131,6 +132,8 @@ namespace FlappyCrix
             SkipIntro = cfg.Bind(W, "SkipIntro", true, "Skip the CRIX STUDIOS intro video.");
             RunSelfTest = cfg.Bind(W, "RunSelfTest", true, "Check the embedded site actually works (JS, CSS, images, audio, canvas, input, frame rate) and log the result.");
             EngineStartupTimeoutMs = cfg.Bind(W, "EngineStartupTimeoutMs", 20000, "How long to wait for the browser engine to start.");
+            DownloadEngine = cfg.Bind(W, "DownloadEngine", true,
+                "If no browser on this PC can run the website hidden (Edge, Chrome, Brave, Vivaldi, Chromium... - Opera and Firefox can't), download Google's official Chrome for Testing headless shell once (about 100 MB, into %LOCALAPPDATA%\\FlappyCrix\\engine). It never opens a window. false = use the built-in version instead.");
             RemoteDebugging = cfg.Bind(W, "RemoteDebugging", false, "Developer: Chrome DevTools at http://127.0.0.1:9022 while the game runs.");
 
             // One-time upgrade: the first test build put a 1.0 m screen 1.6 m away, which was too big.
@@ -149,12 +152,21 @@ namespace FlappyCrix
                 revision.Value = 2;
                 UpgradedFromOlderConfig = true;
             }
+            // Revision 4: the screen moved to just behind the deck (0.36 m wide, 0.75 m away) and
+            // HeightOffset now means the screen's bottom edge, so the old values no longer fit.
+            if (revision.Value < 4)
+            {
+                Width.Value = (float)Width.DefaultValue;
+                Distance.Value = (float)Distance.DefaultValue;
+                HeightOffset.Value = (float)HeightOffset.DefaultValue;
+                UpgradedFromOlderConfig = true;
+            }
             // Revision 3: the live site got only 12 s (counted from game start) before the offline copy took over.
             if (revision.Value < 3)
             {
                 if (RemoteTimeoutSeconds.Value < (float)RemoteTimeoutSeconds.DefaultValue) RemoteTimeoutSeconds.Value = (float)RemoteTimeoutSeconds.DefaultValue;
-                revision.Value = 3;
             }
+            if (revision.Value < 4) revision.Value = 4;
         }
     }
 }
