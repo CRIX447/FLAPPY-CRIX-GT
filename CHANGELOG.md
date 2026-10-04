@@ -73,6 +73,10 @@ The version stays at 1.0.0 until CRIX decides to change it.
     100 MB, only from Google's servers), with progress on the in-game screen.
 - Browser profiles, the downloaded engine and `selftest.txt` moved to `%LOCALAPPDATA%\FlappyCrix` (always
   writable; the game can be under Program Files).
+- **A DLL-only install works**: CRIX's plugin folder had `FlappyCrix.dll` but no `Web` folder, which stopped
+  website mode before it even tried the live site. The bridge is now built into the DLL, the live site works
+  without the `Web` folder, and if the live site can't load either, the log says the offline copy isn't
+  installed (unzip the whole `FlappyCrix` folder to get it).
 - **SELECT works as FLAP**: it starts a run from the menu, flaps while playing and retries after a game over.
   It only presses a menu item when you've highlighted one with the joystick (or a window like the tutorial
   is open).

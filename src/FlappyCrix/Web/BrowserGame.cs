@@ -21,6 +21,22 @@ namespace FlappyCrix.Web
         public abstract string EngineName { get; }
         public string ModeName => "Website (" + (remoteActive ? config.RemoteUrl.Value : "packaged copy") + ") via " + EngineName;
         public bool IsReady { get; private set; }
+        /// <summary>The packaged offline copy (Web/flappycrix.html) is installed next to the DLL.</summary>
+        public bool PackagedCopyInstalled { get; private set; }
+
+        private static string EmbeddedBridge()
+        {
+            try
+            {
+                using (var s = typeof(BrowserGame).Assembly.GetManifestResourceStream("FlappyCrix.bridge.js"))
+                {
+                    if (s == null) return null;
+                    using (var r = new StreamReader(s)) return r.ReadToEnd();
+                }
+            }
+            catch { return null; }
+        }
+
         /// <summary>The engine itself started and connected (a later failure is the page's, not the browser's).</summary>
         public bool EngineEverConnected => engineConnected;
         public bool HasFailed { get; private set; }
@@ -58,8 +74,12 @@ namespace FlappyCrix.Web
         {
             this.config = config;
             this.modFolder = modFolder;
+            // The bridge is built into the DLL, so it always matches it (and a DLL-only install still
+            // runs the live site); Web/__flappycrix/bridge.js is only the fallback.
+            bridgeSource = EmbeddedBridge();
             string bridgeFile = Path.Combine(WebRoot, "__flappycrix", "bridge.js");
-            bridgeSource = File.Exists(bridgeFile) ? File.ReadAllText(bridgeFile) : null;
+            if (bridgeSource == null && File.Exists(bridgeFile)) bridgeSource = File.ReadAllText(bridgeFile);
+            PackagedCopyInstalled = File.Exists(Path.Combine(WebRoot, "flappycrix.html"));
             configJson = "{\"skipIntro\":" + Js(config.SkipIntro.Value) +
                          ",\"disableServiceWorker\":true" +
                          ",\"flapStartsGame\":" + Js(config.FlapStartsGame.Value) +
@@ -100,17 +120,31 @@ namespace FlappyCrix.Web
         {
             startTime = Time.realtimeSinceStartup;
             readyDeadline = startTime + config.EngineStartupTimeoutMs.Value / 1000f + 25f;
-            if (bridgeSource == null) { Fail("Web/__flappycrix/bridge.js is missing from the mod folder."); return; }
+            if (bridgeSource == null) { Fail("The bridge script is missing (Web/__flappycrix/bridge.js)."); return; }
+            if (!PackagedCopyInstalled)
+            {
+                Emit("The offline copy of the site isn't installed (no Web folder next to FlappyCrix.dll - unzip the whole FlappyCrix folder from the release). Only the live site can be used.");
+                if (!config.UseRemoteWebsite.Value) { Fail("UseRemoteWebsite = false, but the offline copy (Web folder) isn't installed."); return; }
+            }
             Directory.CreateDirectory(DataFolder);
 
-            string startUrl;
-            try
+            string startUrl = null;
+            if (PackagedCopyInstalled)
             {
-                server = new LocalWebServer(WebRoot, "flappycrix.html", configJson, Emit);
-                server.Start(config.LocalPort.Value);
-                startUrl = server.EntryUrl;
+                try
+                {
+                    server = new LocalWebServer(WebRoot, "flappycrix.html", configJson, Emit);
+                    server.Start(config.LocalPort.Value);
+                    startUrl = server.EntryUrl;
+                }
+                catch (Exception e)
+                {
+                    Emit("Could not serve the packaged website: " + e.Message);
+                    server = null;
+                    PackagedCopyInstalled = false;
+                    if (!config.UseRemoteWebsite.Value) { Fail("Could not serve the packaged website: " + e.Message); return; }
+                }
             }
-            catch (Exception e) { Fail("Could not serve the packaged website: " + e.Message); return; }
 
             if (config.UseRemoteWebsite.Value)
             {
@@ -268,6 +302,11 @@ namespace FlappyCrix.Web
         private void FallBackToLocal(string why)
         {
             if (!remoteActive) return;
+            if (!PackagedCopyInstalled)
+            {
+                Fail("Couldn't load the live site (" + why + ") and the offline copy isn't installed (unzip the whole FlappyCrix folder, including Web).");
+                return;
+            }
             Emit("Couldn't load the live site (" + why + "); playing the packaged copy (offline) instead.");
             remoteActive = false;
             remoteCommitted = false;

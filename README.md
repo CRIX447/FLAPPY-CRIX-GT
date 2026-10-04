@@ -33,8 +33,9 @@ More pictures in [`docs/screenshots`](docs/screenshots): a real frame from the w
 ## Install
 
 1. Install [BepInEx 5](https://github.com/BepInEx/BepInEx/releases) (x64) into Gorilla Tag and run the game once.
-2. Download `FlappyCrix-vX.Y.Z.zip` from [Releases](../../releases) and unzip it into `Gorilla Tag/BepInEx/plugins/`,
-   so you have `BepInEx/plugins/FlappyCrix/FlappyCrix.dll`.
+2. Download `FlappyCrix-vX.Y.Z.zip` from [Releases](../../releases) and unzip **the whole `FlappyCrix` folder**
+   into `Gorilla Tag/BepInEx/plugins/`, so you have `BepInEx/plugins/FlappyCrix/FlappyCrix.dll` **and**
+   `BepInEx/plugins/FlappyCrix/Web/`. (With only the DLL the live site still works, but there's no offline copy.)
 3. Start Gorilla Tag. The screen appears in front of you once you've loaded in.
 
 That's it. If your PC has no browser that can run hidden, the first start shows **Getting the website engine**

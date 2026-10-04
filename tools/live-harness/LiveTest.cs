@@ -20,6 +20,9 @@
 //   5. no usable browser: the engine is downloaded (from a local stand-in for Google's
 //      Chrome for Testing servers), unpacked, found, and runs the website.
 //      Needs HEADLESS_SHELL (a headless shell executable) - skipped otherwise.
+//   6. only FlappyCrix.dll installed (no Web folder, as found on CRIX's PC) -> the live site still
+//      works (the bridge is built into the DLL); with the live site down it says the offline copy
+//      is missing instead of showing an empty page.
 // Part of Flappy Crix for Gorilla Tag - made with AI (Claude by Anthropic).
 
 using System;
@@ -149,6 +152,7 @@ static class LiveTest
             if (only == "" || only == "3") StallThenRecover();
             if (only == "" || only == "4") FindBrowsers();
             if (only == "" || only == "5") DownloadEngine();
+            if (only == "" || only == "6") DllOnlyInstall();
         }
         finally { StopSite(); }
 
@@ -327,5 +331,34 @@ static class LiveTest
             try { srv.Kill(); } catch { }
             try { Directory.Delete(t, true); } catch { }
         }
+    }
+
+    // ------------------------------------------------------------------ 6. DLL-only install
+
+    static void DllOnlyInstall()
+    {
+        Console.WriteLine("== 6. only FlappyCrix.dll installed (no Web folder)");
+        string bare = Path.Combine(Path.GetTempPath(), "flappycrix-dllonly-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(bare);
+        string saved = modFolder;
+        modFolder = bare;
+        try
+        {
+            StartSite("");
+            using (var r = new Run(NewConfig()))
+            {
+                bool live = r.PumpUntil(() => r.LiveReady, 40);
+                Check("the live site works with just the DLL (bridge built in)", live, r.Game.ModeName);
+                Check("...and the log says the offline copy isn't installed", r.When("offline copy of the site isn't installed").HasValue);
+            }
+            StopSite();
+            using (var r = new Run(NewConfig()))
+            {
+                r.PumpUntil(() => r.Game.HasFailed, 40);
+                Check("live site down + no offline copy -> a clear failure (then the next engine), not an empty page",
+                      r.Game.HasFailed && (r.Game.FailureReason ?? "").Contains("offline copy isn't installed"), r.Game.FailureReason ?? "");
+            }
+        }
+        finally { modFolder = saved; StopSite(); try { Directory.Delete(bare, true); } catch { } }
     }
 }

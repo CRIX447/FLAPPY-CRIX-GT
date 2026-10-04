@@ -11,6 +11,7 @@ What was verified while building the mod, how, and what still needs a real heads
 | "I can't see the UI unless I put my hand in front of it" | Draw-order bug: the screen's black backing was drawn *after* the game picture and covered it, while the menu text used Unity's text shader, which draws on top of everything — so text only showed where a hand blocked the backing. | The screen is now one solid picture (website stream or native image), drawn with a solid depth-tested shader; text is drawn into textures with a pixel font. No text shader is used anywhere. |
 | "The screen is too big" | 1.0 m wide at 1.6 m ≈ 35° × 43° of your view. | 0.55 m at 1.3 m ≈ 24° × 30°, deck − / + buttons, and a one-time config upgrade so old configs get the new size. |
 | Fourth test: "make it support any browser" — log: `No Microsoft Edge or Chrome found`, native version shown | The PC has no Edge or Chrome (Edge removed: only `EdgeCore`, `EdgeUpdate`, `EdgeWebView` left; Opera GX installed). The mod only knew Edge, Chrome and Brave. | `BrowserFinder` (all headless-capable Chromium browsers incl. EdgeCore; Opera/Firefox listed, not opened), next-browser on failure with memory, and `EngineDownloader` (Chrome for Testing headless shell from Google, once). Live harness scenarios 4–5; the headless shell passes the engine harness 18/18. |
+| Fourth test (found on CRIX's PC): the plugin folder had `FlappyCrix.dll` but no `Web` folder | Website mode needed `Web/__flappycrix/bridge.js` and the local server refused to start without `Web/`, so it failed before trying the live site. | Bridge built into the DLL; the local server only starts when the offline copy is installed; clear message otherwise. Live harness scenario 6. |
 | Fourth test: "select works as flap" | SELECT on the website's menu highlighted the first item instead of starting. | SELECT = FLAP (start / flap / retry) unless the joystick highlighted something or a window is open. `test_deck.py` 11/11. |
 | Fourth test: "move the screen closer to the gamepad thing" | Screen 1.3 m away, deck at 0.42 m. | Screen 0.75 m away, 0.36 m wide, bottom edge just above the deck (`docs/screenshots/16-screen-behind-deck.png`); settings upgraded once. |
 | Third test: "it's not connecting to the web" (the site's offline mode) | (1) The mod counted the live site as started only at the page's `load` event — every image/sound/script downloaded — and gave it 12 s from game start, then switched to the packaged copy, which is offline by design. (2) The site marks itself offline when its first `/robots.txt` check takes over 5 s (likely while the rest of the page is downloading) and only re-checks when a tab becomes visible, which never happens in a hidden browser. | Ready as soon as the game's code has run; 30 s to *start* loading (from browser start), then unlimited; the bridge re-triggers the site's own online check every 6 s while it says offline; the reason is shown on screen and logged, and the mod returns to the live site by itself when it can. `tools/live-harness` 9/9. |
@@ -98,7 +99,7 @@ The DLL references only `mscorlib`, `System` and `System.Core` (all shipped with
 UnityEngine. Newer-runtime overloads such as `string.Trim(char)` / `Split(char)` were replaced with the classic
 forms, so it doesn't depend on the game's .NET profile.
 
-## 5. Live site and engine choice — `tools/live-harness` (22/22)
+## 5. Live site, engine choice, DLL-only install — `tools/live-harness` (25/25)
 
 crixgamingvr.com can't be reached from the build machine, so `live_site.py` stands in for it (served like Vercel
 serves the real site: clean URLs, `/robots.txt`), and the mod's real `EdgeBrowserGame`/`BrowserGame` from
@@ -136,7 +137,11 @@ PASS progress reached 100%
 PASS older engine versions are removed
 PASS the finder picks up the downloaded engine
 PASS the downloaded engine runs the website
-22/22 passed
+== 6. only FlappyCrix.dll installed (no Web folder)
+PASS the live site works with just the DLL (bridge built in)
+PASS ...and the log says the offline copy isn't installed
+PASS live site down + no offline copy -> a clear failure (then the next engine), not an empty page
+25/25 passed
 ```
 
 Scenario 5 serves a stand-in for Google's servers (same JSON format and zip layout) whose package launches the

@@ -23,6 +23,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- The bridge is built into the DLL (always matches it; a DLL-only install still runs the live site) -->
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\__flappycrix\bridge.js" LogicalName="FlappyCrix.bridge.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- Game + BepInEx (never copied into the mod) -->
     <Reference Include="BepInEx"><HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine"><HintPath>$(Managed)\UnityEngine.dll</HintPath><Private>false</Private></Reference>
