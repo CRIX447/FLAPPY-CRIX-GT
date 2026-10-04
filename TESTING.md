@@ -3,13 +3,14 @@
 What was verified while building the mod, how, and what still needs a real headset.
 (This mod and these tests were made with AI — Claude by Anthropic.)
 
-## Fixes after the first in-game test (by CRIX)
+## Fixes after in-game tests (by CRIX)
 
 | Report | Cause | Fix |
 |---|---|---|
 | "It isn't using the webpage" | The first build's website engine (UnityWebBrowser) wasn't in the release zip — it needs a separate Unity build — so the mod fell back to the native version. | New default engine: the PC's own Microsoft Edge/Chrome, started hidden and streamed in. Nothing to install. |
 | "I can't see the UI unless I put my hand in front of it" | Draw-order bug: the screen's black backing was drawn *after* the game picture and covered it, while the menu text used Unity's text shader, which draws on top of everything — so text only showed where a hand blocked the backing. | The screen is now one solid picture (website stream or native image), drawn with a solid depth-tested shader; text is drawn into textures with a pixel font. No text shader is used anywhere. |
 | "The screen is too big" | 1.0 m wide at 1.6 m ≈ 35° × 43° of your view. | 0.55 m at 1.3 m ≈ 24° × 30°, deck − / + buttons, and a one-time config upgrade so old configs get the new size. |
+| Second test: "it won't work" (no screen at all) | The start-up method called `UwbBrowserGame.IsInstalled`, a member of the optional UnityWebBrowser engine's class. Without that engine's DLLs (the normal install) Mono can't load the class, so it refused to compile the **whole** start-up method: no engine started, and `Update` returned before the screen was ever placed. The earlier checks loaded the DLL *with* the UWB stand-ins present, so they missed it. | The check now only looks for the engine's files; every engine is created in its own `[NoInlining]` method inside a try/catch; the screen is placed and shown before any engine code runs, with a Loading / Could-not-start picture. The new `tools/load-check` reproduces the bug on the old DLL (`TypeLoadException` at engine start-up) and passes on the new one. |
 
 ## 1. Hidden-browser engine, end to end — `tools/engine-harness` (18/18)
 
@@ -68,10 +69,29 @@ crixgamingvr.com itself wasn't reachable from the build machine, so the repo's c
 ## 4. The DLL
 
 `FlappyCrix.dll` is built with Mono against the real BepInEx 5.4.23.2 DLL and reference stand-ins for Unity and
-UnityWebBrowser (`tools/refs`). Every Unity member the DLL calls was listed from its IL and checked against Unity's
-real API (names, property vs field, overloads such as `LoadImage(Texture2D, byte[], bool)`), and it references
-Unity through the `UnityEngine` facade exactly as BepInEx itself does. The DLL loads under Mono with all 62 types
-resolving, and the browser suites above were run against the web server inside it.
+UnityWebBrowser (`tools/refs`). Two checks run on every build (locally and in GitHub Actions):
+
+**`tools/load-check`** loads the DLL the way a normal install has it (BepInEx and Unity, **no** UnityWebBrowser
+DLLs). It binds the settings against the real BepInEx `ConfigFile` (with BepInEx's own Vector3/Color converters),
+runs the controller's engine start-up through the unavailable engines, then JIT-compiles every method:
+
+```
+DLL from the second in-game test:                         This build:
+PASS settings bind against the real BepInEx ConfigFile    PASS settings bind against the real BepInEx ConfigFile
+FAIL engine start-up ... TypeLoadException:               PASS engine start-up skips the unavailable engines
+     Could not load ... 'VoltstroStudios.UnityWebBrowser' PASS every method outside the UWB-only classes compiles
+1 FAILED                                                  ALL PASSED
+```
+
+**`tools/api-audit`** disassembles the DLL, lists every UnityEngine member it calls (169: type, name, parameter
+types, field vs property vs method) and finds each one in Unity's own C# source
+([UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference)). All 169 are found in **2021.3, 2022.3
+and Unity 6 (6000.0)**. The audit itself was tested by planting five wrong members (a missing overload, a missing
+property, a missing field, a wrong parameter type, an extra parameter); it flagged all five.
+
+The DLL references only `mscorlib`, `System` and `System.Core` (all shipped with every Unity game), BepInEx and
+UnityEngine. Newer-runtime overloads such as `string.Trim(char)` / `Split(char)` were replaced with the classic
+forms, so it doesn't depend on the game's .NET profile.
 
 ## Still needs a real headset
 

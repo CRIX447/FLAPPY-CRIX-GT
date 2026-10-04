@@ -42,26 +42,50 @@ namespace FlappyCrix
         // edge detection
         private bool prevLPrimary, prevRPrimary, prevLStickUp, prevRStickUp, prevRSecondary, prevLSecondary;
 
+        // Shown on the screen while the website loads, or if nothing could start.
+        private Texture2D statusTexture;
+        private uint[] statusPixels;
+        private string statusShown;
+        private float engineStartedAt;
+        private readonly System.Collections.Generic.HashSet<string> loggedErrors = new System.Collections.Generic.HashSet<string>();
+
+        // The optional UnityWebBrowser engine's files. Checked by name only: touching any UWB
+        // class here would make Mono fail to compile this whole class when UWB isn't installed
+        // (it isn't, by default) - which is exactly what hid the screen in the 1.0.0 test build.
+        private const string UwbDll = "VoltstroStudios.UnityWebBrowser.dll";
+        private const string UwbEngineExe = "UnityWebBrowser.Engine.Cef.exe";
+
         private void Start()
         {
-            station = new GameObject("FlappyCrixStation").transform;
-            DontDestroyOnLoad(station.gameObject);
-            station.gameObject.SetActive(false);
-
-            panel = new GamePanel(station);
-            panel.Root.localPosition = new Vector3(0, Config.HeightOffset.Value, Config.Distance.Value);
-            if (Config.DeckEnabled.Value)
-            {
-                deck = new ArcadeDeck(station);
-                deck.Root.localPosition = Config.DeckOffset.Value;
-                deck.Joystick.NavAngle = Config.JoystickNavAngle.Value;
-            }
-            laser = new LaserPointer { PitchDegrees = Config.LaserPitch.Value };
-
+            Logger.LogInfo("Building the screen and deck");
+            // Set before anything is drawn, so the shader choice is logged and the override applies.
             Visuals.Log = m => Logger.LogInfo(m);
             Visuals.ShaderOverride = Config.ShaderOverride.Value;
             if (Config.UpgradedFromOlderConfig)
-                Logger.LogInfo("Settings upgraded to the new display defaults (screen " + Config.Width.Value + " m wide, " + Config.Distance.Value + " m away).");
+                Logger.LogInfo("Display settings set to the current defaults (screen " + Config.Width.Value + " m wide, " + Config.Distance.Value + " m away).");
+
+            // Each part on its own: if one can't be built, the others still appear.
+            station = new GameObject("FlappyCrixStation").transform;
+            DontDestroyOnLoad(station.gameObject);
+            station.gameObject.SetActive(false);
+            try
+            {
+                panel = new GamePanel(station);
+                panel.Root.localPosition = new Vector3(0, Config.HeightOffset.Value, Config.Distance.Value);
+            }
+            catch (Exception e) { Logger.LogError("Could not build the screen: " + e); }
+            if (Config.DeckEnabled.Value)
+            {
+                try
+                {
+                    deck = new ArcadeDeck(station);
+                    deck.Root.localPosition = Config.DeckOffset.Value;
+                    deck.Joystick.NavAngle = Config.JoystickNavAngle.Value;
+                }
+                catch (Exception e) { Logger.LogError("Could not build the arcade deck: " + e); deck = null; }
+            }
+            try { laser = new LaserPointer { PitchDegrees = Config.LaserPitch.Value }; }
+            catch (Exception e) { Logger.LogError("Could not build the laser pointer: " + e); laser = null; }
 
             // Engines to try, in order. Each one that fails hands over to the next.
             if (Config.UseWebsite.Value)
@@ -86,39 +110,47 @@ namespace FlappyCrix
                 engineQueue.RemoveAt(0);
                 try
                 {
-                    if (next == "edge")
-                    {
-                        string exe = Web.EdgeBrowserGame.FindBrowser(Config, m => Logger.LogInfo(m));
-                        if (exe == null) { Logger.LogWarning("No Microsoft Edge or Chrome found on this PC (set BrowserPath in the config to use another Chromium browser)."); continue; }
-                        var web = new Web.EdgeBrowserGame(Config, ModFolder, exe);
-                        web.Log += m => Logger.LogInfo(m);
-                        game = web;
-                        web.Start();
-                    }
-                    else if (next == "uwb")
-                    {
-                        if (!Web.UwbBrowserGame.IsInstalled(ModFolder)) continue;
-                        game = CreateUwbGame();
-                    }
+                    // Every engine is created in its own [NoInlining] method, so an engine whose
+                    // code can't load only fails its own call - caught here - and never this method.
+                    IFlappyGame g;
+                    if (next == "edge") g = CreateEdgeGame();
+                    else if (next == "uwb") g = UwbFilesPresent() ? CreateUwbGame() : null;
                     else
                     {
                         if (!Config.AutoFallbackToNative.Value && Config.UseWebsite.Value)
                         { Logger.LogError("No website engine could run and AutoFallbackToNative = false."); return; }
-                        var native = new NativeFlappyGame(panel.Root, ModFolder, this);
-                        native.Log += m => Logger.LogInfo(m);
-                        game = native;
+                        g = CreateNativeGame();
                     }
+                    if (g == null) continue;
+                    game = g;
+                    engineStartedAt = Time.realtimeSinceStartup;
                     Logger.LogInfo("Mode: " + game.ModeName);
                     return;
                 }
                 catch (Exception e)
                 {
-                    // TypeLoadException / FileNotFoundException when an optional engine's DLLs are missing or mismatched
+                    // TypeLoadException / FileNotFoundException when an engine's DLLs are missing or mismatched
                     Logger.LogError(next + " engine unavailable: " + e.GetType().Name + ": " + e.Message);
+                    if (game != null) { try { game.Dispose(); } catch { } }
                     game = null;
                 }
             }
+            Logger.LogError("Flappy Crix could not start any engine. The screen shows this message; details above.");
         }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private IFlappyGame CreateEdgeGame()
+        {
+            string exe = Web.EdgeBrowserGame.FindBrowser(Config, m => Logger.LogInfo(m));
+            if (exe == null) { Logger.LogWarning("No Microsoft Edge or Chrome found on this PC (set BrowserPath in the config to use another Chromium browser)."); return null; }
+            var web = new Web.EdgeBrowserGame(Config, ModFolder, exe);
+            web.Log += m => Logger.LogInfo(m);
+            web.Start();
+            return web;
+        }
+
+        private bool UwbFilesPresent() =>
+            File.Exists(Path.Combine(ModFolder, UwbDll)) && File.Exists(Path.Combine(ModFolder, "UWB", UwbEngineExe));
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private IFlappyGame CreateUwbGame()
@@ -129,30 +161,93 @@ namespace FlappyCrix
             return web;
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private IFlappyGame CreateNativeGame()
+        {
+            var native = new NativeFlappyGame(panel != null ? panel.Root : station, ModFolder, this);
+            native.Log += m => Logger.LogInfo(m);
+            return native;
+        }
+
         // ------------------------------------------------------------------ frame
 
         private void Update()
         {
-            rig.Update();
-            if (game == null) return;
+            Guard("controllers", rig.Update);
+            if (station == null) return;
 
-            game.Tick();
-            if (game.HasFailed) { StartNextEngine(game.FailureReason); if (game == null) return; }
-
-            panel.SetSize(Config.Width.Value, game.Aspect);
-            panel.ShowTexture(game.PanelTexture, game.TextureScale, game.TextureOffset);
-
-            // Open in front of you as soon as the VR camera exists
+            // Open in front of you as soon as the VR camera exists - before anything else, so
+            // the screen shows up even if an engine is still starting or has failed.
             if (!placed && rig.Head != null)
             {
                 placed = true;
                 PlaceHere();
                 station.gameObject.SetActive(Config.ShowOnStart.Value);
+                Logger.LogInfo("Screen opened in front of you (B hides it, Y brings it back)");
+            }
+            Guard("system input", HandleSystemInput);
+
+            if (game != null)
+            {
+                try { game.Tick(); }
+                catch (Exception e) { LogOnce("tick", "Engine error: " + e); StartNextEngine(game.ModeName + " stopped with " + e.GetType().Name + ": " + e.Message); }
+                if (game != null && game.HasFailed) StartNextEngine(game.FailureReason);
             }
 
-            HandleSystemInput();
-            if (!Visible) return;
-            HandleGameInput();
+            Guard("picture", ShowPicture);
+            if (!Visible || game == null) return;
+            Guard("game input", HandleGameInput);
+        }
+
+        /// <summary>The engine's picture, or a loading / error message while there is none.</summary>
+        private void ShowPicture()
+        {
+            if (panel == null) return;
+            Texture tex = game != null ? game.PanelTexture : null;
+            if (tex != null)
+            {
+                panel.SetSize(Config.Width.Value, game.Aspect);
+                panel.ShowTexture(tex, game.TextureScale, game.TextureOffset);
+                return;
+            }
+            panel.SetSize(Config.Width.Value, StatusPicture.W / (float)StatusPicture.H);
+            if (game != null)
+            {
+                int secs = Mathf.FloorToInt(Time.realtimeSinceStartup - engineStartedAt);
+                ShowStatus("Loading...", "Starting the Flappy Crix website (" + secs + " s)", "B hides - Y opens");
+            }
+            else
+                ShowStatus("Could not start", "See BepInEx/LogOutput.log", "B hides - Y opens");
+        }
+
+        private void ShowStatus(string title, string body, string footer)
+        {
+            string key = title + "|" + body + "|" + footer;
+            if (statusTexture == null)
+            {
+                statusTexture = new Texture2D(StatusPicture.W, StatusPicture.H, TextureFormat.RGBA32, false)
+                { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Point };
+                statusPixels = new uint[StatusPicture.W * StatusPicture.H];
+            }
+            if (key != statusShown)
+            {
+                statusShown = key;
+                StatusPicture.Draw(statusPixels, title, body, footer);
+                Visuals.Upload(statusTexture, statusPixels, StatusPicture.W, StatusPicture.H, true);
+            }
+            panel.ShowTexture(statusTexture, Vector2.one, Vector2.zero);
+        }
+
+        /// <summary>Runs one part of the frame; an error is logged once instead of stopping the rest.</summary>
+        private void Guard(string what, Action a)
+        {
+            try { a(); }
+            catch (Exception e) { LogOnce(what + e.GetType().Name, "Error in " + what + ": " + e); }
+        }
+
+        private void LogOnce(string key, string message)
+        {
+            if (loggedErrors.Add(key)) Logger.LogError(message);
         }
 
         private bool Visible => station != null && station.gameObject.activeSelf;
@@ -240,8 +335,9 @@ namespace FlappyCrix
             if (flap) game.Flap();
 
             // Laser pointer (VR) or mouse (desktop testing)
+            if (panel == null) return;
             if (Config.LaserPointer.Value && rig.AnyXR)
-                laser.Update(Config.LaserOnRightHand.Value ? rig.Right : rig.Left, panel, game);
+                laser?.Update(Config.LaserOnRightHand.Value ? rig.Right : rig.Left, panel, game);
             else
                 MousePointer();
         }

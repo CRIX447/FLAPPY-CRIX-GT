@@ -61,6 +61,9 @@ namespace UnityEngine
         public static float Distance(Vector3 a, Vector3 b) { return 0; }
         public static Vector3 Lerp(Vector3 a, Vector3 b, float t) { return a; }
     }
+    // Only needed by BepInEx's own config converters (tools/load-check); the mod doesn't use it.
+    public struct Vector4 { public float x, y, z, w; }
+    public struct Rect { public float x { get; set; } public float y { get; set; } public float width { get; set; } public float height { get; set; } }
     public struct Quaternion
     {
         public float x, y, z, w;
@@ -114,6 +117,7 @@ namespace UnityEngine
         public static float Sqrt(float f) { return f; }
         public static float Round(float f) { return f; }
         public static int RoundToInt(float f) { return 0; }
+        public static int FloorToInt(float f) { return 0; }
         public static float Lerp(float a, float b, float t) { return a; }
         public static float InverseLerp(float a, float b, float value) { return 0; }
         public static float Cos(float f) { return 0; }
@@ -125,7 +129,7 @@ namespace UnityEngine
         public static float unscaledDeltaTime { get { return 0; } }
         public static float realtimeSinceStartup { get { return 0; } }
     }
-    public class ColorUtility { public static bool TryParseHtmlString(string htmlString, out Color color) { color = default(Color); return false; } }
+    public class ColorUtility { public static bool TryParseHtmlString(string htmlString, out Color color) { color = default(Color); return false; } public static string ToHtmlStringRGBA(Color color) { return "000000FF"; } }
     public enum RuntimePlatform { OSXEditor = 0, OSXPlayer = 1, WindowsPlayer = 2, WindowsEditor = 7, Android = 11, LinuxPlayer = 13 }
     public class Application { public static RuntimePlatform platform { get { return 0; } } public static string dataPath { get { return null; } } public static void OpenURL(string url) { } }
     public enum KeyCode { None = 0, Backspace = 8, Return = 13, Escape = 27, Space = 32, Minus = 45, Equals = 61, P = 112, UpArrow = 273, DownArrow = 274, RightArrow = 275, LeftArrow = 276, F5 = 286, F8 = 289, F9 = 290 }
@@ -257,7 +261,13 @@ namespace UnityEngine
         public void PlayOneShot(AudioClip clip, float volumeScale) { }
     }
     public enum AudioType { UNKNOWN = 0, MPEG = 13, OGGVORBIS = 14, WAV = 20 }
-    public static class JsonUtility { public static T FromJson<T>(string json) { return default(T); } }
+    public static class JsonUtility
+    {
+        public static T FromJson<T>(string json) { return default(T); }
+        // Used by BepInEx's config converters (Vector3 settings); bodies only matter to tools/load-check.
+        public static string ToJson(object obj) { return "{}"; }
+        public static object FromJson(string json, System.Type type) { return System.Activator.CreateInstance(type); }
+    }
     public class AsyncOperation : YieldInstruction { }
 }
 

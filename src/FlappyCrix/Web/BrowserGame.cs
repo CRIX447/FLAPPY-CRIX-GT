@@ -131,7 +131,7 @@ namespace FlappyCrix.Web
         {
             Uri u;
             if (!Uri.TryCreate(url, UriKind.Absolute, out u)) return false;
-            string path = u.AbsolutePath.TrimEnd('/').ToLowerInvariant();
+            string path = u.AbsolutePath.TrimEnd(new[] { '/' }).ToLowerInvariant();
             bool gamePath = path == "/flappycrix" || path == "/flappycrix.html";
             if (server != null && url.StartsWith(server.BaseUrl, StringComparison.Ordinal)) return gamePath || path == "";
             return SameSite(url, config.RemoteUrl.Value) && gamePath;

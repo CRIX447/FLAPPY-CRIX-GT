@@ -43,7 +43,7 @@ namespace FlappyCrix.Web
         public LocalWebServer(string root, string entryPage, string configJson, Action<string> log)
         {
             this.root = Path.GetFullPath(root);
-            this.entryPage = entryPage.TrimStart('/');
+            this.entryPage = entryPage.TrimStart(new[] { '/' });
             this.configJson = string.IsNullOrEmpty(configJson) ? "{}" : configJson;
             this.log = log ?? (_ => { });
         }
@@ -100,7 +100,7 @@ namespace FlappyCrix.Web
                     var headers = ReadHeaders(stream);
                     if (headers == null) return;
 
-                    string[] requestLine = headers[0].Split(' ');
+                    string[] requestLine = headers[0].Split(new[] { ' ' });
                     if (requestLine.Length < 2) { Simple(stream, 400, "Bad Request"); return; }
                     string method = requestLine[0];
                     if (method != "GET" && method != "HEAD") { Simple(stream, 405, "Method Not Allowed"); return; }
@@ -157,7 +157,7 @@ namespace FlappyCrix.Web
             // Range support: Chromium uses it for <audio>/<video> and needs a 206 to seek.
             if (range != null && range.StartsWith("bytes=", StringComparison.OrdinalIgnoreCase))
             {
-                string spec = range.Substring(6).Split(',')[0].Trim();
+                string spec = range.Substring(6).Split(new[] { ',' })[0].Trim();
                 int dash = spec.IndexOf('-');
                 long start, end;
                 if (dash > 0)
@@ -192,9 +192,9 @@ namespace FlappyCrix.Web
         /// <summary>Maps a URL path to a file under root, refusing anything that escapes it.</summary>
         private string Resolve(string urlPath)
         {
-            string rel = urlPath.Replace('\\', '/').TrimStart('/');
+            string rel = urlPath.Replace('\\', '/').TrimStart(new[] { '/' });
             if (rel.Length == 0) return null;
-            foreach (var part in rel.Split('/'))
+            foreach (var part in rel.Split(new[] { '/' }))
                 if (part == "..") return null;
             string full = Path.GetFullPath(Path.Combine(root, rel.Replace('/', Path.DirectorySeparatorChar)));
             string rootWithSep = root.EndsWith(Path.DirectorySeparatorChar.ToString()) ? root : root + Path.DirectorySeparatorChar;
@@ -221,7 +221,7 @@ namespace FlappyCrix.Web
                 if (++total > 16384) return null;
                 if (b == '\n')
                 {
-                    string line = sb.ToString().TrimEnd('\r');
+                    string line = sb.ToString().TrimEnd(new[] { '\r' });
                     sb.Length = 0;
                     if (line.Length == 0) return lines.Count > 0 ? lines : null;
                     lines.Add(line);

@@ -97,8 +97,14 @@ engine was used (`Mode: Website (...) via hidden msedge ...`), which shader draw
 rate and decode time, and why an engine was skipped. The self test checks JavaScript, CSS, images, audio, the
 canvas, frames reaching the screen, key input reaching the page, and the page's frame rate.
 
+When the mod starts, the screen opens in front of you straight away and shows **Loading...** until the website
+is ready (usually a few seconds). If no screen appears at all, open `BepInEx/LogOutput.log` and search for
+`Flappy Crix`. No lines means BepInEx didn't load the mod (check the folder is `BepInEx/plugins/FlappyCrix/` with
+`FlappyCrix.dll` inside); otherwise the lines after it say what went wrong.
+
 | Log says | What to do |
 |---|---|
+| `Still waiting for the player's camera` | The game hasn't created the player yet; the screen opens as soon as it does. |
 | `No Microsoft Edge or Chrome found` | Install Edge or Chrome, or set `BrowserPath`. The native version runs meanwhile. |
 | `DevTools port did not appear` | Something blocked the hidden browser (antivirus, or a work/school policy that disables browser debugging). |
 | `Screen stream: ... ms per frame to decode` is high | Lower `BrowserFrameRate` (e.g. 20) or `StreamQuality`. |
@@ -113,7 +119,8 @@ src/FlappyCrix/        C# source of the BepInEx plugin
   VR/                  XR input, screen, arcade deck, joystick, laser
   Native/              native fallback: rules + renderer (no Unity code) + Unity glue
 mod/FlappyCrix/        the plugin folder as shipped (Web/ = packaged website + bridge.js)
-tools/                 tests (engine-harness, native-harness, Playwright suites), packaging, build scripts
+tools/                 tests (engine-harness, native-harness, load-check, api-audit, Playwright suites),
+                       packaging, build scripts
 docs/screenshots/      screenshots and mock-ups
 .github/workflows/     builds FlappyCrix.dll and the release zip on every push / tag
 ```
@@ -132,6 +139,8 @@ stand-ins for Unity/UnityWebBrowser in `tools/refs/`:
 sudo apt install mono-devel
 tools/get_bepinex.sh
 tools/refs/build_dll.sh        # -> mod/FlappyCrix/FlappyCrix.dll
+tools/load-check/run.sh        # loads it like a normal install and runs the start-up
+tools/api-audit/run.sh         # checks every Unity call against Unity's own source
 ```
 GitHub Actions does this automatically; pushing a version tag (e.g. `v1.0.0`) publishes a release with the zip attached.
 

@@ -127,7 +127,7 @@ namespace FlappyCrix
         /// <summary>0xAABBGGRR from a #RRGGBB string (Unity RGBA32 byte order on little-endian).</summary>
         public static uint Rgba(string hex, byte a = 255)
         {
-            hex = hex.TrimStart('#');
+            hex = hex.TrimStart(new[] { '#' });
             byte r = System.Convert.ToByte(hex.Substring(0, 2), 16);
             byte g = System.Convert.ToByte(hex.Substring(2, 2), 16);
             byte b = System.Convert.ToByte(hex.Substring(4, 2), 16);

@@ -25,3 +25,18 @@ The version stays at 1.0.0 until CRIX decides to change it.
 - The screen was too big: now 0.55 m wide at 1.3 m (was 1.0 m at 1.6 m), with − / + buttons; settings files from
   the first build are upgraded to the new size once.
 - `confirm()` / `alert()` / `prompt()` no longer freeze the page.
+
+### Fixed after the second in-game test
+
+- **Nothing appeared at all.** The start-up code checked for the optional UnityWebBrowser engine by calling into
+  that engine's own code. That engine isn't shipped, so Mono refused to run the whole start-up method, no engine
+  started, and the screen was never switched on. The check now only looks for the engine's files; each engine is
+  started in its own isolated method; and the screen opens in front of you first, whatever happens to the engines.
+- The screen now shows **"Loading..."** while the website starts, and **"Could not start"** (pointing to the log)
+  if nothing can run — it is never invisible or blank.
+- Each part (screen, deck, laser, controllers, picture, input) is guarded on its own: an error is logged once and
+  the rest keeps working.
+- Plain .NET calls only (no newer-runtime string overloads), so the DLL fits any Unity version Gorilla Tag uses.
+- New checks run on every build: `tools/load-check` (loads the DLL the way a normal install has it and runs the
+  start-up — it reproduces this bug on the old DLL) and `tools/api-audit` (every Unity call checked against Unity's
+  own source for 2021.3, 2022.3 and Unity 6).

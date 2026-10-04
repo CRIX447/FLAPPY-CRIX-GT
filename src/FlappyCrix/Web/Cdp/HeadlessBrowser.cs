@@ -78,7 +78,7 @@ namespace FlappyCrix.Web.Cdp
                     using (var k = hive.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\" + exe))
                     {
                         var v = k?.GetValue(null) as string;
-                        if (!string.IsNullOrEmpty(v)) found.Add(v.Trim('"'));
+                        if (!string.IsNullOrEmpty(v)) found.Add(v.Trim(new[] { '"' }));
                     }
                 }
             }

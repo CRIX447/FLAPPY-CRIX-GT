@@ -1,5 +1,6 @@
 # Builds FlappyCrix.dll with Mono against the real BepInEx DLL and the reference
-# stand-ins in tools/refs, then packages the plugin folder.
+# stand-ins in tools/refs, checks it (start-up without the optional engine, and every
+# Unity call against Unity's own source), then packages the plugin folder.
 # Push a version tag (e.g. v1.0.0) to publish a GitHub Release with the zip attached.
 # (This mod was made with AI - Claude by Anthropic.)
 name: build
@@ -29,6 +30,14 @@ jobs:
       - name: Build FlappyCrix.dll
         run: tools/refs/build_dll.sh
 
+      - name: Start-up check (loads the DLL like a normal install, without UnityWebBrowser)
+        run: tools/load-check/run.sh
+
+      - name: Unity API audit (every Unity call checked against Unity's own source)
+        run: |
+          tools/api-audit/run.sh mod/FlappyCrix/FlappyCrix.dll 2022.3
+          tools/api-audit/run.sh mod/FlappyCrix/FlappyCrix.dll 2021.3
+
       - name: Package plugin folder
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
@@ -49,4 +58,5 @@ jobs:
           body: |
             Flappy Crix for Gorilla Tag ${{ github.ref_name }}.
             🤖 This mod was made with AI (Claude by Anthropic).
-            Unzip into `Gorilla Tag/BepInEx/plugins/`. The browser engine (UWB folder) is installed separately - see the README.
+            Unzip into `Gorilla Tag/BepInEx/plugins/`. The website runs in the Microsoft Edge (or Chrome) already on
+            your PC, hidden - nothing else to install. See the README.

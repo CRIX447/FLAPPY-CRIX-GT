@@ -73,7 +73,7 @@ namespace FlappyCrix.Web.Cdp
             int b;
             while ((b = input.ReadByte()) != -1)
             {
-                if (b == '\n') return sb.ToString().TrimEnd('\r');
+                if (b == '\n') return sb.ToString().TrimEnd(new[] { '\r' });
                 sb.Append((char)b);
                 if (sb.Length > 8192) throw new IOException("Header line too long");
             }
