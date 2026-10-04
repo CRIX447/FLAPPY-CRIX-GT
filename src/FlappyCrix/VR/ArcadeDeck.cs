@@ -4,14 +4,15 @@ using UnityEngine;
 namespace FlappyCrix.VR
 {
     /// <summary>
-    /// The arcade control deck that sits in front of the screen: a joystick for menu
-    /// navigation and four push buttons - FLAP, SELECT, START, PAUSE. Press a button by
-    /// pushing your hand down onto it. The deck stays where it was placed.
-    /// No colliders: presses are measured from the controller positions.
+    /// The arcade control deck in front of the screen: a joystick for menu navigation, the
+    /// FLAP, SELECT, START and PAUSE buttons, and small - / + buttons for the screen size.
+    /// Press a button by pushing your hand down onto it. No colliders: presses are measured
+    /// from the controller positions.
+    /// Part of Flappy Crix for Gorilla Tag - made with AI (Claude by Anthropic).
     /// </summary>
     public sealed class ArcadeDeck
     {
-        public enum DeckButton { Flap, Select, Start, Pause }
+        public enum DeckButton { Flap, Select, Start, Pause, SizeDown, SizeUp }
 
         private sealed class Button
         {
@@ -30,6 +31,7 @@ namespace FlappyCrix.VR
         private readonly List<Button> buttons = new List<Button>();
 
         const float CapHeight = 0.018f;
+        const string Plate = "#2B2140";
 
         public ArcadeDeck(Transform parent)
         {
@@ -40,13 +42,12 @@ namespace FlappyCrix.VR
             surface.SetParent(Root, false);
             surface.localRotation = Quaternion.Euler(-15f, 0, 0);   // top tilts towards the player
 
-            // Cabinet body and its top plate
             var body = Visuals.Primitive(PrimitiveType.Cube, "Body", surface, Visuals.Hex("#1A1A24"), 0).transform;
-            body.localScale = new Vector3(0.6f, 0.08f, 0.26f);
-            body.localPosition = new Vector3(0, -0.04f, 0);
-            var top = Visuals.Primitive(PrimitiveType.Cube, "Top", surface, Visuals.Hex("#2B2140"), 1).transform;
-            top.localScale = new Vector3(0.58f, 0.004f, 0.24f);
-            top.localPosition = new Vector3(0, 0.002f, 0);
+            body.localScale = new Vector3(0.6f, 0.08f, 0.28f);
+            body.localPosition = new Vector3(0, -0.04f, 0.01f);
+            var top = Visuals.Primitive(PrimitiveType.Cube, "Top", surface, Visuals.Hex(Plate), 1).transform;
+            top.localScale = new Vector3(0.58f, 0.004f, 0.26f);
+            top.localPosition = new Vector3(0, 0.002f, 0.01f);
             var trim = Visuals.Primitive(PrimitiveType.Cube, "Trim", surface, Visuals.Hex("#FF6B35"), 2).transform;
             trim.localScale = new Vector3(0.6f, 0.012f, 0.008f);
             trim.localPosition = new Vector3(0, -0.002f, -0.132f);
@@ -56,37 +57,40 @@ namespace FlappyCrix.VR
 
             Joystick = new VRJoystick(surface);
             Joystick.Root.localPosition = new Vector3(-0.19f, 0.004f, 0f);
-            Label("MENU", new Vector3(-0.19f, 0.005f, -0.085f), Color.white);
+            Visuals.Label("MENU", surface, new Vector3(-0.19f, 0.0045f, -0.085f), 0.016f, "#FFFFFF", Plate);
 
             AddButton(DeckButton.Select, "SELECT", new Vector3(-0.055f, 0, 0.0f), 0.026f, Visuals.Hex("#00CC7A"));
             AddButton(DeckButton.Start,  "START",  new Vector3( 0.025f, 0, 0.0f), 0.026f, Visuals.Hex("#3A8DFF"));
             AddButton(DeckButton.Pause,  "PAUSE",  new Vector3( 0.105f, 0, 0.0f), 0.026f, Visuals.Hex("#FFC107"));
             AddButton(DeckButton.Flap,   "FLAP",   new Vector3( 0.205f, 0, 0.0f), 0.045f, Visuals.Hex("#FF6B35"));
+
+            // Screen size, in the back row
+            AddButton(DeckButton.SizeDown, "-", new Vector3(0.0f, 0, 0.095f), 0.016f, Visuals.Hex("#8A8FB0"), labelBelow: false);
+            AddButton(DeckButton.SizeUp,   "+", new Vector3(0.07f, 0, 0.095f), 0.016f, Visuals.Hex("#8A8FB0"), labelBelow: false);
+            Visuals.Label("SIZE", surface, new Vector3(0.035f, 0.0045f, 0.062f), 0.011f, "#C8C8D8", Plate);
         }
 
-        private void AddButton(DeckButton action, string label, Vector3 at, float radius, Color colour)
+        private void AddButton(DeckButton action, string label, Vector3 at, float radius, Color colour, bool labelBelow = true)
         {
             var ring = Visuals.Primitive(PrimitiveType.Cylinder, label + "Ring", surface, Visuals.Hex("#0D0D12"), 3).transform;
             ring.localScale = new Vector3(radius * 2.5f, 0.004f, radius * 2.5f);
             ring.localPosition = at + new Vector3(0, 0.004f, 0);
 
-            var capGo = Visuals.Primitive(PrimitiveType.Cylinder, label, surface, colour, 4);
+            var capGo = Visuals.Primitive(PrimitiveType.Cylinder, label + "Button", surface, colour, 4);
             var cap = capGo.transform;
             cap.localScale = new Vector3(radius * 2f, CapHeight / 2f, radius * 2f);
             cap.localPosition = at + new Vector3(0, CapHeight / 2f + 0.004f, 0);
 
-            Label(label, at + new Vector3(0, 0.005f, -radius - 0.03f), Color.white);
+            if (labelBelow)
+                Visuals.Label(label, surface, at + new Vector3(0, 0.0045f, -radius - 0.026f), 0.012f, "#FFFFFF", Plate);
+            else
+            {
+                // symbol printed on top of the small cap
+                var sym = Visuals.Label(label, cap, new Vector3(0, 1.01f, 0), 0.6f, "#FFFFFF", "#8A8FB0");
+                sym.localScale = new Vector3(sym.localScale.x * 0.5f, sym.localScale.y * 0.5f, 1);
+            }
             buttons.Add(new Button { Action = action, Local = at, Radius = radius, Cap = cap,
                                      CapMat = capGo.GetComponent<MeshRenderer>().sharedMaterial, Colour = colour });
-        }
-
-        private void Label(string text, Vector3 at, Color colour)
-        {
-            var t = Visuals.Text(text + "Label", surface, 60, colour, TextAnchor.MiddleCenter);
-            t.text = text;
-            t.characterSize = 0.0035f;
-            t.transform.localPosition = at;
-            t.transform.localRotation = Quaternion.Euler(90f, 0, 0);   // lying on the deck, readable from the player's side
         }
 
         public bool Visible
@@ -114,6 +118,7 @@ namespace FlappyCrix.VR
                 // Visual: cap sinks while held, brightens
                 b.Cap.localPosition = b.Local + new Vector3(0, (b.Down ? 0.004f : CapHeight / 2f + 0.004f), 0);
                 b.CapMat.color = b.Down ? Color.Lerp(b.Colour, Color.white, 0.45f) : b.Colour;
+                if (b.CapMat.HasProperty("_BaseColor")) b.CapMat.SetColor("_BaseColor", b.CapMat.color);
             }
         }
 

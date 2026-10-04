@@ -3,11 +3,26 @@ using UnityEngine;
 
 namespace FlappyCrix
 {
+    public enum WebEngine
+    {
+        /// <summary>Hidden Edge/Chrome if found, else UnityWebBrowser if installed, else the native version.</summary>
+        Auto,
+        /// <summary>The PC's own Microsoft Edge / Chrome, running hidden (no window).</summary>
+        SystemBrowser,
+        /// <summary>UnityWebBrowser's bundled CEF (needs the UWB folder, see README).</summary>
+        UnityWebBrowser,
+    }
+
     /// <summary>All settings, written to BepInEx/config/com.crix.flappycrix.cfg on first run.</summary>
     public sealed class FlappyCrixConfig
     {
         // General
         public readonly ConfigEntry<bool> UseWebsite;
+        public readonly ConfigEntry<WebEngine> Engine;
+        public readonly ConfigEntry<string> BrowserPath;
+        public readonly ConfigEntry<string> BrowserExtraArgs;
+        public readonly ConfigEntry<int> JpegQuality;
+        public readonly ConfigEntry<string> ShaderOverride;
         public readonly ConfigEntry<bool> UseRemoteWebsite;
         public readonly ConfigEntry<string> RemoteUrl;
         public readonly ConfigEntry<float> RemoteTimeoutSeconds;
@@ -49,12 +64,17 @@ namespace FlappyCrix
         public readonly ConfigEntry<int> EngineStartupTimeoutMs;
         public readonly ConfigEntry<bool> RemoteDebugging;
 
+        /// <summary>True when settings from the first test build were upgraded to the current display defaults this run.</summary>
+        public readonly bool UpgradedFromOlderConfig;
+
         public FlappyCrixConfig(ConfigFile cfg)
         {
             const string G = "1. General", D = "2. Display", I = "3. Input", J = "4. Arcade deck", W = "5. Website";
 
             UseWebsite = cfg.Bind(G, "UseWebsite", true,
-                "true = run the real Flappy Crix website (HTML/JS) in an embedded Chromium (UnityWebBrowser). false = native Unity version.");
+                "true = play the real Flappy Crix website. false = the native Unity version.");
+            Engine = cfg.Bind(G, "Engine", WebEngine.Auto,
+                "What runs the website. Auto/SystemBrowser = the Microsoft Edge (or Chrome) already on your PC, started hidden - no window opens, the page is streamed onto the in-game screen. UnityWebBrowser = optional bundled engine (see README).");
             UseRemoteWebsite = cfg.Bind(G, "UseRemoteWebsite", true,
                 "true = play the live page at RemoteUrl (crixgamingvr.com/flappycrix). false = the copy packaged with the mod (works offline). The live page falls back to the packaged copy if it can't load.");
             RemoteUrl = cfg.Bind(G, "RemoteUrl", "https://crixgamingvr.com/flappycrix", "Live site used when UseRemoteWebsite = true.");
@@ -65,12 +85,14 @@ namespace FlappyCrix
             ToggleKey = cfg.Bind(G, "ToggleKey", KeyCode.F8, "Keyboard: show/hide. In VR: B hides, Y opens it in front of you.");
             RecenterKey = cfg.Bind(G, "RecenterKey", KeyCode.F9, "Keyboard: bring the screen and deck in front of you (same as Y in VR).");
 
-            Distance = cfg.Bind(D, "Distance", 1.6f, new ConfigDescription("Metres in front of you. 1.6 fits inside the stump.", new AcceptableValueRange<float>(0.75f, 6f)));
-            Width = cfg.Bind(D, "Width", 1.0f, new ConfigDescription("Panel width in metres. Height follows the resolution's aspect ratio.", new AcceptableValueRange<float>(0.5f, 4f)));
-            HeightOffset = cfg.Bind(D, "HeightOffset", -0.15f, "Panel centre relative to eye height, metres.");
+            Distance = cfg.Bind(D, "Distance", 1.3f, new ConfigDescription("Metres in front of you.", new AcceptableValueRange<float>(0.75f, 6f)));
+            Width = cfg.Bind(D, "Width", 0.55f, new ConfigDescription("Screen width in metres (height follows: 0.55 wide = 0.69 tall). Also changed in-game with the deck's - / + buttons.", new AcceptableValueRange<float>(0.3f, 2.5f)));
+            HeightOffset = cfg.Bind(D, "HeightOffset", -0.1f, "Screen centre relative to eye height, metres.");
             ResolutionWidth = cfg.Bind(D, "ResolutionWidth", 768, new ConfigDescription("Browser pixels. 768x960 gives the site's tablet layout with text large enough for VR; 1024x1280 is sharper but smaller; below ~700 wide the site switches to its cramped phone layout.", new AcceptableValueRange<int>(320, 2560)));
             ResolutionHeight = cfg.Bind(D, "ResolutionHeight", 960, new ConfigDescription("Browser pixels.", new AcceptableValueRange<int>(320, 2560)));
-            BrowserFrameRate = cfg.Bind(D, "BrowserFrameRate", 60, new ConfigDescription("Frames per second the browser renders at (UnityWebBrowser allows 1-60).", new AcceptableValueRange<int>(15, 60)));
+            BrowserFrameRate = cfg.Bind(D, "BrowserFrameRate", 30, new ConfigDescription("Most screen updates per second from the website. 30 is smooth and light on VR performance; up to 60.", new AcceptableValueRange<int>(10, 60)));
+            JpegQuality = cfg.Bind(D, "StreamQuality", 80, new ConfigDescription("Picture quality of the website stream (hidden Edge engine), 50-95.", new AcceptableValueRange<int>(50, 95)));
+            ShaderOverride = cfg.Bind(D, "ShaderOverride", "", "Advanced: a shader name to draw the screen and deck with, if the default doesn't show up.");
             MuteWebAudio = cfg.Bind(D, "MuteWebAudio", false, "Mute the website's music and sound effects.");
 
             KeyboardSpaceFlaps = cfg.Bind(I, "KeyboardSpaceFlaps", true, "SPACE on the PC keyboard = flap.");
@@ -90,12 +112,31 @@ namespace FlappyCrix
 
             LocalPort = cfg.Bind(W, "LocalPort", 47321,
                 "Loopback port for the packaged site (127.0.0.1 only). Keep it fixed: your saved progress belongs to this address. The browser IPC uses the next two ports.");
+            BrowserPath = cfg.Bind(W, "BrowserPath", "", "Leave empty to use Microsoft Edge (or Chrome/Brave) automatically. Or the full path to a Chromium browser's .exe.");
+            BrowserExtraArgs = cfg.Bind(W, "BrowserExtraArgs", "", "Advanced: extra command-line switches for the hidden browser.");
             OpenLinksOnDesktop = cfg.Bind(W, "OpenLinksOnDesktop", true,
                 "Sign-in, Discord/YouTube/TikTok/shop and the site's other pages open in your normal PC browser. Only the Flappy Crix game stays in-game.");
             SkipIntro = cfg.Bind(W, "SkipIntro", true, "Skip the CRIX STUDIOS intro video.");
             RunSelfTest = cfg.Bind(W, "RunSelfTest", true, "Check the embedded site actually works (JS, CSS, images, audio, canvas, input, frame rate) and log the result.");
-            EngineStartupTimeoutMs = cfg.Bind(W, "EngineStartupTimeoutMs", 15000, "How long to wait for the browser engine process to start.");
+            EngineStartupTimeoutMs = cfg.Bind(W, "EngineStartupTimeoutMs", 20000, "How long to wait for the browser engine to start.");
             RemoteDebugging = cfg.Bind(W, "RemoteDebugging", false, "Developer: Chrome DevTools at http://127.0.0.1:9022 while the game runs.");
+
+            // One-time upgrade: the first test build put a 1.0 m screen 1.6 m away, which was too big.
+            // Settings files from that build get the new display defaults (and the lighter 30 fps stream) once.
+            // (A settings-file revision number - not the mod's version.)
+            var revision = cfg.Bind("0. About", "SettingsRevision", 0, "Set automatically; not the mod version. This mod was made with AI (Claude by Anthropic).");
+            if (revision.Value < 2)
+            {
+                Width.Value = (float)Width.DefaultValue;
+                Distance.Value = (float)Distance.DefaultValue;
+                HeightOffset.Value = (float)HeightOffset.DefaultValue;
+                BrowserFrameRate.Value = (int)BrowserFrameRate.DefaultValue;
+                ResolutionWidth.Value = (int)ResolutionWidth.DefaultValue;
+                ResolutionHeight.Value = (int)ResolutionHeight.DefaultValue;
+                EngineStartupTimeoutMs.Value = (int)EngineStartupTimeoutMs.DefaultValue;
+                revision.Value = 2;
+                UpgradedFromOlderConfig = true;
+            }
         }
     }
 }

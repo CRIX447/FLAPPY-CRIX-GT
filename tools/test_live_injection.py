@@ -1,9 +1,14 @@
+#!/usr/bin/env python3
+"""Live-page mode check: inject config + bridge AFTER the unmodified site has loaded
+(as UnityWebBrowser does on crixgamingvr.com). Serve the crix-website repo on :8765 first.
+Made with AI (Claude by Anthropic)."""
 import asyncio, json
 from playwright.async_api import async_playwright
-BRIDGE=open('/home/claude/FlappyCrixMod/mod/FlappyCrix/Web/__flappycrix/bridge.js').read()
+import os
+BRIDGE=open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','mod','FlappyCrix','Web','__flappycrix','bridge.js')).read()
 async def main():
     async with async_playwright() as p:
-        b=await p.chromium.launch(executable_path="/opt/pw-browsers/chromium-1194/chrome-linux/chrome")
+        b=await p.chromium.launch(executable_path=os.environ.get("CHROME","/opt/pw-browsers/chromium-1194/chrome-linux/chrome"))
         ctx=await b.new_context(viewport={"width":1024,"height":1280})
         await ctx.add_init_script("window.__ev=[];window.uwb={ExecuteJsMethod:(n,m)=>{window.__ev.push(m);return true}};")
         pg=await ctx.new_page()

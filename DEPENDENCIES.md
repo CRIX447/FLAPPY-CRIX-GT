@@ -1,4 +1,32 @@
-# WebView dependency
+# Website engine
+
+## Default: the browser already on the PC
+
+The mod runs the website with **the Chromium browser already installed on the player's PC** — Microsoft Edge,
+which ships with Windows 10 and 11, or Google Chrome / Brave — started **headless** (no window, nothing on the
+desktop, its own private profile in `BrowserData/EdgeProfile`). The page is rendered off-screen and streamed into
+Gorilla Tag over the Chrome DevTools Protocol:
+
+| Need | How |
+|---|---|
+| Frames for the in-game screen | `Page.startScreencast` (JPEG, 1:1) → `ImageConversion.LoadImage` into a `Texture2D` |
+| Real input | `Input.dispatchKeyEvent` (Space), `Input.dispatchMouseEvent` (laser/mouse, wheel) |
+| Bridge before the site's own scripts | `Page.addScriptToEvaluateOnNewDocument` |
+| JS → Unity | `Runtime.addBinding("flappyCrixSend")` → `Runtime.bindingCalled` |
+| Only the game page loads in the panel | `Fetch.enable` on main-frame documents; others are failed and opened on the desktop |
+| Page size | `Emulation.setDeviceMetricsOverride` 768×960 |
+| No leftover processes | Windows job object with kill-on-close, tied to Gorilla Tag's process |
+
+**Nothing is downloaded or redistributed** for this: the protocol client (`src/FlappyCrix/Web/Cdp/`: launcher,
+WebSocket, JSON, page controller) is part of the mod's own source, and the browser is the player's own.
+Limitations: Windows (Edge/Chrome present); a work/school policy that disables browser remote debugging blocks it
+(the mod then falls back); each frame is decoded on Unity's main thread (logged; `BrowserFrameRate` caps it at 30/s);
+audio plays through Windows' default output from the hidden browser.
+
+The rest of this file describes the **optional** UnityWebBrowser engine (`Engine = UnityWebBrowser`), which bundles
+its own Chromium instead.
+
+---
 
 ## Which library
 

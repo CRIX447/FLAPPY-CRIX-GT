@@ -32,6 +32,8 @@ namespace UnityEngine
         public float x, y;
         public Vector2(float x, float y) { this.x = x; this.y = y; }
         public float sqrMagnitude { get { return 0; } }
+        public static Vector2 one { get { return default(Vector2); } }
+        public static Vector2 zero { get { return default(Vector2); } }
         public static Vector2 operator -(Vector2 a, Vector2 b) { return a; }
         public static bool operator ==(Vector2 lhs, Vector2 rhs) { return false; }
         public static bool operator !=(Vector2 lhs, Vector2 rhs) { return false; }
@@ -110,6 +112,8 @@ namespace UnityEngine
         public static float Min(float a, float b) { return a; }
         public static float Abs(float f) { return f; }
         public static float Sqrt(float f) { return f; }
+        public static float Round(float f) { return f; }
+        public static int RoundToInt(float f) { return 0; }
         public static float Lerp(float a, float b, float t) { return a; }
         public static float InverseLerp(float a, float b, float value) { return 0; }
         public static float Cos(float f) { return 0; }
@@ -124,7 +128,7 @@ namespace UnityEngine
     public class ColorUtility { public static bool TryParseHtmlString(string htmlString, out Color color) { color = default(Color); return false; } }
     public enum RuntimePlatform { OSXEditor = 0, OSXPlayer = 1, WindowsPlayer = 2, WindowsEditor = 7, Android = 11, LinuxPlayer = 13 }
     public class Application { public static RuntimePlatform platform { get { return 0; } } public static string dataPath { get { return null; } } public static void OpenURL(string url) { } }
-    public enum KeyCode { None = 0, Backspace = 8, Return = 13, Escape = 27, Space = 32, P = 112, UpArrow = 273, DownArrow = 274, RightArrow = 275, LeftArrow = 276, F5 = 286, F8 = 289, F9 = 290 }
+    public enum KeyCode { None = 0, Backspace = 8, Return = 13, Escape = 27, Space = 32, Minus = 45, Equals = 61, P = 112, UpArrow = 273, DownArrow = 274, RightArrow = 275, LeftArrow = 276, F5 = 286, F8 = 289, F9 = 290 }
 
     public class Component : Object
     {
@@ -195,7 +199,7 @@ namespace UnityEngine
     }
     public enum TextureWrapMode { Repeat = 0, Clamp = 1, Mirror = 2, MirrorOnce = 3 }
     public enum FilterMode { Point = 0, Bilinear = 1, Trilinear = 2 }
-    public enum TextureFormat { RGBA32 = 4, BGRA32 = 14 }
+    public enum TextureFormat { RGB24 = 3, RGBA32 = 4, BGRA32 = 14 }
     public class Texture : Object
     {
         public virtual int width { get { return 0; } set { } }
@@ -209,12 +213,16 @@ namespace UnityEngine
         public Texture2D(int width, int height, TextureFormat textureFormat, bool mipChain, bool linear) { }
         public void SetPixel(int x, int y, Color color) { }
         public Color GetPixel(int x, int y) { return default(Color); }
+        public Color32[] GetPixels32() { return null; }
+        public void SetPixels32(Color32[] colors) { }
         public void Apply(bool updateMipmaps) { }
     }
-    public static class ImageConversion { public static bool LoadImage(this Texture2D tex, byte[] data) { return false; } }
+    public static class ImageConversion { public static bool LoadImage(this Texture2D tex, byte[] data) { return false; } public static bool LoadImage(this Texture2D tex, byte[] data, bool markNonReadable) { return false; } }
     public class Material : Object
     {
         public Material(Shader shader) { }
+        public Material(Material source) { }
+        public Shader shader { get { return null; } set { } }
         public Texture mainTexture { get { return null; } set { } }
         public Color color { get { return default(Color); } set { } }
         public int renderQueue { get { return 0; } set { } }

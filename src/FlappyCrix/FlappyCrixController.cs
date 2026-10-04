@@ -17,8 +17,9 @@ namespace FlappyCrix
     ///   Controllers: Y = open in front of you, B = hide, X / A = flap, laser + trigger = click
     ///   Keyboard:    SPACE flap, arrows navigate, ENTER select, F5 start, P pause, F8 show/hide, F9 bring here
     ///        |
-    ///   IFlappyGame = WebFlappyGame (input bridge -> the website's own handlers)
-    ///              or NativeFlappyGame (fallback)
+    ///   IFlappyGame = EdgeBrowserGame (the real website, PC's Edge/Chrome running hidden)
+    ///              or UwbBrowserGame (the real website, optional UnityWebBrowser engine)
+    ///              or NativeFlappyGame (offline fallback)
     ///
     /// Portable: it opens in front of you when you load in and every time you press Y,
     /// then stays put (it never drifts after you). B hides it.
@@ -35,7 +36,8 @@ namespace FlappyCrix
         private ArcadeDeck deck;
         private LaserPointer laser;
         private readonly XRRig rig = new XRRig();
-        private bool placed, fellBack;
+        private bool placed;
+        private readonly System.Collections.Generic.List<string> engineQueue = new System.Collections.Generic.List<string>();
 
         // edge detection
         private bool prevLPrimary, prevRPrimary, prevLStickUp, prevRStickUp, prevRSecondary, prevLSecondary;
@@ -56,49 +58,75 @@ namespace FlappyCrix
             }
             laser = new LaserPointer { PitchDegrees = Config.LaserPitch.Value };
 
-            if (Config.UseWebsite.Value) StartWebsiteMode();
-            if (game == null) StartNativeMode(Config.UseWebsite.Value ? "website mode could not start" : "UseWebsite = false");
+            Visuals.Log = m => Logger.LogInfo(m);
+            Visuals.ShaderOverride = Config.ShaderOverride.Value;
+            if (Config.UpgradedFromOlderConfig)
+                Logger.LogInfo("Settings upgraded to the new display defaults (screen " + Config.Width.Value + " m wide, " + Config.Distance.Value + " m away).");
+
+            // Engines to try, in order. Each one that fails hands over to the next.
+            if (Config.UseWebsite.Value)
+            {
+                if (Config.Engine.Value != WebEngine.UnityWebBrowser) engineQueue.Add("edge");
+                if (Config.Engine.Value != WebEngine.SystemBrowser) engineQueue.Add("uwb");
+            }
+            engineQueue.Add("native");
+            StartNextEngine(Config.UseWebsite.Value ? null : "UseWebsite = false");
         }
 
         // ------------------------------------------------------------------ modes
 
-        private void StartWebsiteMode()
+        private void StartNextEngine(string whyPreviousFailed)
         {
-            string uwbDll = Path.Combine(ModFolder, "VoltstroStudios.UnityWebBrowser.dll");
-            if (!File.Exists(uwbDll))
+            if (game != null) { try { game.Dispose(); } catch { } game = null; }
+            if (whyPreviousFailed != null) Logger.LogWarning("Switching engine: " + whyPreviousFailed);
+
+            while (engineQueue.Count > 0)
             {
-                Logger.LogWarning("UnityWebBrowser is not installed (" + uwbDll + " missing). See README.md -> 'Installing the browser engine'.");
-                return;
-            }
-            try
-            {
-                game = CreateWebGame();     // separate method: UWB types are only JIT-loaded here
-                Logger.LogInfo("Mode: " + game.ModeName);
-            }
-            catch (Exception e)
-            {
-                Logger.LogError("Website mode unavailable: " + e.GetType().Name + ": " + e.Message);
-                game = null;
+                string next = engineQueue[0];
+                engineQueue.RemoveAt(0);
+                try
+                {
+                    if (next == "edge")
+                    {
+                        string exe = Web.EdgeBrowserGame.FindBrowser(Config, m => Logger.LogInfo(m));
+                        if (exe == null) { Logger.LogWarning("No Microsoft Edge or Chrome found on this PC (set BrowserPath in the config to use another Chromium browser)."); continue; }
+                        var web = new Web.EdgeBrowserGame(Config, ModFolder, exe);
+                        web.Log += m => Logger.LogInfo(m);
+                        game = web;
+                        web.Start();
+                    }
+                    else if (next == "uwb")
+                    {
+                        if (!Web.UwbBrowserGame.IsInstalled(ModFolder)) continue;
+                        game = CreateUwbGame();
+                    }
+                    else
+                    {
+                        if (!Config.AutoFallbackToNative.Value && Config.UseWebsite.Value)
+                        { Logger.LogError("No website engine could run and AutoFallbackToNative = false."); return; }
+                        var native = new NativeFlappyGame(panel.Root, ModFolder, this);
+                        native.Log += m => Logger.LogInfo(m);
+                        game = native;
+                    }
+                    Logger.LogInfo("Mode: " + game.ModeName);
+                    return;
+                }
+                catch (Exception e)
+                {
+                    // TypeLoadException / FileNotFoundException when an optional engine's DLLs are missing or mismatched
+                    Logger.LogError(next + " engine unavailable: " + e.GetType().Name + ": " + e.Message);
+                    game = null;
+                }
             }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private IFlappyGame CreateWebGame()
+        private IFlappyGame CreateUwbGame()
         {
-            var web = new Web.WebFlappyGame(Config, ModFolder);
+            var web = new Web.UwbBrowserGame(Config, ModFolder);   // UWB types are only JIT-loaded here
             web.Log += m => Logger.LogInfo(m);
             web.Start();
             return web;
-        }
-
-        private void StartNativeMode(string why)
-        {
-            game?.Dispose();
-            Logger.LogInfo("Mode: native Unity Flappy Crix (" + why + ")");
-            var native = new NativeFlappyGame(panel.Surface, ModFolder, this);
-            native.Log += m => Logger.LogInfo(m);
-            game = native;
-            panel.ShowTexture(null);
         }
 
         // ------------------------------------------------------------------ frame
@@ -109,15 +137,10 @@ namespace FlappyCrix
             if (game == null) return;
 
             game.Tick();
-            if (game.HasFailed && !fellBack)
-            {
-                fellBack = true;
-                if (Config.AutoFallbackToNative.Value) StartNativeMode(game.FailureReason);
-                else Logger.LogError("Website mode failed and AutoFallbackToNative = false: " + game.FailureReason);
-            }
+            if (game.HasFailed) { StartNextEngine(game.FailureReason); if (game == null) return; }
 
             panel.SetSize(Config.Width.Value, game.Aspect);
-            if (game.PanelTexture != null) panel.ShowTexture(game.PanelTexture);
+            panel.ShowTexture(game.PanelTexture, game.TextureScale, game.TextureOffset);
 
             // Open in front of you as soon as the VR camera exists
             if (!placed && rig.Head != null)
@@ -189,6 +212,8 @@ namespace FlappyCrix
             if (k.GetKeyDown(KeyCode.F5)) game.StartButton();
             if (k.GetKeyDown(KeyCode.P)) game.TogglePause();
             if (k.GetKeyDown(KeyCode.Backspace)) game.Back();
+            if (k.GetKeyDown(KeyCode.Minus)) ResizeScreen(-1);
+            if (k.GetKeyDown(KeyCode.Equals)) ResizeScreen(+1);
 
             // Controller buttons: left X, right A
             if (Config.PrimaryButtonsFlap.Value)
@@ -229,7 +254,18 @@ namespace FlappyCrix
                 case ArcadeDeck.DeckButton.Select: game.Select(); break;
                 case ArcadeDeck.DeckButton.Start: game.StartButton(); break;
                 case ArcadeDeck.DeckButton.Pause: game.TogglePause(); break;
+                case ArcadeDeck.DeckButton.SizeDown: ResizeScreen(-1); break;
+                case ArcadeDeck.DeckButton.SizeUp: ResizeScreen(+1); break;
             }
+        }
+
+        /// <summary>Deck - / + (or keyboard - / =): screen 0.3 m to 2.5 m wide, saved in the config.</summary>
+        private void ResizeScreen(int dir)
+        {
+            float w = Mathf.Clamp(Mathf.Round((Config.Width.Value + dir * 0.08f) * 100f) / 100f, 0.3f, 2.5f);
+            if (Mathf.Abs(w - Config.Width.Value) < 0.001f) return;
+            Config.Width.Value = w;
+            Logger.LogInfo("Screen width " + w.ToString("0.00") + " m");
         }
 
         private bool mouseDown;

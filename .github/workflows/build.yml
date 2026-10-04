@@ -1,6 +1,6 @@
 # Builds FlappyCrix.dll with Mono against the real BepInEx DLL and the reference
 # stand-ins in tools/refs, then packages the plugin folder.
-# Push a tag like v1.1.0 to publish a GitHub Release with the zip attached.
+# Push a version tag (e.g. v1.0.0) to publish a GitHub Release with the zip attached.
 # (This mod was made with AI - Claude by Anthropic.)
 name: build
 

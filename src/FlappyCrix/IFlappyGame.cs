@@ -3,7 +3,11 @@ using UnityEngine;
 
 namespace FlappyCrix
 {
-    /// <summary>Common surface for the website (WebFlappyGame) and the native fallback (NativeFlappyGame).</summary>
+    /// <summary>
+    /// Common surface for the website engines (hidden Edge/Chrome, UnityWebBrowser) and the
+    /// native fallback.
+    /// Part of Flappy Crix for Gorilla Tag - made with AI (Claude by Anthropic).
+    /// </summary>
     public interface IFlappyGame : IDisposable
     {
         string ModeName { get; }
@@ -11,12 +15,16 @@ namespace FlappyCrix
         /// <summary>True once the game can take input.</summary>
         bool IsReady { get; }
 
-        /// <summary>True if this mode has failed and the controller should fall back.</summary>
+        /// <summary>True if this mode has failed and the controller should try the next one.</summary>
         bool HasFailed { get; }
         string FailureReason { get; }
 
-        /// <summary>Texture to show on the panel, or null if the mode draws its own geometry.</summary>
+        /// <summary>The picture for the screen (null until the first frame).</summary>
         Texture PanelTexture { get; }
+
+        /// <summary>Which part of PanelTexture to show (material UV scale and offset).</summary>
+        Vector2 TextureScale { get; }
+        Vector2 TextureOffset { get; }
 
         /// <summary>Width / height of the game's picture.</summary>
         float Aspect { get; }

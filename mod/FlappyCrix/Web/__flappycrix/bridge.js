@@ -15,6 +15,7 @@
  */
 (function () {
     'use strict';
+    if (window.top !== window.self) return;          // main page only, never inside iframes
     if (window.FlappyCrixBridge && window.FlappyCrixBridge.version) return;
 
     var cfg = window.__FLAPPYCRIX_CONFIG || {};
@@ -101,6 +102,22 @@
         };
     } catch (err) {}
 
+    // Browser dialogs can't be answered in VR (and would freeze the page). Show the site's
+    // own toast instead; confirm() answers "no" so nothing destructive happens unseen,
+    // prompt() (staff tools only) answers "cancel".
+    function siteToast(kind, title, body) {
+        var t = (typeof toast === 'function') ? toast : (typeof window.toast === 'function' ? window.toast : null);
+        try { if (t) t({ kind: kind, title: title, body: body }); } catch (err) {}
+    }
+    try {
+        window.alert = function (m) { siteToast('info', 'ℹ️ Message', String(m || '').slice(0, 200)); };
+        window.confirm = function (m) {
+            siteToast('warn', 'Not available in VR', String(m || '').slice(0, 120) + ' — do this on crixgamingvr.com on your PC.');
+            return false;
+        };
+        window.prompt = function () { return null; };
+    } catch (err) {}
+
     // Any code path that opens the in-page sign-in dialog -> close it, sign in on the PC.
     function watchAuth() {
         var m = document.getElementById('authModal');
@@ -119,6 +136,9 @@
     function send(name, payload) {
         var msg = name + ':' + (payload === undefined || payload === null ? '' : String(payload));
         try {
+            // Edge/Chrome engine (DevTools binding)
+            if (typeof window.flappyCrixSend === 'function') { window.flappyCrixSend(msg); return; }
+            // UnityWebBrowser engine
             if (window.uwb && typeof window.uwb.ExecuteJsMethod === 'function') {
                 window.uwb.ExecuteJsMethod('FlappyCrixEvent', msg);
                 return;
@@ -268,6 +288,7 @@
         },
 
         state: function () { return JSON.stringify(state()); },
+        reportSelfTest: function () { send('SelfTest', api.selfTest()); return 'sent'; },
         drain: function () { var q = queue.slice(); queue.length = 0; return q; },
 
         // ---- self test: what the plugin reports in the BepInEx log ----
