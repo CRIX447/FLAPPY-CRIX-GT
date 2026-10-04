@@ -1,0 +1,2142 @@
+{
+ "source": "https://github.com/CRIX447/crix-website",
+ "commit": "57e902daf7f60ead2bfaa9d0cdd80a4e844d9498 2026-10-04 16:35:28 +1100",
+ "entry": "flappycrix.html",
+ "files": [
+  {
+   "path": "_vercel/insights/script.js",
+   "bytes": 46,
+   "sha256": "0b862d9ab5f977cb261b4a61580ad3b61d4c0761b59c8ff3f172685d137317b2"
+  },
+  {
+   "path": "android-bridge.js",
+   "bytes": 11287,
+   "sha256": "281f0d6fb2f3850c11a7a0049affb154e140b17a98af7836896852b3cf26d80a"
+  },
+  {
+   "path": "api.json",
+   "bytes": 99,
+   "sha256": "9d2402a94e79db53015b1056b4566ebb6602e1859af125928dc51a715253a1cf"
+  },
+  {
+   "path": "birthday.js",
+   "bytes": 5400,
+   "sha256": "8f1ec9b4c23ffc62ecf5879bddac820fd64119974e95284696e9aa95abb65f59"
+  },
+  {
+   "path": "cosmetic-art.js",
+   "bytes": 40875,
+   "sha256": "d64cb69789ad66c3e6a3199fecc6642b51148d91598cfd67d505d894b3e0a691"
+  },
+  {
+   "path": "filter.js",
+   "bytes": 9233,
+   "sha256": "d32a43c8c0991bf3f316fb3c21e0db7babdf3b8c7dbe11088e20f6e38236562d"
+  },
+  {
+   "path": "flappycrix.html",
+   "bytes": 1044453,
+   "sha256": "7510fa28e7508720a0a88cf74c4147a4f6d5ba214b18fec78fea964b06cfdc7a"
+  },
+  {
+   "path": "img/67.gif",
+   "bytes": 444382,
+   "sha256": "af1c0c04a64f177ffb3cd5cb580b27cf210c2ce2d94c8bf21308ed57000e68c0"
+  },
+  {
+   "path": "img/67.mp3",
+   "bytes": 16748,
+   "sha256": "dfab537776723dcaa288ba33b8c2077423def15668881867909e1f793ea0c882"
+  },
+  {
+   "path": "img/ach.mp3",
+   "bytes": 47616,
+   "sha256": "d5dfb245ae9d9b55ca32333d4d74d4b19e609db56a20de93c7ec86f2119cf69c"
+  },
+  {
+   "path": "img/bird-bare.png",
+   "bytes": 45861,
+   "sha256": "043ca329b2bcdda68062a02f6413a13623068874f504586934ae52d84d698f7c"
+  },
+  {
+   "path": "img/bird.png",
+   "bytes": 47285,
+   "sha256": "db7b6f7d9dcff7cafef2cefac80561d04ccd8e91ffe22733d86a1e89dd2d5e14"
+  },
+  {
+   "path": "img/boom.gif",
+   "bytes": 50096,
+   "sha256": "cbd33ed952f2ef3bd4cfaf6e955535545b39b67b5dadb66f9196e04993c6b9c5"
+  },
+  {
+   "path": "img/boom.mp3",
+   "bytes": 27728,
+   "sha256": "1561f28f79163dcfad2dc7ba759e5ed43e97fa7793ddd5b8883bbd166a31acec"
+  },
+  {
+   "path": "img/carry.mp3",
+   "bytes": 10560,
+   "sha256": "bab708cf7ceb3be73382af2826683bcaa5f0ac91a84be9947fc27d47fa8de78a"
+  },
+  {
+   "path": "img/christmasmusic.mp3",
+   "bytes": 779107,
+   "sha256": "55775d538d65cb58cc26ce18d0d9f78bd2260f8b99b652172de4a6a110d3de85"
+  },
+  {
+   "path": "img/click.mp3",
+   "bytes": 5015,
+   "sha256": "6cddde09455648d0a00d7ef244701b0aa77e3fdd00c617b212dbcda9706af566"
+  },
+  {
+   "path": "img/coin-still.png",
+   "bytes": 4121,
+   "sha256": "9a6ce4f8058cf22a77c0c25ff16bd8c255f3f99e63be1346a53d003e4eb7ebe0"
+  },
+  {
+   "path": "img/coin-still@2x.png",
+   "bytes": 11366,
+   "sha256": "669db4283591eb4730d464c491329f0bd68ee642b47f1489e154e8bf9581495d"
+  },
+  {
+   "path": "img/coin.mp3",
+   "bytes": 18390,
+   "sha256": "51a19667f6dea88963b7fc7d64580bbe46b286aeeb7c0cb1a2ce8bf1634ee833"
+  },
+  {
+   "path": "img/countdown.mp3",
+   "bytes": 70703,
+   "sha256": "1faec90556c6cadba473aeff2a01e8f010bbf46e2fd182c93b3b89f38f07cb51"
+  },
+  {
+   "path": "img/crixblox.png",
+   "bytes": 48148,
+   "sha256": "1010d28a286810a5edf011333d9a864212919d3fffaf19e8d5d4a51103c007e7"
+  },
+  {
+   "path": "img/crixgamingvr.png",
+   "bytes": 47792,
+   "sha256": "014dda7c97017ca3ce06e6d4e78d1ae1b22235730a1ddafc4963f232320bf2da"
+  },
+  {
+   "path": "img/crixreacts.png",
+   "bytes": 55489,
+   "sha256": "413c3751f82e1379f81cb5e36761a24f50751213546414f614523bbcec51bc4a"
+  },
+  {
+   "path": "img/crixsmp.png",
+   "bytes": 4014,
+   "sha256": "783bfcd1181e7eff73d9de52ed8d8e51d4693f4f4e2a79aa7aea676f5156b399"
+  },
+  {
+   "path": "img/death.mp3",
+   "bytes": 60186,
+   "sha256": "13fcfc4ddce1548078fd6584b18ac1fce322b49ef6035e270ac6081ce1c91451"
+  },
+  {
+   "path": "img/deliver.mp3",
+   "bytes": 29280,
+   "sha256": "06dc286a22a3e34ce1484a9400be59a8d6c28d4c9681c1cabc1fd5b3a562f554"
+  },
+  {
+   "path": "img/emoji/72/1f192.png",
+   "bytes": 1658,
+   "sha256": "a044959873517f1caa496912a89cecc254dc8e5c6f704a71c3e976ba1c2eb59e"
+  },
+  {
+   "path": "img/emoji/72/1f195.png",
+   "bytes": 1663,
+   "sha256": "681dd679ddae508a0976a9d2f80026a5ee5023bfafd06c3d6669a437db95a8a7"
+  },
+  {
+   "path": "img/emoji/72/1f197.png",
+   "bytes": 1755,
+   "sha256": "3ac9677fe8264bfb5dd0fdbbffac38ef763af5329ef1a23c9cf52d11ce9f8dcc"
+  },
+  {
+   "path": "img/emoji/72/1f308.png",
+   "bytes": 1922,
+   "sha256": "1452ff14208e654e094948fc3b5d8abc5a181cdc36298097cc3ed603fbfdd268"
+  },
+  {
+   "path": "img/emoji/72/1f30a.png",
+   "bytes": 2181,
+   "sha256": "537169c7475394c535bfd9f59ad74e0330e4274e7f500aa16162b4f717165015"
+  },
+  {
+   "path": "img/emoji/72/1f30d.png",
+   "bytes": 2539,
+   "sha256": "d8d22ce177559ad7a40ebc1d1992715ba3a7253aef7efdd3df98dd828ca89db6"
+  },
+  {
+   "path": "img/emoji/72/1f310.png",
+   "bytes": 2245,
+   "sha256": "a3bfdbdbb73a0c0e3034d5b0885671167bbd352e76c9ad613ce04d5d40a693c6"
+  },
+  {
+   "path": "img/emoji/72/1f319.png",
+   "bytes": 1679,
+   "sha256": "f3f6e940cd0b6d244e20986f08f74ac0b6628665fad3a0375af1de2667c1fb44"
+  },
+  {
+   "path": "img/emoji/72/1f31f.png",
+   "bytes": 2027,
+   "sha256": "d7e78d17651ea058f7223687ef96a95e29bbc3e242e8ad00c72f2db806a04c2e"
+  },
+  {
+   "path": "img/emoji/72/1f32d.png",
+   "bytes": 2048,
+   "sha256": "e8a4274f0ab87bfb8dd76f9308cba9098e7e506d9a74979ee6f589653569c861"
+  },
+  {
+   "path": "img/emoji/72/1f32e.png",
+   "bytes": 2543,
+   "sha256": "fa454686f41db5c7b9ce66ec3bdbc9d1854b74729c10e99d6fdab2f0a5c7cac2"
+  },
+  {
+   "path": "img/emoji/72/1f336.png",
+   "bytes": 1931,
+   "sha256": "ff70a4cec56df5c940a2e626ac592540e5e4d2a9438c9f521be423f617758306"
+  },
+  {
+   "path": "img/emoji/72/1f338.png",
+   "bytes": 2044,
+   "sha256": "82057ae0746d132ab0c7beee41f1457be57b8c752de6177611c997566b9d29d6"
+  },
+  {
+   "path": "img/emoji/72/1f340.png",
+   "bytes": 2144,
+   "sha256": "33970e94dcd4f956225e562775d66a53fff360cadbc61073d1b869f8e969237c"
+  },
+  {
+   "path": "img/emoji/72/1f342.png",
+   "bytes": 2298,
+   "sha256": "a2769574b0bc8b153ba5afef930c169be8ebaee3d1130951ef588bee3f19326a"
+  },
+  {
+   "path": "img/emoji/72/1f349.png",
+   "bytes": 2207,
+   "sha256": "7ce83d5927f6b7ff36a0bebb838747bc83696bc2d2f32897b495a892edd4c6bf"
+  },
+  {
+   "path": "img/emoji/72/1f34c.png",
+   "bytes": 2073,
+   "sha256": "c3e531960661148d4954d975725b178175e46cbf67ac104439fb1d4f0e492413"
+  },
+  {
+   "path": "img/emoji/72/1f34e.png",
+   "bytes": 2152,
+   "sha256": "63ff5ed370c13272e8235825b101de639ce02b2d8b5c469ea9dda29c39f29883"
+  },
+  {
+   "path": "img/emoji/72/1f353.png",
+   "bytes": 2229,
+   "sha256": "8affe87085f1b3f85731a9f54da8f38da58fb9d8877c84a9831a0fae144bab1c"
+  },
+  {
+   "path": "img/emoji/72/1f354.png",
+   "bytes": 2761,
+   "sha256": "3074491450bbbb6a0ae69b3b5983b718a950d582fa0ce11cf53612b84862f4e7"
+  },
+  {
+   "path": "img/emoji/72/1f355.png",
+   "bytes": 2268,
+   "sha256": "9bd8fb00eb3de9a80121a9bbe886c4083573ebb71e0b492b458f21b9ebd0da90"
+  },
+  {
+   "path": "img/emoji/72/1f35f.png",
+   "bytes": 2441,
+   "sha256": "9ab35cd03a4297a406c258419936777fc9885cd00a988fdd7005994d93f3137c"
+  },
+  {
+   "path": "img/emoji/72/1f369.png",
+   "bytes": 2289,
+   "sha256": "14e0b205c66484d9fe4ddbe74f81f152c6e9d2240fa842449970aa7e14fce730"
+  },
+  {
+   "path": "img/emoji/72/1f36a.png",
+   "bytes": 2434,
+   "sha256": "7e0394760090ebb62f534ce6e653f45cec7dcadf1ae767e661a1406876652ae6"
+  },
+  {
+   "path": "img/emoji/72/1f36b.png",
+   "bytes": 2045,
+   "sha256": "7f3edbdefad4a14d2eeba19018f423f3cf2b90927fbbf5cc946840ce8c753c86"
+  },
+  {
+   "path": "img/emoji/72/1f36c.png",
+   "bytes": 2042,
+   "sha256": "c1edb04f42eef8f68ab280cb76767dbda1a1c8b13aa5af4363bae13ddb7041dd"
+  },
+  {
+   "path": "img/emoji/72/1f36d.png",
+   "bytes": 2827,
+   "sha256": "8c91a423f44f90d6424c0ca4a47e4029d013aaa0bfee670322c58715783ce2fa"
+  },
+  {
+   "path": "img/emoji/72/1f370.png",
+   "bytes": 2354,
+   "sha256": "820f4c1fdc477f842b023634362a6dbcb50393d3536df2ee4077d1d2e8434c8e"
+  },
+  {
+   "path": "img/emoji/72/1f37f.png",
+   "bytes": 2822,
+   "sha256": "254227d44254fb8ac8ea24c323d998c4008736ea072f84134fba3bde9846362e"
+  },
+  {
+   "path": "img/emoji/72/1f381.png",
+   "bytes": 2284,
+   "sha256": "230c26ac1e897251bec1329c70a3f2b7b53c4dd987a9ad9cd9d68a8bb6acaf09"
+  },
+  {
+   "path": "img/emoji/72/1f382.png",
+   "bytes": 2474,
+   "sha256": "daba92578d41034b1d01233e425c731c4e226b7d6c2e4cd4ac1bd6afe5e19c00"
+  },
+  {
+   "path": "img/emoji/72/1f383.png",
+   "bytes": 2087,
+   "sha256": "309a05bb77bc6b0db8043a452bb4a438967cf3d486113dc797d6f52558a93222"
+  },
+  {
+   "path": "img/emoji/72/1f384.png",
+   "bytes": 2687,
+   "sha256": "f1007420a957f6f33d80596fc32329d71e39f18ca0a201bafef36d69ab2b7b47"
+  },
+  {
+   "path": "img/emoji/72/1f388.png",
+   "bytes": 1679,
+   "sha256": "29234b4bdec9ba481030717bd141e149254554794a6f874d418a8acc1e92b8b6"
+  },
+  {
+   "path": "img/emoji/72/1f389.png",
+   "bytes": 3050,
+   "sha256": "d753d1447c6ec5f805db90f1e8957fb72203c0206a6f86d1ad87d8dd126c6045"
+  },
+  {
+   "path": "img/emoji/72/1f38a.png",
+   "bytes": 7651,
+   "sha256": "ddc9c0b3d55739bd5f6e73a419a38b39bb9c9c8a29f96bb7cde1503614d05ab7"
+  },
+  {
+   "path": "img/emoji/72/1f399.png",
+   "bytes": 2386,
+   "sha256": "c8c8e707bf8ab619e2ac7bbe6de6f7e923c43842ff93b9c9e3bd76d96dcd7aac"
+  },
+  {
+   "path": "img/emoji/72/1f3a4.png",
+   "bytes": 1899,
+   "sha256": "811825a4ce5932130a8180d716a2cbf88957d0bac4726e7469fab082624b83fd"
+  },
+  {
+   "path": "img/emoji/72/1f3a7.png",
+   "bytes": 2076,
+   "sha256": "706bf6b162d8ad5f6df863b745d3f500c79bf9c0879439a2cc2f77a365be5450"
+  },
+  {
+   "path": "img/emoji/72/1f3a8.png",
+   "bytes": 2413,
+   "sha256": "a444eaff6829902a64596b7a2b4085aa6777327ea31fb4bed59a81adf1f2909f"
+  },
+  {
+   "path": "img/emoji/72/1f3ac.png",
+   "bytes": 1833,
+   "sha256": "762846afae8d71beff847e76c7cb48dd60d106f2aac0f051d8fa5a074afd1ec2"
+  },
+  {
+   "path": "img/emoji/72/1f3ae.png",
+   "bytes": 1959,
+   "sha256": "4294a231a8a09e76822598d0b97bb0b63238c880ffe40a7698a46fad5b10666f"
+  },
+  {
+   "path": "img/emoji/72/1f3af.png",
+   "bytes": 2372,
+   "sha256": "3092b39a5221cfb4f7d6f0f0e68e4aa9be4c0cfda54e2bf568db95c170c83b6f"
+  },
+  {
+   "path": "img/emoji/72/1f3b2.png",
+   "bytes": 2042,
+   "sha256": "278220315f9eb634a8a2e994bb7d0d1a9af67f4d44c5c1fa28a91481b634bdf7"
+  },
+  {
+   "path": "img/emoji/72/1f3b5.png",
+   "bytes": 1482,
+   "sha256": "e1ff0247eeae9b020c615120d813f0203a614ca84109cb6602c3e64cf21c2b85"
+  },
+  {
+   "path": "img/emoji/72/1f3b6.png",
+   "bytes": 1816,
+   "sha256": "e8580192be95ff22cdb1ae7003d5a8005e34f2d02559eaf7ce5806f120a6dd92"
+  },
+  {
+   "path": "img/emoji/72/1f3b8.png",
+   "bytes": 2303,
+   "sha256": "a0479a5bf001a7298532377a940a3e82301a00c11f13e45451bf2c449015b79c"
+  },
+  {
+   "path": "img/emoji/72/1f3be.png",
+   "bytes": 2825,
+   "sha256": "55d91fd1b05cc6eb54f9a1ca2aa736b53cb409bddd31b041457fbeaf3db0fcb1"
+  },
+  {
+   "path": "img/emoji/72/1f3c0.png",
+   "bytes": 2253,
+   "sha256": "d1d3aab76f8398476463517d22ab7949d80d5e6cd0a52152e99c08707d9074e2"
+  },
+  {
+   "path": "img/emoji/72/1f3c1.png",
+   "bytes": 2351,
+   "sha256": "55bc0a60254216567d1536d6974a31e66dba7ff53f59d1b07683c337825e4427"
+  },
+  {
+   "path": "img/emoji/72/1f3c5.png",
+   "bytes": 2018,
+   "sha256": "bf169877a136579e8ee5953c5c980a1c48e073d6755a28062050b9ffe4fffecc"
+  },
+  {
+   "path": "img/emoji/72/1f3c6.png",
+   "bytes": 2330,
+   "sha256": "f18e89a04e350f96551c8e37e6b18afd612b5557e9cfe8637b1f2e86f6e71eb5"
+  },
+  {
+   "path": "img/emoji/72/1f3c8.png",
+   "bytes": 2331,
+   "sha256": "765d56d491cec879506b347d0dc453e1cd4bd3bc9a8be47ace279155421983e2"
+  },
+  {
+   "path": "img/emoji/72/1f3df.png",
+   "bytes": 2794,
+   "sha256": "d765824bda31b0776c5ad7bcf8a77ac62a10f6b39cf38316173aee8f39596fc0"
+  },
+  {
+   "path": "img/emoji/72/1f3f7.png",
+   "bytes": 1979,
+   "sha256": "53464e928f5dd7d0b05ae82a248b0663d875c1f021cfc91276c2a3530013a198"
+  },
+  {
+   "path": "img/emoji/72/1f40c.png",
+   "bytes": 2165,
+   "sha256": "51e961b9cc5bc28b1ec440788b87a77c6510da246309eda2265abadbe01ac658"
+  },
+  {
+   "path": "img/emoji/72/1f40d.png",
+   "bytes": 2238,
+   "sha256": "6af3ae6a0a535e3bb517e5aa3c4db301371e054dc2ab5540be85f33194eca247"
+  },
+  {
+   "path": "img/emoji/72/1f414.png",
+   "bytes": 2093,
+   "sha256": "de670510c20783f813c8584653536c8d47824cde4a0a90a2047c5765520d7660"
+  },
+  {
+   "path": "img/emoji/72/1f418.png",
+   "bytes": 1951,
+   "sha256": "c05bdaf567e7d0a4b5bb2cae60479a0c8a592e20c3daf35b211965a429b36888"
+  },
+  {
+   "path": "img/emoji/72/1f419.png",
+   "bytes": 2500,
+   "sha256": "28a374198453580dc92a3a76d6715fe926e710535dfb21b713b6599de4c265d6"
+  },
+  {
+   "path": "img/emoji/72/1f41b.png",
+   "bytes": 2250,
+   "sha256": "eeae81e2f0d6e56eea134a4a10f714877dd781d4212e60ee0c547bc40d8a20b3"
+  },
+  {
+   "path": "img/emoji/72/1f41d.png",
+   "bytes": 2602,
+   "sha256": "1ceb188623cfbd5cdf2e96f38a0139d9c46d2c932c12f1c970f10cc891494e5d"
+  },
+  {
+   "path": "img/emoji/72/1f422.png",
+   "bytes": 2040,
+   "sha256": "cab1e569474e997f1981ee0be7b0d1a248277baeff03abec2edcbd6391e73aee"
+  },
+  {
+   "path": "img/emoji/72/1f423.png",
+   "bytes": 1873,
+   "sha256": "e810bf0c7239b8af574bbf76b91c517e71ea05a9736ebc0d6d4f82a68a701d06"
+  },
+  {
+   "path": "img/emoji/72/1f424.png",
+   "bytes": 1702,
+   "sha256": "58c37ae9d042c2f3a95f9e770970ba85866034f154860111e689c5370c44be67"
+  },
+  {
+   "path": "img/emoji/72/1f426.png",
+   "bytes": 1863,
+   "sha256": "468d0c85b46673e3cb9c9348fe3945a02233cb1bceca1f91d01728aa53a234e8"
+  },
+  {
+   "path": "img/emoji/72/1f427.png",
+   "bytes": 1996,
+   "sha256": "1a04b3b3a97b8bc9709f9b4a02657a97c0601f8af65f30c861a2b571fc17d9d1"
+  },
+  {
+   "path": "img/emoji/72/1f428.png",
+   "bytes": 2064,
+   "sha256": "12b61e2d530a137c54de9fb470560ec664b8b9ede710bc1760a9199e5e65afc5"
+  },
+  {
+   "path": "img/emoji/72/1f42c.png",
+   "bytes": 2046,
+   "sha256": "6fff9782cc2ef2f92c7b036d6142cf3e425bda2b92475859ef9f2ef57d27e630"
+  },
+  {
+   "path": "img/emoji/72/1f42d.png",
+   "bytes": 1980,
+   "sha256": "6d30fe0d2f445b76e9005185bb051fbd0ce4161685106ef5d3f34ebba4350495"
+  },
+  {
+   "path": "img/emoji/72/1f42e.png",
+   "bytes": 2146,
+   "sha256": "da555778bf3718c69aa8bdd7cd88c8a2502a81f1c8acca9171d50e1f215484a7"
+  },
+  {
+   "path": "img/emoji/72/1f42f.png",
+   "bytes": 2695,
+   "sha256": "224df8f1a6bd56d9226b72c23cdb12584f146c9ec414b585980dddaa3af0ac08"
+  },
+  {
+   "path": "img/emoji/72/1f430.png",
+   "bytes": 2237,
+   "sha256": "08792b4d0f7148c4e6924a2cac6063bd62460457a3ec31f4f101a8be9e7917d3"
+  },
+  {
+   "path": "img/emoji/72/1f431.png",
+   "bytes": 2228,
+   "sha256": "84cddcce4b2a51ca6c2d5a418618b06b1da88f1765a355f287db868ab027fefe"
+  },
+  {
+   "path": "img/emoji/72/1f435.png",
+   "bytes": 1860,
+   "sha256": "55d3b65f58dbdca6b4359f3687269c396b7c5470b249c7a8eaafd8266a3a17aa"
+  },
+  {
+   "path": "img/emoji/72/1f436.png",
+   "bytes": 2138,
+   "sha256": "0a085602a7e44e04fdb9c6763f32978b9b102c68b8d80b0c0426db3aabfcd5e0"
+  },
+  {
+   "path": "img/emoji/72/1f437.png",
+   "bytes": 2141,
+   "sha256": "e97eacf419096d0fbfd47d06478c52f916adf7a345b14c050582d94648a35eed"
+  },
+  {
+   "path": "img/emoji/72/1f438.png",
+   "bytes": 2008,
+   "sha256": "2c3efbc947c4dcdc157ac56abe39dc9538fc88e70468e2b810e147fa5c887926"
+  },
+  {
+   "path": "img/emoji/72/1f43b.png",
+   "bytes": 1976,
+   "sha256": "5e3ba7b71284c36ed4cae543f581d04539b0675b98e5d27b8599be01ff44d496"
+  },
+  {
+   "path": "img/emoji/72/1f43c.png",
+   "bytes": 2241,
+   "sha256": "59f321deac9094290ced35286fda6351bc731694775bfd040514f589f69dd8c4"
+  },
+  {
+   "path": "img/emoji/72/1f440.png",
+   "bytes": 1819,
+   "sha256": "428d3aa2afb5e5317e91f44ce1b45da05c5db0b283c87bd03f9477c4c7dcf63e"
+  },
+  {
+   "path": "img/emoji/72/1f446.png",
+   "bytes": 1733,
+   "sha256": "28837e51b97ab8c60d87cffff2cecbbd5834ad08da34c5c3041f25fc03b35458"
+  },
+  {
+   "path": "img/emoji/72/1f447.png",
+   "bytes": 1741,
+   "sha256": "7e38f485734e0ff58a58204cd7c17fd4f1e095073e06c36a065cc1b49f8f404f"
+  },
+  {
+   "path": "img/emoji/72/1f448.png",
+   "bytes": 1698,
+   "sha256": "1106951b842a0ad90c7d1ef100fded1e1e63444047df0a4d1357d765c97dab15"
+  },
+  {
+   "path": "img/emoji/72/1f449.png",
+   "bytes": 1699,
+   "sha256": "8c8c53f0719a79ee952c7287932e4043f653e8a463df498ae4ed5f93851080c8"
+  },
+  {
+   "path": "img/emoji/72/1f44a.png",
+   "bytes": 1957,
+   "sha256": "c037cc3db76340477bd11ee189ab96f6edcc0ae62758c6f9114858ea6a416537"
+  },
+  {
+   "path": "img/emoji/72/1f44b.png",
+   "bytes": 2401,
+   "sha256": "8a06b43d2762094a2e83d992d6515f27aca96e9ab8c3df8235304d341636e3c6"
+  },
+  {
+   "path": "img/emoji/72/1f44c.png",
+   "bytes": 1946,
+   "sha256": "3836681f6d54e199158304634179e79c13fc2b45b7db897793ededbb78c0cb90"
+  },
+  {
+   "path": "img/emoji/72/1f44d.png",
+   "bytes": 2019,
+   "sha256": "8d29258b3ef118d0a1970b06fef328b417461d73391698f1332b569acc30333b"
+  },
+  {
+   "path": "img/emoji/72/1f44e.png",
+   "bytes": 2020,
+   "sha256": "f1876e5dded8bcf2666799ad2928f34bf64bf4d986b0924135ab362effcf0f25"
+  },
+  {
+   "path": "img/emoji/72/1f44f.png",
+   "bytes": 2272,
+   "sha256": "b432f2abe40a79f3a05ca6a8338112b1e1e429d8ce29a0b93a0cf41df5ccd65d"
+  },
+  {
+   "path": "img/emoji/72/1f450.png",
+   "bytes": 2096,
+   "sha256": "72b69fc6dd093ac6a55f551c39e60a29f2d2249de7ba41f1ea347def5e4552fd"
+  },
+  {
+   "path": "img/emoji/72/1f451.png",
+   "bytes": 2587,
+   "sha256": "d5af75979350a24c8be7ead8c38e3de413c377711b68ef7e7835bcbb0d189dce"
+  },
+  {
+   "path": "img/emoji/72/1f462.png",
+   "bytes": 1892,
+   "sha256": "c1bfd0d293332e81bf7e4dd2aa0fc33e107e5e123c74e69c68c4be7af88cd631"
+  },
+  {
+   "path": "img/emoji/72/1f464.png",
+   "bytes": 1588,
+   "sha256": "cbe2586440821cd341832344470db32f602ba28d9f388076b3710c98c11b8972"
+  },
+  {
+   "path": "img/emoji/72/1f465.png",
+   "bytes": 1690,
+   "sha256": "1504786c8a1ea14be297f439927ec71e8680076ce70edd9228f3f74ca19489e7"
+  },
+  {
+   "path": "img/emoji/72/1f479.png",
+   "bytes": 3027,
+   "sha256": "4ba9ca06af8c79f95325fb9ee298af7af02f0c66cb4819f15cc791dc8fb8fb5d"
+  },
+  {
+   "path": "img/emoji/72/1f47a.png",
+   "bytes": 2733,
+   "sha256": "3f91fe78e29256b8630f9c47060d9b9aaa3ace8356b1a28fd4529b9297b88d05"
+  },
+  {
+   "path": "img/emoji/72/1f47b.png",
+   "bytes": 2193,
+   "sha256": "aa48df2296b166878ce6854afa275962619f1325fda4840b33cb4ba8c374fe6f"
+  },
+  {
+   "path": "img/emoji/72/1f47d.png",
+   "bytes": 1969,
+   "sha256": "4cb0ecd89f4f20b4250c112baa09074181299f5d657d0ca25cd3204d7a4c9a45"
+  },
+  {
+   "path": "img/emoji/72/1f47e.png",
+   "bytes": 1634,
+   "sha256": "d24c724130474a7f7ebdad3f3269a908c0b992558e1f8d989eb10b06f121dc01"
+  },
+  {
+   "path": "img/emoji/72/1f47f.png",
+   "bytes": 6067,
+   "sha256": "e458d40300f31fff0f34d72dc2fc2368244ca20ff80d39834a028615f653d70e"
+  },
+  {
+   "path": "img/emoji/72/1f480.png",
+   "bytes": 1915,
+   "sha256": "11f90b0a852f8dc4a388ad170c57bb8c50d8f8b80452473f6e6360e9ff427b99"
+  },
+  {
+   "path": "img/emoji/72/1f48e.png",
+   "bytes": 1935,
+   "sha256": "b7302d476f6daafa62655672e6bf0c3c202a23acf3654e4117abf0e2a15eddb8"
+  },
+  {
+   "path": "img/emoji/72/1f493.png",
+   "bytes": 2479,
+   "sha256": "bee17d1b1cd75fec67f30397fd57646f9206ef1de8be457e402dacc94e8e9453"
+  },
+  {
+   "path": "img/emoji/72/1f494.png",
+   "bytes": 1989,
+   "sha256": "e79075a62de09fb3c5fed893c5efb2c75b679513eae6d9d83e97503ffbc95a1c"
+  },
+  {
+   "path": "img/emoji/72/1f495.png",
+   "bytes": 1988,
+   "sha256": "84e6e962a335349631b35794e3a56104bdb3451f02ba321b7ea8d7363c667477"
+  },
+  {
+   "path": "img/emoji/72/1f496.png",
+   "bytes": 2283,
+   "sha256": "4092ddbd0fa4e8c809d26114ceeb0a8b0cff7a28e014b27947e4f45e5d8dc2e9"
+  },
+  {
+   "path": "img/emoji/72/1f497.png",
+   "bytes": 2154,
+   "sha256": "ed474836255e02485f33f8ed98b440e5b982e96f3fb946381c4dd1f84d8cfe2e"
+  },
+  {
+   "path": "img/emoji/72/1f498.png",
+   "bytes": 2108,
+   "sha256": "e1fb250b45038fa26fea9f12aa27e39d2d42c7f44512dc01a01121acd8529185"
+  },
+  {
+   "path": "img/emoji/72/1f499.png",
+   "bytes": 1867,
+   "sha256": "e366d62b617a4e210bc719a5bdbb208cfbeba88f6d1d2a70af736e1af78a0c49"
+  },
+  {
+   "path": "img/emoji/72/1f49a.png",
+   "bytes": 1865,
+   "sha256": "e363731ef6face5b17f95e6ea88d36ef072ba55a7d673f84e6079288aa1dc1b5"
+  },
+  {
+   "path": "img/emoji/72/1f49b.png",
+   "bytes": 1813,
+   "sha256": "0f12537f1c28531b9c940ec72388be9ecb2458271f117fcce7612a19439deb21"
+  },
+  {
+   "path": "img/emoji/72/1f49c.png",
+   "bytes": 1836,
+   "sha256": "0c26da5fd2fe887b2717045d7f325981bf2597e1a290f1cca01d4baf09d5971f"
+  },
+  {
+   "path": "img/emoji/72/1f49d.png",
+   "bytes": 2222,
+   "sha256": "c4df1dcd781701bafb31c5e441c455eb6796292986b1238247da9ac0c67ff25e"
+  },
+  {
+   "path": "img/emoji/72/1f49e.png",
+   "bytes": 2477,
+   "sha256": "62b0e826cab43bdd0c4a34a4feb274daf8235b1c8082f5d20c1c502f29d5f7f0"
+  },
+  {
+   "path": "img/emoji/72/1f4a2.png",
+   "bytes": 1934,
+   "sha256": "14e397158be484a828658b918810bd1399e9c553e32866162d82e06792977321"
+  },
+  {
+   "path": "img/emoji/72/1f4a4.png",
+   "bytes": 1756,
+   "sha256": "81e0d4b795b18d95da9012d1797d51a4d36ae3d7ad195ecb6332746c84f368b2"
+  },
+  {
+   "path": "img/emoji/72/1f4a5.png",
+   "bytes": 2673,
+   "sha256": "96a768a3dc588363b1b98fbccf92bb7cf7120f65c55d94702d809134855172eb"
+  },
+  {
+   "path": "img/emoji/72/1f4a6.png",
+   "bytes": 1902,
+   "sha256": "951a3493e20f2fa1ac7f21de01dd9ce81a2fc4751111458811e7628765d42f12"
+  },
+  {
+   "path": "img/emoji/72/1f4a8.png",
+   "bytes": 2015,
+   "sha256": "095fbdba4791b6fb0778ca82ee0db831bcfb5eb8a0f7d42f4038964a3300b887"
+  },
+  {
+   "path": "img/emoji/72/1f4a9.png",
+   "bytes": 1922,
+   "sha256": "dbe211af6d879c7e4fd7f93c902bce8606604e5c96b391873da730a3649cef48"
+  },
+  {
+   "path": "img/emoji/72/1f4aa.png",
+   "bytes": 1991,
+   "sha256": "a644a8406f763b024b18de67ee8c5b232943e6c6e861472b6d72d23e172ab24a"
+  },
+  {
+   "path": "img/emoji/72/1f4ab.png",
+   "bytes": 2051,
+   "sha256": "953c0d359b5b45fce8ae4ac77fcbc544e3baf82e191a507eb176cd84f1ea3e5d"
+  },
+  {
+   "path": "img/emoji/72/1f4ac.png",
+   "bytes": 1875,
+   "sha256": "ad4f25cd81a8a7ee409f76fec5e9bd6d75d68c2cef08e1dd48aa76f9ecceb16e"
+  },
+  {
+   "path": "img/emoji/72/1f4af.png",
+   "bytes": 2206,
+   "sha256": "0417aa9226c30e3532ef6d36bd2935ce145dcfb97d4ae5f0b99f9dc0ddecdd60"
+  },
+  {
+   "path": "img/emoji/72/1f4b0.png",
+   "bytes": 2000,
+   "sha256": "c02d2bc016a9af34419631bba0ab34e53f7a0f204eaebdd6f903ec0cffcbe0cf"
+  },
+  {
+   "path": "img/emoji/72/1f4b8.png",
+   "bytes": 2548,
+   "sha256": "6f47dcc5e9de1f0e1db64ccb3d2d9c2a79a4ba2af9b3a441a226fdbdee3f2f1f"
+  },
+  {
+   "path": "img/emoji/72/1f4bb.png",
+   "bytes": 1784,
+   "sha256": "302fa1625c7e600f9e6a7c5c5583a8d217f0918826b87112eb14d973391f0836"
+  },
+  {
+   "path": "img/emoji/72/1f4be.png",
+   "bytes": 1197,
+   "sha256": "1b674082441b33404ef4d091587cb947393d009a72002d053ca6ea02b6c71013"
+  },
+  {
+   "path": "img/emoji/72/1f4c4.png",
+   "bytes": 1226,
+   "sha256": "9ac8059877011d51a947b268d6863ace52486b5d0b8e0b840bbf4534fb4db598"
+  },
+  {
+   "path": "img/emoji/72/1f4cb.png",
+   "bytes": 1515,
+   "sha256": "c79a4df64c112e41795edc4e0e109c0fa6ba50f4f17d583cabcc873464693966"
+  },
+  {
+   "path": "img/emoji/72/1f4e2.png",
+   "bytes": 2333,
+   "sha256": "df2d03b6266f0bef8d3bcde326a7af85e0963454a0a3602f738423895ab68bbf"
+  },
+  {
+   "path": "img/emoji/72/1f4e4.png",
+   "bytes": 1698,
+   "sha256": "57b6b8f5bd7f39287726a836f969740c02f939d931ab69b7b5182198336d13d6"
+  },
+  {
+   "path": "img/emoji/72/1f4e7.png",
+   "bytes": 1640,
+   "sha256": "86ceea39274e3dbe42d3571422b9b38e492360b77a22a4d3dcfa587f23bc2c11"
+  },
+  {
+   "path": "img/emoji/72/1f4f1.png",
+   "bytes": 1618,
+   "sha256": "3a27a3185cc245784b27f94d1021f536f7a54a148c9be78708e9f8692cfaa5ee"
+  },
+  {
+   "path": "img/emoji/72/1f4f2.png",
+   "bytes": 1801,
+   "sha256": "8ca348847e756b401b456b8b2b4addd02e76749ec6f3e44edffe161a0d9d4bec"
+  },
+  {
+   "path": "img/emoji/72/1f4f4.png",
+   "bytes": 1611,
+   "sha256": "638ada91e61b7c443139451e5f4ec72dcbfe26725b2d44fe171336df3ebb046b"
+  },
+  {
+   "path": "img/emoji/72/1f4f6.png",
+   "bytes": 1216,
+   "sha256": "3f9333f1168b3be8b383cd4b48c784b9ddd6791c08039a55b06de3e2e1d57d2b"
+  },
+  {
+   "path": "img/emoji/72/1f4f8.png",
+   "bytes": 2360,
+   "sha256": "9a9b329269814ccd90081e9dabf2cd944fc6a7aa7e51e803d0f9476111442757"
+  },
+  {
+   "path": "img/emoji/72/1f4fa.png",
+   "bytes": 1834,
+   "sha256": "83a52c3eecf1dea73da31b9a26cf9cbdf94f0c13185e5ae0610a4e727302f6ee"
+  },
+  {
+   "path": "img/emoji/72/1f504.png",
+   "bytes": 1688,
+   "sha256": "460908b2f8d9115ee2a692e7e0523ae4cdfe8965a73ec5505d82c436edc7e7ef"
+  },
+  {
+   "path": "img/emoji/72/1f507.png",
+   "bytes": 2255,
+   "sha256": "a7a5db4ac44727867833caa7785d17a3f8114fd96e00c506cefc7a1f963f1a10"
+  },
+  {
+   "path": "img/emoji/72/1f50a.png",
+   "bytes": 2562,
+   "sha256": "87f1763dd32189f339740f3b9b8f1dbf99a88471e20747a9716a1b18b68d5df4"
+  },
+  {
+   "path": "img/emoji/72/1f510.png",
+   "bytes": 2210,
+   "sha256": "c800ec00727f1ac828b49a77c0135a1a052e728b381738b55390a7db9f318a0c"
+  },
+  {
+   "path": "img/emoji/72/1f511.png",
+   "bytes": 1927,
+   "sha256": "b643d6878cc524db937b422d018665a76f67577bc119790e72a04204ac28a87b"
+  },
+  {
+   "path": "img/emoji/72/1f512.png",
+   "bytes": 1747,
+   "sha256": "1ba1c191d40896d16df770d3923a65bf315ce9836c6fb72b224521614b5165b5"
+  },
+  {
+   "path": "img/emoji/72/1f513.png",
+   "bytes": 1814,
+   "sha256": "028f3fabb7f2ab122c05339d0024a4b80bc7dd79ec748f7997fd8e495087b3de"
+  },
+  {
+   "path": "img/emoji/72/1f514.png",
+   "bytes": 2008,
+   "sha256": "dd3aa53d7ad48a52ed9367b2fb56949cdbe3fd9c3620361612ef2d62d768ee67"
+  },
+  {
+   "path": "img/emoji/72/1f517.png",
+   "bytes": 2178,
+   "sha256": "f8d454213f4db745462d52c92f9b4da02816fbe23c59fe201d2d18cb43d37041"
+  },
+  {
+   "path": "img/emoji/72/1f525.png",
+   "bytes": 2094,
+   "sha256": "6cf65bd1929fdd208d8cf6ec069c62ab8069e19b672e5bb3f56e8e17e5261754"
+  },
+  {
+   "path": "img/emoji/72/1f527.png",
+   "bytes": 1924,
+   "sha256": "0ab13870cf30f96805aacea85d6703d1f6b0c62971adab3582e3ffe7c2e747ab"
+  },
+  {
+   "path": "img/emoji/72/1f528.png",
+   "bytes": 1899,
+   "sha256": "987ae119c579d920eb16019eb0d9a443469abe1d6b0574d017cbb2b15263b586"
+  },
+  {
+   "path": "img/emoji/72/1f54a.png",
+   "bytes": 2124,
+   "sha256": "9c6eb584bf9dcacf56a410b215e41a71b8eb97306bb0428bd0996cb5ebd7d302"
+  },
+  {
+   "path": "img/emoji/72/1f576.png",
+   "bytes": 1595,
+   "sha256": "b92e6e9f0bd886033e3964ebf6e5213cee6cf7ddfcd109c84422f5cf11175534"
+  },
+  {
+   "path": "img/emoji/72/1f577.png",
+   "bytes": 2093,
+   "sha256": "2237ac9abb52207967f7e924532e607455c050b548194835d93432596b70dd48"
+  },
+  {
+   "path": "img/emoji/72/1f579.png",
+   "bytes": 1946,
+   "sha256": "3f07e526573210e87678ffa3e0b421923b7b7cf37be3c150588154c90e2cf69a"
+  },
+  {
+   "path": "img/emoji/72/1f57a.png",
+   "bytes": 2337,
+   "sha256": "ace7a5794a539948735668e56e431ec912e2cebb65b021ff5cd79d3d73857233"
+  },
+  {
+   "path": "img/emoji/72/1f596.png",
+   "bytes": 2056,
+   "sha256": "a82c6a73a379e1a8db04f54102d85f72c2cafd6138f29b4daca008456620919b"
+  },
+  {
+   "path": "img/emoji/72/1f5a4.png",
+   "bytes": 1712,
+   "sha256": "ef4f6e9b02675c17fbe31e68df1a5ff28dde82177625d4c2d8418435195ddeb8"
+  },
+  {
+   "path": "img/emoji/72/1f5a5.png",
+   "bytes": 1753,
+   "sha256": "95ff19b6d5672676a4c0f413826790f52227eebb61e0e262018ddcedb06a73d6"
+  },
+  {
+   "path": "img/emoji/72/1f5bc.png",
+   "bytes": 1853,
+   "sha256": "d48e9fb7fc2e3a12ba60f1d259995320bf8338787395544b70c4d93892c03796"
+  },
+  {
+   "path": "img/emoji/72/1f5d3.png",
+   "bytes": 2259,
+   "sha256": "0345ed6a668efc2928df5237cb87ff29d60c172f6d72b051b1ec30690d00a573"
+  },
+  {
+   "path": "img/emoji/72/1f5f3.png",
+   "bytes": 1864,
+   "sha256": "ce0467a46792a5a25291d6ad00e1442fdd078cda323a22d689864a3ed4aa9867"
+  },
+  {
+   "path": "img/emoji/72/1f5ff.png",
+   "bytes": 2142,
+   "sha256": "d55ec790aa0c837e03a4a4430c80299b0e6fab6e6caa0b70855e8f530c14bf52"
+  },
+  {
+   "path": "img/emoji/72/1f600.png",
+   "bytes": 2189,
+   "sha256": "102be2217dfb8d6567a269caab4c23b89b78da3c53b028a1b90aaff878556222"
+  },
+  {
+   "path": "img/emoji/72/1f601.png",
+   "bytes": 2185,
+   "sha256": "827b493c65d8f2875eb68cc1da96bfd41d060df7350b75d67e4d2154510f436e"
+  },
+  {
+   "path": "img/emoji/72/1f602.png",
+   "bytes": 2483,
+   "sha256": "4f446ea77f117e1df339b63c16775ea54eef45edc7b4f35c27b2e5d41a7b796c"
+  },
+  {
+   "path": "img/emoji/72/1f603.png",
+   "bytes": 2257,
+   "sha256": "1037bc613a2cefe4c8c37353b33926a5b6d2fe6e1afb9a1bad1e5ab38d3fc541"
+  },
+  {
+   "path": "img/emoji/72/1f604.png",
+   "bytes": 2194,
+   "sha256": "0a1aee56fc0f4c99256365c24b9f0a4d90c9ebf5156d1cbdd992997b2f2ba96c"
+  },
+  {
+   "path": "img/emoji/72/1f605.png",
+   "bytes": 2348,
+   "sha256": "61dfb5185a323957ad12409853b2f915ae4b8fe0eb4bb6caa01aac30badb668c"
+  },
+  {
+   "path": "img/emoji/72/1f606.png",
+   "bytes": 2271,
+   "sha256": "4cf510a25fe356152b3b9b79d9bc5a8fa3408985966fcd9adc3b25b19095fb15"
+  },
+  {
+   "path": "img/emoji/72/1f607.png",
+   "bytes": 2306,
+   "sha256": "3c328571800abccac8dccee9890931fbdf0fd6c9c7377dd6d3d855097755590c"
+  },
+  {
+   "path": "img/emoji/72/1f608.png",
+   "bytes": 6085,
+   "sha256": "3f1baf7711f38322a6929885e37e3991b03f2c8798a6077cfa6e4daa454b72ec"
+  },
+  {
+   "path": "img/emoji/72/1f609.png",
+   "bytes": 2119,
+   "sha256": "4ae78153f82ba7748415bd06fb99b6db7c9475d4a9985ab80683b0249635e446"
+  },
+  {
+   "path": "img/emoji/72/1f60a.png",
+   "bytes": 2142,
+   "sha256": "d6179fa45364f9d0684aad04e5f0f15961ff7ce8af5e573d9c1cfde899930add"
+  },
+  {
+   "path": "img/emoji/72/1f60b.png",
+   "bytes": 2204,
+   "sha256": "53e106d1a5ded6fb3682911e8fb554f80a7b2d37292a37b1ccb1911d57d1ff87"
+  },
+  {
+   "path": "img/emoji/72/1f60c.png",
+   "bytes": 2119,
+   "sha256": "b191de0387bc991ed8378240ab45347a56253a12f0d02270f0921e4da981c516"
+  },
+  {
+   "path": "img/emoji/72/1f60d.png",
+   "bytes": 2311,
+   "sha256": "1517b03e58198665b7deea8599a14dc97c5b522275420c5d33ac8d3b8df0152c"
+  },
+  {
+   "path": "img/emoji/72/1f60e.png",
+   "bytes": 2144,
+   "sha256": "08fe4c00958edf3afcfc141bc2856d058f827792fd1d697d1686a037b1c28fd1"
+  },
+  {
+   "path": "img/emoji/72/1f60f.png",
+   "bytes": 2131,
+   "sha256": "17675eba5ae31389b9c31717a7822d0ea4f42dc715d41eeece13f94f52652e0a"
+  },
+  {
+   "path": "img/emoji/72/1f610.png",
+   "bytes": 1978,
+   "sha256": "d070ea92f2d8f587c952112c040ad0ec8b07d0d923ddd48a5a9b8a84138f8963"
+  },
+  {
+   "path": "img/emoji/72/1f611.png",
+   "bytes": 1885,
+   "sha256": "93c28bee6d1e29c953d7891522c4f9da9a415399fd87ba813a2688a3a3f9050e"
+  },
+  {
+   "path": "img/emoji/72/1f612.png",
+   "bytes": 2121,
+   "sha256": "39d30d99427bc88542a8267ad3e184c0a0c5fd26523fe62629dd49ac916f2774"
+  },
+  {
+   "path": "img/emoji/72/1f613.png",
+   "bytes": 2173,
+   "sha256": "a032fc40ccc49aa750e5f0ab1e1e71dfa8b25d092788926f3228abdbdd0b5653"
+  },
+  {
+   "path": "img/emoji/72/1f614.png",
+   "bytes": 2082,
+   "sha256": "f5e301fe623cda0295bb8818e20b0653e3cffaa9279efd01f6c6ed2af79f4497"
+  },
+  {
+   "path": "img/emoji/72/1f615.png",
+   "bytes": 2058,
+   "sha256": "08ab0b9265df607a2cf5209a5fa4e1747cf5da18723e66a4f3e5e8a671549d07"
+  },
+  {
+   "path": "img/emoji/72/1f616.png",
+   "bytes": 2139,
+   "sha256": "8649510251dc8e3ab6b2c3483975f5defd5fe8a88fb53f555a40673ab57388ee"
+  },
+  {
+   "path": "img/emoji/72/1f618.png",
+   "bytes": 2265,
+   "sha256": "7a4dd607910b0c02159012c5e41609dc48897133593f94dea37cb545a922109f"
+  },
+  {
+   "path": "img/emoji/72/1f61b.png",
+   "bytes": 2175,
+   "sha256": "ec430bf008a33cc19f21f9ba2973ef81971842af87de68607696e664f08ec693"
+  },
+  {
+   "path": "img/emoji/72/1f61c.png",
+   "bytes": 2268,
+   "sha256": "7b899fecff6a47db289d079232a9a204f1b59e89dec19a540bcee04c029bef23"
+  },
+  {
+   "path": "img/emoji/72/1f61d.png",
+   "bytes": 2224,
+   "sha256": "71b73e34dde35dc922a409ebc61ebae53f77eb6c7b49059ee58c600ca9e639ea"
+  },
+  {
+   "path": "img/emoji/72/1f61e.png",
+   "bytes": 1997,
+   "sha256": "0e8d3c6686178169210a44685ca0a7483653f5a7deb790e99431c8e96f36ecf7"
+  },
+  {
+   "path": "img/emoji/72/1f61f.png",
+   "bytes": 2114,
+   "sha256": "2c99b576dd740ee3eb2d4c7bd811bf5259a456319e6c820514e4ff270cf9a746"
+  },
+  {
+   "path": "img/emoji/72/1f620.png",
+   "bytes": 2086,
+   "sha256": "39dc4da768045396fe97db9bf9eb3d9e82a59bfb52f913bdc0f9c4de3a2466ed"
+  },
+  {
+   "path": "img/emoji/72/1f621.png",
+   "bytes": 2142,
+   "sha256": "44634e7444cdb52c92f39f28b426b491888b6a17b1baf629059e919e5676aad6"
+  },
+  {
+   "path": "img/emoji/72/1f622.png",
+   "bytes": 2262,
+   "sha256": "3e59bfb07fae5dd63aade7362fa20af0f5d199fcbb174c447a0c5cba39161e08"
+  },
+  {
+   "path": "img/emoji/72/1f623.png",
+   "bytes": 2185,
+   "sha256": "eb039bd1a2d3dbeec52abbcdc04e2f1d7fe0a4e77149cbf7e550a79d63eae287"
+  },
+  {
+   "path": "img/emoji/72/1f624.png",
+   "bytes": 2364,
+   "sha256": "3d8adf82aa355c57aa2583db57942cfc880914757a8810e226ada46d7b29aea4"
+  },
+  {
+   "path": "img/emoji/72/1f625.png",
+   "bytes": 2300,
+   "sha256": "ab166b853541a9d8dce0496f5d678bb273571c9704b7c425078784abb1241c6c"
+  },
+  {
+   "path": "img/emoji/72/1f626.png",
+   "bytes": 2013,
+   "sha256": "87b33af8c7c632f679290bea4ec462360b2c7f8c6e858bcdec89c9f7312db6c3"
+  },
+  {
+   "path": "img/emoji/72/1f627.png",
+   "bytes": 2101,
+   "sha256": "9e24b659a6b19b0df2a5921f683e2db6f927eb56bd2e648b9c44c2d8b9bd78aa"
+  },
+  {
+   "path": "img/emoji/72/1f628.png",
+   "bytes": 2383,
+   "sha256": "1b13078b459f0f5621161abe2f3e680a70a53896695c5c4d5d51dbc6a5486f4e"
+  },
+  {
+   "path": "img/emoji/72/1f629.png",
+   "bytes": 2277,
+   "sha256": "2b055db2865df98b71cebed61a3f90f95de848782cc39d45e0bd2f4c451b2d85"
+  },
+  {
+   "path": "img/emoji/72/1f62a.png",
+   "bytes": 2226,
+   "sha256": "7b66fbd3cb682eef0454d5cfe2ebca9749025f3c4423cbd3aac899bf5a9e2d17"
+  },
+  {
+   "path": "img/emoji/72/1f62b.png",
+   "bytes": 2296,
+   "sha256": "8c2cec5fe2a6b58202160f9820d2d144430876ac102cbed17d9dd23bf8e37c5a"
+  },
+  {
+   "path": "img/emoji/72/1f62c.png",
+   "bytes": 2103,
+   "sha256": "a663f14aa9e9cc6d31c24b67224431dc051e320b1c43d4f98f63510c4d3152ae"
+  },
+  {
+   "path": "img/emoji/72/1f62d.png",
+   "bytes": 2437,
+   "sha256": "aef8d5f0b2e7da4c595b65ce2aa4f3099a280dde988e3874a1f58df75a26fdb8"
+  },
+  {
+   "path": "img/emoji/72/1f62e.png",
+   "bytes": 2028,
+   "sha256": "3faffb5b80177de33a3afd4bb21d4ed0af0117c9d48edd98130ab2e404de9a85"
+  },
+  {
+   "path": "img/emoji/72/1f62f.png",
+   "bytes": 2122,
+   "sha256": "1fe45cf941293c297942198edbdec65c8ddf9228765817e4ef7944b735437ca7"
+  },
+  {
+   "path": "img/emoji/72/1f630.png",
+   "bytes": 2514,
+   "sha256": "cc3d2c88fa16d715a209257ad022ae4d996711f5ef2f3dc3a02776de46832937"
+  },
+  {
+   "path": "img/emoji/72/1f631.png",
+   "bytes": 6435,
+   "sha256": "1a170fdb3475f875e1a4064c2e9ac7929ab94b9b1ac75bdd73bdb675ea532a40"
+  },
+  {
+   "path": "img/emoji/72/1f632.png",
+   "bytes": 2168,
+   "sha256": "85c1afe7a7ae099a2f767932f359ce9395a55f854a104b466f91c3f26f49ba5b"
+  },
+  {
+   "path": "img/emoji/72/1f633.png",
+   "bytes": 2291,
+   "sha256": "c6d2e0c5f369eea0e8850e113e80cbf55a9ba985a24815633b41f1bf625fae74"
+  },
+  {
+   "path": "img/emoji/72/1f634.png",
+   "bytes": 2300,
+   "sha256": "be8a3097daae8c5b9accb42a4cfcb5f2a64e32fcf4e1b2e142ebe8d40063a047"
+  },
+  {
+   "path": "img/emoji/72/1f635.png",
+   "bytes": 2251,
+   "sha256": "9bbf2fc667f8ba7eba21510bbe8a93e4769c5a426705aebc6aa05aa038c483e2"
+  },
+  {
+   "path": "img/emoji/72/1f636.png",
+   "bytes": 1956,
+   "sha256": "7a3fd3ab6980e68ad79d4ea182c9a500fba620540f97fb10aab1951aa4687ca8"
+  },
+  {
+   "path": "img/emoji/72/1f637.png",
+   "bytes": 2185,
+   "sha256": "9ef8c4f8c317b9a2b97c0e2b679814840fb8e7a8eb91783363da8b193d32f19a"
+  },
+  {
+   "path": "img/emoji/72/1f638.png",
+   "bytes": 2384,
+   "sha256": "d0b7f685a632cb3c5c8194518e24fa62f8b7a51b0f12f481477b55e30d1f56d2"
+  },
+  {
+   "path": "img/emoji/72/1f639.png",
+   "bytes": 2568,
+   "sha256": "2b77cd7061dc58ac12b50efd2232423495dd682aa82aeb1aea523fb66c61dc42"
+  },
+  {
+   "path": "img/emoji/72/1f63a.png",
+   "bytes": 2338,
+   "sha256": "e29a52fd38dc1c5c9e31b56075005be840da722c7db2b04fa819a62eb538c8c2"
+  },
+  {
+   "path": "img/emoji/72/1f63b.png",
+   "bytes": 2554,
+   "sha256": "a3fa480f79310a20bc9d65f9f4e01913be105aa05eedbf3a36ee15c6e7339b3f"
+  },
+  {
+   "path": "img/emoji/72/1f63c.png",
+   "bytes": 2319,
+   "sha256": "661f648606b67d0cc0bf2d7d733329281f54c30e5de28570e4200fc55587b1b6"
+  },
+  {
+   "path": "img/emoji/72/1f63d.png",
+   "bytes": 2352,
+   "sha256": "7261f51d5e6b81fcb573d0d48f33891a02fabb3dc9bac32f6839e33c3f59f96e"
+  },
+  {
+   "path": "img/emoji/72/1f63e.png",
+   "bytes": 2344,
+   "sha256": "1f66cf61c2a792323b95a05ac6a1f1bbf42ffde219dfed9a99eeac3da265e61a"
+  },
+  {
+   "path": "img/emoji/72/1f63f.png",
+   "bytes": 2482,
+   "sha256": "9dcce890d8adc7839976be2963ed9550f8081a20b7427998a48fe318db2251bf"
+  },
+  {
+   "path": "img/emoji/72/1f640.png",
+   "bytes": 2614,
+   "sha256": "68b618f43d4733520852fede4a557b05aab9325068bc0257fe9b4b7528518e96"
+  },
+  {
+   "path": "img/emoji/72/1f641.png",
+   "bytes": 2059,
+   "sha256": "1d795c364bb3a9858c2ef270863f28e433e8249268b46a2f675746d8697b7250"
+  },
+  {
+   "path": "img/emoji/72/1f642.png",
+   "bytes": 2035,
+   "sha256": "89399265649c11e011b847b95bc8cd3ecdc707393edd367acab8bfb60a87e815"
+  },
+  {
+   "path": "img/emoji/72/1f643.png",
+   "bytes": 2030,
+   "sha256": "969ce22023d17c4639f95220b4756728c96695700bffdee0883828cec3515c26"
+  },
+  {
+   "path": "img/emoji/72/1f644.png",
+   "bytes": 2148,
+   "sha256": "de0147b4df3b7737ad7da8f9f29c2955bed4a592864e6acf5228420e6a5cbcb8"
+  },
+  {
+   "path": "img/emoji/72/1f648.png",
+   "bytes": 1986,
+   "sha256": "49c1da9f06798cef3599ebce0ba424a1fccf392b0cc01c3b7c9582ae047559a4"
+  },
+  {
+   "path": "img/emoji/72/1f649.png",
+   "bytes": 2014,
+   "sha256": "112d18c2d5b8320eb3723f5ba98da1bf09ec1ff949c6af03c0e81ae188352a37"
+  },
+  {
+   "path": "img/emoji/72/1f64a.png",
+   "bytes": 2000,
+   "sha256": "e74b70b3bb4469ceeb8ee5a64c50e4ac64fdc16f3ceccb9fa89eae6729218b48"
+  },
+  {
+   "path": "img/emoji/72/1f64c.png",
+   "bytes": 2173,
+   "sha256": "f52732e93988b6975bf27d64df2d9035bfa7550f39f9f0668de3f5194222f636"
+  },
+  {
+   "path": "img/emoji/72/1f64f.png",
+   "bytes": 2040,
+   "sha256": "73f7077ddc0b87192660a739b364c5b63c60c6ca6c9f3101a0c2c5c45f88659e"
+  },
+  {
+   "path": "img/emoji/72/1f680.png",
+   "bytes": 2606,
+   "sha256": "288e5be60541c1faf5037cac83ad14e12a9bf482e230579ca8ee926a001393e6"
+  },
+  {
+   "path": "img/emoji/72/1f6a8.png",
+   "bytes": 2337,
+   "sha256": "f6359f78ae87cc411e1f3acddf4f4d2bb6d5487650d7f896d154bfb5f597fbcc"
+  },
+  {
+   "path": "img/emoji/72/1f6aa.png",
+   "bytes": 909,
+   "sha256": "7c5c42a22ed63a79268f38209c70518c916a2b8140b27bcba19199f0b836d67c"
+  },
+  {
+   "path": "img/emoji/72/1f6ab.png",
+   "bytes": 2028,
+   "sha256": "f0afde794889438d6a1b226956c53713641d00ed91b4219dec896f2038bbbe2e"
+  },
+  {
+   "path": "img/emoji/72/1f6d2.png",
+   "bytes": 2460,
+   "sha256": "7b5d2e68e35a9822ebc8fb1fc5354c895f9de30fa08a7b391e0f95d036e074c8"
+  },
+  {
+   "path": "img/emoji/72/1f6e0.png",
+   "bytes": 2528,
+   "sha256": "bc99267901bbe70a6b920cff0c1b89291b145e272df764a0809507c1e3d6549d"
+  },
+  {
+   "path": "img/emoji/72/1f6e1.png",
+   "bytes": 2244,
+   "sha256": "757174badbf2ff62873f774a7ccf623ab9123fc7afda456be9ebfb7d55ffae18"
+  },
+  {
+   "path": "img/emoji/72/1f90c.png",
+   "bytes": 2053,
+   "sha256": "672f51fa06bffd572933de0fb5b650789fb71c1f9f16623a2675c4ac3bea1007"
+  },
+  {
+   "path": "img/emoji/72/1f90d.png",
+   "bytes": 1799,
+   "sha256": "d01913953d9ccf365d96c1673fb91d79c77894eb40920b6cd985ed873ded75fc"
+  },
+  {
+   "path": "img/emoji/72/1f90e.png",
+   "bytes": 1812,
+   "sha256": "75fb4c95e18b99c95ae660966061090b09ce13ac5859a37e2c7e2c754c415894"
+  },
+  {
+   "path": "img/emoji/72/1f90f.png",
+   "bytes": 2099,
+   "sha256": "0f46ecce503fc3f6eaaabf3ff244b17b3a5832817186c536c52e3f049dc3905f"
+  },
+  {
+   "path": "img/emoji/72/1f910.png",
+   "bytes": 2232,
+   "sha256": "330e4fa5d2fd5974a33f418bc1a0de7f82674d0a907014fad2acb3b4cfebd7c0"
+  },
+  {
+   "path": "img/emoji/72/1f911.png",
+   "bytes": 2452,
+   "sha256": "2ead10f549fb93646a27ba17c61653cc5ed9f0b09658df0056783c39e7d3974f"
+  },
+  {
+   "path": "img/emoji/72/1f912.png",
+   "bytes": 2417,
+   "sha256": "dca6728816135bbbd3cfbd9aca94fb778cfc79c13eebd2881b155022e578780b"
+  },
+  {
+   "path": "img/emoji/72/1f913.png",
+   "bytes": 2491,
+   "sha256": "dff1b620904c40bd32a2f8e5ad975d0df0a3c9c013eca0d1e822848b3144dfb3"
+  },
+  {
+   "path": "img/emoji/72/1f914.png",
+   "bytes": 2373,
+   "sha256": "f85508a880185531ba0c4514149c63f337c5102399fbb82f5e21c3a365af0b23"
+  },
+  {
+   "path": "img/emoji/72/1f915.png",
+   "bytes": 2301,
+   "sha256": "71057eecb30afaccbb53bff50165054d8f05b73ca9a8b1732881800d54d8e1fb"
+  },
+  {
+   "path": "img/emoji/72/1f916.png",
+   "bytes": 1867,
+   "sha256": "13e1a187332127cea8d15c598417bc6adcc3a7308243ade05378e4d130343a79"
+  },
+  {
+   "path": "img/emoji/72/1f917.png",
+   "bytes": 2559,
+   "sha256": "dc6748d7fa264ad8c0c7cd387184b70323524c6dae4e1d74a34133d661550df5"
+  },
+  {
+   "path": "img/emoji/72/1f918.png",
+   "bytes": 2075,
+   "sha256": "15acada534f1e1e3017ec9d086a96874cfc3454a3566f9592d099f289ec26808"
+  },
+  {
+   "path": "img/emoji/72/1f919.png",
+   "bytes": 1820,
+   "sha256": "3bf28d10043ca5d579230c48e6755a37a024daeac6ffba6edfd5702be56e5f08"
+  },
+  {
+   "path": "img/emoji/72/1f91a.png",
+   "bytes": 1894,
+   "sha256": "6ebe25c79008a88d5d83dcbb08840294602d7fdea2a036ef939031737fd0a63a"
+  },
+  {
+   "path": "img/emoji/72/1f91b.png",
+   "bytes": 1785,
+   "sha256": "44d181112f8a332e269c1b953d91d5ac66134b0924eff459d9110e4950424aca"
+  },
+  {
+   "path": "img/emoji/72/1f91c.png",
+   "bytes": 1782,
+   "sha256": "3e2affcf394ae279de5fe55402ff4f21718eba72b5b184c53f41e98c04f2dad2"
+  },
+  {
+   "path": "img/emoji/72/1f91d.png",
+   "bytes": 1983,
+   "sha256": "63b4d62ec20a1ecf2b8f622b047d6ea9802454412f9658d7254883b9cbf0574c"
+  },
+  {
+   "path": "img/emoji/72/1f91e.png",
+   "bytes": 2063,
+   "sha256": "80a5bf449cfbda2e2a167fe4527358e0aee549b10260a4a3615f771f26e5fa2c"
+  },
+  {
+   "path": "img/emoji/72/1f91f.png",
+   "bytes": 2110,
+   "sha256": "5933e06f7ea4e05982b37da0ed2979efa73970c46bd06d78727a4b2bb744c131"
+  },
+  {
+   "path": "img/emoji/72/1f920.png",
+   "bytes": 2446,
+   "sha256": "aec6b2f07fe6e9427a480cb1163fb51b79f0212f2a2e655a5a13da1716630579"
+  },
+  {
+   "path": "img/emoji/72/1f921.png",
+   "bytes": 2575,
+   "sha256": "6f311a8897c6a59c1e5796d919eb15b1407e573bcbc35db005fac9d5d0f44cee"
+  },
+  {
+   "path": "img/emoji/72/1f922.png",
+   "bytes": 6399,
+   "sha256": "8069d2b79e1623fd231c960532c8785d334dbcd5fc4902b3ed05de4874cd2370"
+  },
+  {
+   "path": "img/emoji/72/1f923.png",
+   "bytes": 2610,
+   "sha256": "c72a6688744994299bb3c83cd3254d39022023657294d26441f3590d02518708"
+  },
+  {
+   "path": "img/emoji/72/1f924.png",
+   "bytes": 2260,
+   "sha256": "781d64eaf28cc0b005e2c31fe62c6b9610d94f9d6337da8394c7993dec587a3d"
+  },
+  {
+   "path": "img/emoji/72/1f928.png",
+   "bytes": 2126,
+   "sha256": "ef934c1f514665a32ba9258c6eaf5d751fdfa6e401f6c54b9afe6575d04d0a7a"
+  },
+  {
+   "path": "img/emoji/72/1f929.png",
+   "bytes": 2418,
+   "sha256": "e1c5bdaaa0928e37b8bb453c7aa8fd659b9c4abc5403f8852ef3e5f78abf5259"
+  },
+  {
+   "path": "img/emoji/72/1f92a.png",
+   "bytes": 2316,
+   "sha256": "64f86c30491230e1fc0900c3e5c236e4bd30c91751cee4b2532b60fe2594895f"
+  },
+  {
+   "path": "img/emoji/72/1f92b.png",
+   "bytes": 2280,
+   "sha256": "eca9c28c988d7c4fb3179ea4f55ac8550290f1b89d530945fd5286a078f5bd0d"
+  },
+  {
+   "path": "img/emoji/72/1f92c.png",
+   "bytes": 2473,
+   "sha256": "6450f9286f9134c1e04f525d0b9e24de39b145f04dadfbc72d1b8599e27fe82a"
+  },
+  {
+   "path": "img/emoji/72/1f92d.png",
+   "bytes": 2350,
+   "sha256": "c0ee3382003eaa2db4df03d345dac6813755bfb568cb697cbe48c8918ec6cfc4"
+  },
+  {
+   "path": "img/emoji/72/1f92e.png",
+   "bytes": 2505,
+   "sha256": "29a3981e6ba02c3b14d809ab33cb57a2a6a4bf2971425154b1d5d906a060b70b"
+  },
+  {
+   "path": "img/emoji/72/1f92f.png",
+   "bytes": 2855,
+   "sha256": "64de16bfe5319bbccf264d1a45a1c119b86b617050f77bc80f0a68ea5b940afe"
+  },
+  {
+   "path": "img/emoji/72/1f932.png",
+   "bytes": 2219,
+   "sha256": "519a167fc50c4b94bae5b45fc0b7f2f9ffa423f0270ceaee08231663e6e6689f"
+  },
+  {
+   "path": "img/emoji/72/1f947.png",
+   "bytes": 1991,
+   "sha256": "f9be90ac51f665552e12b905477b7957f6f0e608d66d180b97a6572f3126446f"
+  },
+  {
+   "path": "img/emoji/72/1f948.png",
+   "bytes": 2032,
+   "sha256": "6db432078a416fc9ffcf94e524aad19d3f58ba00b0f9dcbb19dc9867b5a31078"
+  },
+  {
+   "path": "img/emoji/72/1f949.png",
+   "bytes": 2079,
+   "sha256": "d7477a8fe9e6da93edc7596c2771cc8f91cd1f6a4fc565dae2fe9048811f2354"
+  },
+  {
+   "path": "img/emoji/72/1f951.png",
+   "bytes": 2203,
+   "sha256": "2a15f34e3202ee9914f4d6169f38547f6a885a29deff9c12e6bcaed0495533ea"
+  },
+  {
+   "path": "img/emoji/72/1f95a.png",
+   "bytes": 1749,
+   "sha256": "3e908e8cf097d4b034283d2baae841884456dfbffa9432f6e252958b5e890799"
+  },
+  {
+   "path": "img/emoji/72/1f964.png",
+   "bytes": 1818,
+   "sha256": "606478fbccb3393f6fda664858ad1cba0332add4776e2c8451c4da6833f3c6fd"
+  },
+  {
+   "path": "img/emoji/72/1f970.png",
+   "bytes": 2558,
+   "sha256": "00ca5643a23ed343ce4b0d1be889c25575bf08e6cf42bb1e948e5bbf8bd0a359"
+  },
+  {
+   "path": "img/emoji/72/1f971.png",
+   "bytes": 2374,
+   "sha256": "f71da8a03172e7263412acdeb6e79b615187d7b9424b78adfed2690d65d902de"
+  },
+  {
+   "path": "img/emoji/72/1f973.png",
+   "bytes": 2816,
+   "sha256": "c33e553ccc5c298b7762098976dd21521a4c9c3285e2878c91990a0229de617d"
+  },
+  {
+   "path": "img/emoji/72/1f974.png",
+   "bytes": 2331,
+   "sha256": "195f193560cba451fc034f111d95c7174eab525f6d557a83365db8e068fe015e"
+  },
+  {
+   "path": "img/emoji/72/1f975.png",
+   "bytes": 2661,
+   "sha256": "be5c837de7f6709e215c84f2b79dfd4212c3f58132cc4bfea67d10ed96d812ce"
+  },
+  {
+   "path": "img/emoji/72/1f976.png",
+   "bytes": 6911,
+   "sha256": "6a86cd0ddfd79e56338e953fb8aecbdd9d9e601d94a75413f068adeba89553b6"
+  },
+  {
+   "path": "img/emoji/72/1f978.png",
+   "bytes": 2642,
+   "sha256": "0cea87be0d43c686ad1f0c354e2f6b87f3e436d6bc5fe58321030ea57f15a4a6"
+  },
+  {
+   "path": "img/emoji/72/1f979.png",
+   "bytes": 2471,
+   "sha256": "1c7be16cc41ca69da07efee069963bf45f0ace3242760c43adbef8e6d566c19d"
+  },
+  {
+   "path": "img/emoji/72/1f97a.png",
+   "bytes": 2418,
+   "sha256": "b771e02c57c1ee241aaad7ac5cf9470c031cca5d0d4fb599146fb45aec5d5adc"
+  },
+  {
+   "path": "img/emoji/72/1f981.png",
+   "bytes": 2242,
+   "sha256": "391b484c633aa9d5d4171943e711bbf40217405328f0e4eee5276bcbb73581af"
+  },
+  {
+   "path": "img/emoji/72/1f985.png",
+   "bytes": 2096,
+   "sha256": "81491f5f138506fd3777b2307f9fa7134bf6c2076f90fe3bd65139e870db7721"
+  },
+  {
+   "path": "img/emoji/72/1f986.png",
+   "bytes": 2120,
+   "sha256": "62de6e7ef4d2b2261ebd4c18d6a4b8b2b067306354d0d6c2b9ed75db130e60c5"
+  },
+  {
+   "path": "img/emoji/72/1f987.png",
+   "bytes": 2120,
+   "sha256": "ef5a4d256a10c9a063bcea0fec7c02b3493acc06be8684f72c782a15e5fcfce9"
+  },
+  {
+   "path": "img/emoji/72/1f988.png",
+   "bytes": 2029,
+   "sha256": "2ac975b1b660047b1755c4bfdc87442c1244930d6eced97e961ef636c96d40ba"
+  },
+  {
+   "path": "img/emoji/72/1f989.png",
+   "bytes": 2425,
+   "sha256": "99d4526af6289bef1a47ba6b4b7725f0bee8679a800639273c09092d7609c57d"
+  },
+  {
+   "path": "img/emoji/72/1f98a.png",
+   "bytes": 2228,
+   "sha256": "9702e6742464d651d033bf9c17fc7a1017e6b4df921852bbbe7ff84642e3ce5d"
+  },
+  {
+   "path": "img/emoji/72/1f98b.png",
+   "bytes": 2569,
+   "sha256": "612863757eb1c7049e4e6210eb927a2f5abc2b3b2268cc14bf5f58012fecf836"
+  },
+  {
+   "path": "img/emoji/72/1f996.png",
+   "bytes": 2270,
+   "sha256": "40e205565c7756e10d68902843503eab6fdbfe4ec5fce9f8c670e61e8375b9c4"
+  },
+  {
+   "path": "img/emoji/72/1f9c3.png",
+   "bytes": 2089,
+   "sha256": "6904df948f64491607c2873a810a73d9b3924af0dbf3f8944c260c365eef42c3"
+  },
+  {
+   "path": "img/emoji/72/1f9d0.png",
+   "bytes": 2607,
+   "sha256": "cf66ad85c584bbf2195ae08258ca000a3ad9b6f37dc607d7a54c140803bc2ce0"
+  },
+  {
+   "path": "img/emoji/72/1f9e0.png",
+   "bytes": 2194,
+   "sha256": "646df2450da546858589d28ccdb29540088c71633112b4e3c7a53b5f84866cd2"
+  },
+  {
+   "path": "img/emoji/72/1f9e1.png",
+   "bytes": 1800,
+   "sha256": "ddb5191efdbf9a83dc0073213c0c00d710e397eb96018f5465b500d4de954875"
+  },
+  {
+   "path": "img/emoji/72/1f9e2.png",
+   "bytes": 1794,
+   "sha256": "90e123b934b740670060b748592ff0b443f928fb5712eebcae9af31deedac61e"
+  },
+  {
+   "path": "img/emoji/72/1f9f2.png",
+   "bytes": 1644,
+   "sha256": "1a4657b3ea34014d8e198b7cc5830bada0c01d39ab062a97ea456a90236567f3"
+  },
+  {
+   "path": "img/emoji/72/1f9f9.png",
+   "bytes": 1750,
+   "sha256": "047a05db7a3c37e68d9b53af4a4e48444c73499bc7534b3f0cd287ea4ad344b8"
+  },
+  {
+   "path": "img/emoji/72/1fae0.png",
+   "bytes": 2261,
+   "sha256": "94453253de015023327f733980b0aa2977d101e84c73737bc7d80dd3d006ae29"
+  },
+  {
+   "path": "img/emoji/72/1fae1.png",
+   "bytes": 2359,
+   "sha256": "11b21d60079de35abdf3754224e3f392e15afa9652509136b430074d1c2cfd57"
+  },
+  {
+   "path": "img/emoji/72/1fae2.png",
+   "bytes": 2293,
+   "sha256": "028d0aed04c0fc4cd1cbbe87cf8805a36e5cfccb0d80f12bd08675f0e7533a47"
+  },
+  {
+   "path": "img/emoji/72/1faf0.png",
+   "bytes": 1960,
+   "sha256": "1272d7efe33f2be89e1c0268e087525cc5c0d7e36ebf1212a498980fdefbd0ef"
+  },
+  {
+   "path": "img/emoji/72/1faf6.png",
+   "bytes": 2013,
+   "sha256": "a29c158dbdae656ffaea69d00d90494e788088fafdaafb8ef1aa9d9d8d82415a"
+  },
+  {
+   "path": "img/emoji/72/203c.png",
+   "bytes": 1642,
+   "sha256": "62b0de96432de4b6ba5e45511b487ae3f23a4df949e4d380daf0015087e84081"
+  },
+  {
+   "path": "img/emoji/72/2049.png",
+   "bytes": 1880,
+   "sha256": "f1076832ff99943dc48f58571990779783d65fb4545c3152a1c3f833e29a4ff0"
+  },
+  {
+   "path": "img/emoji/72/2139.png",
+   "bytes": 1417,
+   "sha256": "af130bac373e49ff2515eec943526b6ba7038e13100bb64df5b58c2351ce3884"
+  },
+  {
+   "path": "img/emoji/72/2328.png",
+   "bytes": 1679,
+   "sha256": "697094d2d971e45f27aa18f0535642351db3510d3e942e1fe19df9fb805abaed"
+  },
+  {
+   "path": "img/emoji/72/23f1.png",
+   "bytes": 2219,
+   "sha256": "e210bc20c40a2aa4835a2cee149e6e4c26fbf8e40b4f6a680dc576116abd7491"
+  },
+  {
+   "path": "img/emoji/72/23f3.png",
+   "bytes": 2244,
+   "sha256": "210d793b7850f49eaeff07189c1e8bfce598297e8dcdafb06ce487bfca1d713a"
+  },
+  {
+   "path": "img/emoji/72/25b6.png",
+   "bytes": 1445,
+   "sha256": "ac90eba8d7bf3e7c8a4eda64275dcb63e19d155f8ff4369d04a6f4f241f5c491"
+  },
+  {
+   "path": "img/emoji/72/2600.png",
+   "bytes": 2044,
+   "sha256": "c09959c4356a173c9e992d068873f0084067b699a1efe4bf102a9764c148e62d"
+  },
+  {
+   "path": "img/emoji/72/2601.png",
+   "bytes": 1603,
+   "sha256": "7fb3e35bf68c4242ac6902496e3323a62f1c7a2d36748cc56f4ef716e1c431f5"
+  },
+  {
+   "path": "img/emoji/72/2615.png",
+   "bytes": 2332,
+   "sha256": "60ab4c240d5b4281eab91d135c1912b55f319c8795e95420dd55e4af12ba31ee"
+  },
+  {
+   "path": "img/emoji/72/261d.png",
+   "bytes": 1932,
+   "sha256": "bf3c4528f47c901323b502e073e2d1d56e0bdf42f7711bb7a5c238dc8c9ed0fa"
+  },
+  {
+   "path": "img/emoji/72/2620.png",
+   "bytes": 2227,
+   "sha256": "a94866a0e837c61b1e3bd761f1850d43f9b46d9442ef9dda6a326ff493f564f4"
+  },
+  {
+   "path": "img/emoji/72/2622.png",
+   "bytes": 2147,
+   "sha256": "6003a8e5b394f68ed12119de2fc994eb30f83b418fdd9550dffdf7c9eed79ca5"
+  },
+  {
+   "path": "img/emoji/72/2699.png",
+   "bytes": 1909,
+   "sha256": "d1ad93218682b916ebed8934b689cc9a91a6b7733fd3fc2314d46160c66111e4"
+  },
+  {
+   "path": "img/emoji/72/26a0.png",
+   "bytes": 1777,
+   "sha256": "47cdfd9cfa5a98ed6d149fa49aec4e7169f1e7c54db818884bdcc48acea773b7"
+  },
+  {
+   "path": "img/emoji/72/26a1.png",
+   "bytes": 1725,
+   "sha256": "d5149545149d7f2b1b550e3e560ca816740200ec41e5fd0508061f033d1d9b03"
+  },
+  {
+   "path": "img/emoji/72/26bd.png",
+   "bytes": 2302,
+   "sha256": "da04493f099fa301ba70d797aa774dc4a870da18eceb42622a000bb65e9005ba"
+  },
+  {
+   "path": "img/emoji/72/26c4.png",
+   "bytes": 1927,
+   "sha256": "34cf9353612840ad01122af528ac6cce39c6b43cf2b11d933eb9741b27a0baa3"
+  },
+  {
+   "path": "img/emoji/72/2702.png",
+   "bytes": 2310,
+   "sha256": "27372edd25bee56a392bc9ddf2d9ffca0e7c51a53c632f5b02adf61ae438f7cd"
+  },
+  {
+   "path": "img/emoji/72/2705.png",
+   "bytes": 1670,
+   "sha256": "d3323bff8007d1b9a93dc3b9564f84ae197a0375ca9ea35a3ff83579dbf8664c"
+  },
+  {
+   "path": "img/emoji/72/270a.png",
+   "bytes": 2177,
+   "sha256": "8abe542ef8a73cfe3a5ac3993cbcf513b7a0719282eaa0e20c5762c44b3a7496"
+  },
+  {
+   "path": "img/emoji/72/270b.png",
+   "bytes": 1862,
+   "sha256": "afa49809d571df383f1811253003979f37c29f0d7666bb7f64a7907677e7598e"
+  },
+  {
+   "path": "img/emoji/72/270c.png",
+   "bytes": 2105,
+   "sha256": "dfe5aa3a6c1fa0dd3254d020251cc578387d3758c96dce0c9bd88ab8f0e4fe88"
+  },
+  {
+   "path": "img/emoji/72/2728.png",
+   "bytes": 1948,
+   "sha256": "d805773880f6b057ce415346df36e1810c73a1977f1826e3db1e05a022061bce"
+  },
+  {
+   "path": "img/emoji/72/2744.png",
+   "bytes": 2382,
+   "sha256": "a61fe5847f711ffa95029cf89652578faa2968a0d07e815f85c576649eb437fc"
+  },
+  {
+   "path": "img/emoji/72/274c.png",
+   "bytes": 1792,
+   "sha256": "a0d7376a9f53d7b2069bd9c3e7bd4f6b8883b8d7c42239cdc358d118f3deeccb"
+  },
+  {
+   "path": "img/emoji/72/2753.png",
+   "bytes": 1652,
+   "sha256": "705c9925ac05aedab12ac547572cf4f26d506e4f001e62dc31f5562beef09e88"
+  },
+  {
+   "path": "img/emoji/72/2757.png",
+   "bytes": 1396,
+   "sha256": "3b3a3d362e75243353ea53e35ed4ccacd75da3f4c27ad74ade144ce1760b10bf"
+  },
+  {
+   "path": "img/emoji/72/2763.png",
+   "bytes": 1788,
+   "sha256": "125d333988b86156f2b285e41d8a926ac3201b25a0f4adba4739a98096d3b54e"
+  },
+  {
+   "path": "img/emoji/72/2764.png",
+   "bytes": 1829,
+   "sha256": "7d56656bb2b36f8bf300171b38095232ab6fe36f92d46071ddfccc87ef752bed"
+  },
+  {
+   "path": "img/emoji/72/2795.png",
+   "bytes": 1337,
+   "sha256": "309c8d1bea93d753ef330c4917956f4eb44fbd65ee1fe82a6db91d1e2f592274"
+  },
+  {
+   "path": "img/emoji/72/2b50.png",
+   "bytes": 1706,
+   "sha256": "9b52d80ebfe5dbcf07a888cd3859793a182a15c46e1a40187becf4e1142b3f54"
+  },
+  {
+   "path": "img/emoji/72/30-20e3.png",
+   "bytes": 1577,
+   "sha256": "3bd81c6af6fd81f3a81b78c61b00ebbf2db691fff188c0f4baacdcc9eb23f7cf"
+  },
+  {
+   "path": "img/emoji/72/35-20e3.png",
+   "bytes": 1594,
+   "sha256": "ed281b0c438190b900fd647e239632ddf1240e69d494389f0fe7eb3258af4406"
+  },
+  {
+   "path": "img/error.mp3",
+   "bytes": 39288,
+   "sha256": "6b0d9cadff6014fd320c409ede2504ae14ac0bda2dce442eeeff74154653dbc4"
+  },
+  {
+   "path": "img/fail.mp3",
+   "bytes": 81430,
+   "sha256": "b7e8a30cea3d86031e742f7a342decc08eba6fcb8b2db8dbfbd2a0cb8d86c18b"
+  },
+  {
+   "path": "img/favicon-192.png",
+   "bytes": 10634,
+   "sha256": "4a01ece537d2c9f44b995793de32d34e56757217a5d55f638397a120102cfbb3"
+  },
+  {
+   "path": "img/favicon-32.png",
+   "bytes": 1657,
+   "sha256": "59b927873fe6a39b69b2f79633cb4c3a6859209968085a580081df41ffd490e4"
+  },
+  {
+   "path": "img/font.otf",
+   "bytes": 198372,
+   "sha256": "fd3c1c0394565e8d9bd807c8a74ec7f7d308f16ae3cdbe36f8a35b2f14307292"
+  },
+  {
+   "path": "img/font.woff2",
+   "bytes": 86088,
+   "sha256": "428d7397abab12bc2f594e2545ca140e481105ababb580aed0a27e2ebdf07dae"
+  },
+  {
+   "path": "img/halloweenmusic.mp3",
+   "bytes": 480847,
+   "sha256": "88457ac49aa43f3c0996fbe919f12e73f4b7f9eb6cdfa851d0ef67f9e90880f6"
+  },
+  {
+   "path": "img/hat-bucket.png",
+   "bytes": 4005,
+   "sha256": "fdd0f17740708d7da36d4ca88ff9905e2972268f82f7c766f056d8f76c253946"
+  },
+  {
+   "path": "img/hat-cap.png",
+   "bytes": 12708,
+   "sha256": "0d444c9dbb37285fdc55a77500bcd35816df8bea7ef79a6f387f858b22a30bbd"
+  },
+  {
+   "path": "img/hat-crown.png",
+   "bytes": 5723,
+   "sha256": "6153df916d8bfd7bddff81fa6dfe0d507d203d49d9609964fc2c395517b6df7d"
+  },
+  {
+   "path": "img/hatch.mp3",
+   "bytes": 25344,
+   "sha256": "3a01bcf52c22f44ab07476ab0ce8f3066aa65bd1295858c1485f8e1bf807a2c1"
+  },
+  {
+   "path": "img/hover.mp3",
+   "bytes": 65201,
+   "sha256": "a9f76c4a7b610041d55f37b23782e50b43af5eec96f29eecb5bed55ed96f6759"
+  },
+  {
+   "path": "img/intro.mp4",
+   "bytes": 1394101,
+   "sha256": "307a070f57e41109ec09c0ab4ded733c665dd0cceaa918b742dfb61729853a5d"
+  },
+  {
+   "path": "img/intro.webm",
+   "bytes": 1247987,
+   "sha256": "81757eb09632ceb2232892bc5c4659bd980701bb9a2d21db062dbd0af0e04fb0"
+  },
+  {
+   "path": "img/jetpack.mp3",
+   "bytes": 153120,
+   "sha256": "a1ad2a786b70bfdc71d426571ae0faad7116c0fcfcc4aaff89cb78b7b1df3ad1"
+  },
+  {
+   "path": "img/join.mp3",
+   "bytes": 10120,
+   "sha256": "a2c39514a291b06c568bc474a3a897e711ca53b371567b1f5a428f140bb16e96"
+  },
+  {
+   "path": "img/jump.mp3",
+   "bytes": 9195,
+   "sha256": "b6a94ac6167aac32b3fecc385cbbf279bfcdcca5c2cb6ddc7b428c7bcd8d322a"
+  },
+  {
+   "path": "img/leave.mp3",
+   "bytes": 9991,
+   "sha256": "4a13cdd20a54066a912126751a269d264acb10409457964c31c89ae93319869b"
+  },
+  {
+   "path": "img/levelup.mp3",
+   "bytes": 34560,
+   "sha256": "0881ace783c59f38f5d7128378b1035c59fabd015b91747f1295f0089169b15b"
+  },
+  {
+   "path": "img/message.mp3",
+   "bytes": 34272,
+   "sha256": "c13da61f3e5bcd79ce3e8785715970ef8d09b2edcd5f956febc6d83e6a759827"
+  },
+  {
+   "path": "img/milestone.mp3",
+   "bytes": 88607,
+   "sha256": "cec8cc8405895a8df14abbb1cf36191d66c753ad6d73b511440777b6ffde68bb"
+  },
+  {
+   "path": "img/music.mp3",
+   "bytes": 509264,
+   "sha256": "c965eae1440603bc65e2c1e6faac56dfc198dc5d6aaf56247c0cd2c159da09a9"
+  },
+  {
+   "path": "img/newfavicon.png",
+   "bytes": 106298,
+   "sha256": "62d98a390cc0973cf8090d7047bd38048919152cd25dd01b20d9561f1999baa7"
+  },
+  {
+   "path": "img/nexp.gif",
+   "bytes": 118161,
+   "sha256": "bc388742ed35b6cd605b4466d77e6438e12f860c19e7a85bc71e7a499a36908d"
+  },
+  {
+   "path": "img/notify.mp3",
+   "bytes": 56842,
+   "sha256": "748e6d03a559ac909d04b9fa907fca3424c6bf00aa45bcad3f6a07238e58f6cb"
+  },
+  {
+   "path": "img/nuke.png",
+   "bytes": 57634,
+   "sha256": "64284db89e28f78e9b21433324a684fa655cb179ea2d09f837151318ce85c437"
+  },
+  {
+   "path": "img/pickup.mp3",
+   "bytes": 61440,
+   "sha256": "d85289d0640b955312e13553d2ce8ab21c452a20721538c4bfe69a33c0ea0379"
+  },
+  {
+   "path": "img/pickupBig.mp3",
+   "bytes": 33436,
+   "sha256": "a3e269dcc57ce1ac470a8065d71994d0d1d5e2f7fd335830efe07da36bb156ea"
+  },
+  {
+   "path": "img/pop.mp3",
+   "bytes": 5246,
+   "sha256": "6d0369350e1e0d5c5c1bb5e487df5d10b36d9d2d142b68b3fa9572f7acccb0ec"
+  },
+  {
+   "path": "img/powerup.mp3",
+   "bytes": 37616,
+   "sha256": "ff991f58b1740f47f2f45c4cb4d3c3c0e634b87deaf3d15d3b97862bb4d27ccb"
+  },
+  {
+   "path": "img/purchase.mp3",
+   "bytes": 56160,
+   "sha256": "f5b8e6e1175a886b2f57391c85eea344eecb71e61e571ba25433f8ef5b91540e"
+  },
+  {
+   "path": "img/rank.mp3",
+   "bytes": 135973,
+   "sha256": "76fafa02591cb52d0d4c420ed72ff064e880431b8701b369000e827d663ad949"
+  },
+  {
+   "path": "img/santahohoho.mp3",
+   "bytes": 63926,
+   "sha256": "1001dcfe308a8596f82b6e9b562fae111f4a4c60d7149b1c91f10aa479891148"
+  },
+  {
+   "path": "img/santasley.png",
+   "bytes": 31567,
+   "sha256": "396ca7ee45a7115144528099dc612b0eb01185beb847e01ddb6e2f0459c9935b"
+  },
+  {
+   "path": "img/select.mp3",
+   "bytes": 43008,
+   "sha256": "4a0bdd7b7b7b23f84ba78af46efb200c8a36e5376d965cca469f1e9abcf2923e"
+  },
+  {
+   "path": "img/send.mp3",
+   "bytes": 16128,
+   "sha256": "f80d496814aa158b209f50d63fc1d802fe6cfe85ed6ca2e9127347e774162fa5"
+  },
+  {
+   "path": "img/smash.mp3",
+   "bytes": 37616,
+   "sha256": "6dfc2bad73f702ee590ba11f5d8ccb9b5b3255f6a4d5375b4f0beb67d16a4a5a"
+  },
+  {
+   "path": "img/sour.mp3",
+   "bytes": 129024,
+   "sha256": "7a05c9b5930b9c5fc3b1004ee7cc6751d6c79ce0791c0ade5136a85226b53a26"
+  },
+  {
+   "path": "img/sr.mp3",
+   "bytes": 1710079,
+   "sha256": "672c1a5ff424884e06afb88cf7ccbc428ed1f6434b4cac2fdaef4a5ee1f40f3d"
+  },
+  {
+   "path": "img/start.mp3",
+   "bytes": 57600,
+   "sha256": "1e95917a5fa832bd31ea725144cbcea1e8098e6afe83b1aed8ecf1f9bdf0fcd3"
+  },
+  {
+   "path": "img/swoosh.mp3",
+   "bytes": 11520,
+   "sha256": "d2a6e6eb3191c0498637b24897b420717bcae71c4b73f1ab5237db9c47a802f6"
+  },
+  {
+   "path": "img/tick.mp3",
+   "bytes": 176724,
+   "sha256": "bb33a28b5f7a632cd65baad6c9f87c86e47dcfab1ddb7ca0b45b235ed376fcb8"
+  },
+  {
+   "path": "img/timelow.mp3",
+   "bytes": 25771,
+   "sha256": "d94b976a59bf1b6fba0c00a7d5345143ba6d0e5cc4710d1c4126d9ae987702cb"
+  },
+  {
+   "path": "img/unlock.mp3",
+   "bytes": 141312,
+   "sha256": "27b6d3777779c1af386d67212ae974cbf5dd6c9082aa8d47beaefc3cef1d1bc1"
+  },
+  {
+   "path": "img/vacuum.mp3",
+   "bytes": 464770,
+   "sha256": "996a5b34cdbaeeccf12753e156f019cb08d856d8481645e7b4b3d56acf087109"
+  },
+  {
+   "path": "img/victory.mp3",
+   "bytes": 17363,
+   "sha256": "c91f9cd4448a633d4111800f096e9df252cc0be8c18e1129876e539459bef7e7"
+  },
+  {
+   "path": "img/witch.png",
+   "bytes": 26943,
+   "sha256": "f702320def8f40169c9da78016296a5c4e161f75e0ff4e68d4029e459f65ec15"
+  },
+  {
+   "path": "img/witch1.mp3",
+   "bytes": 35328,
+   "sha256": "34077e6a112f50a91928097586bd70cadc91d97d632b9f38f7c8d1c641c38a32"
+  },
+  {
+   "path": "img/woosh.mp3",
+   "bytes": 36780,
+   "sha256": "cda44a4cf7021031552c1fb25d9e57487a9719aa50aa1331b09257a2d3092783"
+  },
+  {
+   "path": "img/yt.mp3",
+   "bytes": 2297629,
+   "sha256": "fe8d7794fd16b6879fee3d817302806924a3a92bae7ce4cfd0ce389a9e3603e8"
+  },
+  {
+   "path": "manifest.json",
+   "bytes": 485,
+   "sha256": "fa3da1a010281afa747d86f24ee1d633775e491045331c8d707a88a1784838ef"
+  },
+  {
+   "path": "playfab-manager.js",
+   "bytes": 56241,
+   "sha256": "347ffa144011336a37547953fe7950006c03c15b7c563206c39fffa80c46501d"
+  },
+  {
+   "path": "ui.js",
+   "bytes": 7953,
+   "sha256": "1f35a26fcb4f9f70b5abcfa9f4649c1fa995c2fbbe9d04ed6e9f7748f9394d70"
+  }
+ ]
+}

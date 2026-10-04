@@ -1,0 +1,25 @@
+# build output
+bin/
+obj/
+*.zip
+mod/FlappyCrix/FlappyCrix.dll
+
+# browser engine + its DLLs (large; installed separately via tools/collect_uwb.ps1)
+mod/FlappyCrix/UWB/
+mod/FlappyCrix/VoltstroStudios.*.dll
+mod/FlappyCrix/VoltRpc.dll
+mod/FlappyCrix/UniTask.dll
+mod/FlappyCrix/Newtonsoft.Json.dll
+
+# runtime data (browser profile with saves, logs, self test)
+mod/FlappyCrix/BrowserData/
+
+# reference build helpers
+tools/refs/*.dll
+tools/server-harness/*.exe
+
+# misc
+__pycache__/
+.vs/
+.idea/
+*.user

@@ -1,0 +1,35 @@
+{
+ "selfTest": {
+  "js": true,
+  "css": true,
+  "fontLoaded": true,
+  "imagesLoaded": 118,
+  "imagesFailed": 0,
+  "audioFetched": 47,
+  "birdSprite": true,
+  "canvas": true,
+  "canvasColours": 8,
+  "mp3": "probably",
+  "webm": "probably",
+  "inputKeys": 0,
+  "inputClicks": 3,
+  "fps": 60,
+  "screen": "dead"
+ },
+ "eventsToUnity": [
+  "ScoreChanged:0",
+  "Screen:menu",
+  "BridgeReady:1.0.0",
+  "GameStarted:",
+  "Screen:playing",
+  "ScoreChanged:1",
+  "ScoreChanged:2",
+  "ScoreChanged:3",
+  "ScoreChanged:4",
+  "ScoreChanged:5",
+  "Screen:paused",
+  "Screen:playing",
+  "GameOver:5",
+  "Screen:dead"
+ ]
+}
