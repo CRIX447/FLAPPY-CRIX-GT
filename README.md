@@ -97,7 +97,7 @@ points; if a game update moves them, it works the fingertip out from your contro
 Gorilla Tag ─ BepInEx ─ FlappyCrix.dll
                           ├─ the in-game version (its own thread): the site's rules, menus and seasons,
                           │  drawn into one 960×640 picture ──► texture on the in-game screen
-                          ├─ sounds: the site's mp3 files (Web/img), played from the screen
+                          ├─ sounds: the site's mp3 files (built in), played from the screen
                           ├─ account: crixgamingvr.com/api/device-link ─► Firebase Auth ─► Firestore users/{uid}
                           │           (+ PlayFab statistics and bans), like the website
                           ├─ multiplayer: Photon (the website's app, version and region), JSON over secure
@@ -160,7 +160,7 @@ When the mod starts, the screen opens in front of you straight away. If no scree
 | Log says | What to do |
 |---|---|
 | `Still waiting for the player's camera` | The game hasn't created the player yet; the screen opens as soon as it does. |
-| `No sound files (Web/img isn't next to the DLL)` | Unzip the whole `FlappyCrix` folder, including `Web`, for the music and sounds. |
+| `Sounds ready: N of 26 loaded` with N below 26, or `Couldn't load sound ...` | Please send the log: Unity couldn't play some of the sound files in `%LOCALAPPDATA%\FlappyCrix\sounds`. |
 | `The in-game version stopped: ...` | Please report it with the log. |
 | `Couldn't load the live site (...)` | The reason is in brackets, and the screen shows it too. The packaged copy (the site's offline mode) plays meanwhile, and the mod switches back to crixgamingvr.com by itself when it can. |
 | `The website says it is offline` while on the live site | The site's own connection check failed; the mod asks it to check again every 6 s. If it never says `online`, something on the PC is blocking crixgamingvr.com for the hidden browser (firewall, antivirus, VPN). |
