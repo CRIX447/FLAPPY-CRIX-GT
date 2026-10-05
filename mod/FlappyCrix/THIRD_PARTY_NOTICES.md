@@ -18,7 +18,11 @@ owner's permission. Changes: none to the website's files; `api.json` is replaced
 - **Text font** (`ui-font.bin`, made by `tools/make_font.py`): the site's UI font file `img/font.otf`, which is
   **Bubble Sans** — Copyright 2025 The Bubble Sans Project Authors (https://github.com/abayemes/bubblesans),
   SIL Open Font License 1.1 (`LICENSES/OFL-1.1-BubbleSans.txt`) — drawn into small bitmaps at six sizes.
+- **Chat filter**: the site's `filter.js` (CRIX's code, as above) is built in and read by the mod to clean
+  multiplayer chat the way the website does.
 - Sounds and music are not built in: the in-game version plays the site's mp3 files from `Web/img`.
+- No online service's code is included: the mod talks to crixgamingvr.com, Firebase/Firestore, PlayFab and
+  Photon with its own code, using the website's public client settings.
 
 ## Downloaded website engine (not included)
 Google's **Chrome for Testing headless shell** (Chromium; BSD-3-Clause © The Chromium Authors, plus

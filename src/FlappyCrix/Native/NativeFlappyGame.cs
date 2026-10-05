@@ -33,7 +33,7 @@ namespace FlappyCrix.Native
         static readonly string[] Effects =
         {
             "jump", "coin", "death", "milestone", "67", "boom", "victory", "ach", "powerup", "purchase", "unlock",
-            "select", "rank", "woosh", "pop", "error", "smash", "witch1", "santahohoho",
+            "select", "rank", "woosh", "pop", "error", "smash", "witch1", "santahohoho", "fail",
         };
 
         private readonly AppRunner runner;
@@ -51,7 +51,10 @@ namespace FlappyCrix.Native
         private readonly List<string> logBuf = new List<string>();
         private Vector2 lastPointer = new Vector2(-1, -1);
 
-        public NativeFlappyGame(Transform audioAnchor, string modFolder, MonoBehaviour host, bool flapStartsGame)
+        private readonly Online.OnlineServices online;
+        private readonly List<string> urls = new List<string>();
+
+        public NativeFlappyGame(Transform audioAnchor, string modFolder, MonoBehaviour host, bool flapStartsGame, bool onlineFeatures = true)
         {
             this.host = host;
             imgFolder = Path.Combine(Path.Combine(modFolder, "Web"), "img");
@@ -64,8 +67,15 @@ namespace FlappyCrix.Native
             try { art = SpriteSheet.LoadEmbedded(); }
             catch (Exception e) { art = new Assets(); Log?.Invoke("Pictures unavailable: " + e.Message); }
 
-            var app = new FlappyApp(save, art) { FlapStartsGame = flapStartsGame };
+            // the crixgamingvr.com account and multiplayer (their own threads; log lines go through the runner)
+            AppRunner r0 = null;
+            if (onlineFeatures)
+                online = new Online.OnlineServices(new Online.SiteConfig(), data, m => { if (r0 != null) r0.AddLog(m); });
+            var app = new FlappyApp(save, art, 0, null, online) { FlapStartsGame = flapStartsGame };
+            app.OpenUrl += u => { lock (urls) urls.Add(u); };
             runner = new AppRunner(app);
+            r0 = runner;
+            online?.Start();
 
             texture = new Texture2D(FlappyApp.W, FlappyApp.H, TextureFormat.RGBA32, false)
             { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
@@ -132,6 +142,14 @@ namespace FlappyCrix.Native
             soundBuf.Clear();
 
             UpdateMusic();
+
+            // "OPEN ON THIS PC" on the account screen: the site's link page in the PC's browser
+            lock (urls)
+            {
+                foreach (var u in urls)
+                    if (u.StartsWith("https://", StringComparison.Ordinal)) { Log?.Invoke("Opening " + u + " in the PC's browser"); Application.OpenURL(u); }
+                urls.Clear();
+            }
         }
 
         private void PlaySound(string name, float volume)
@@ -218,6 +236,7 @@ namespace FlappyCrix.Native
         public void Dispose()
         {
             runner.Dispose();
+            try { online?.Dispose(); } catch { }
             if (audioRoot != null) UnityEngine.Object.Destroy(audioRoot);
             if (texture != null) UnityEngine.Object.Destroy(texture);
         }

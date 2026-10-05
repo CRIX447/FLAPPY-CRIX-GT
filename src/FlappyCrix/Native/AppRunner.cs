@@ -83,6 +83,9 @@ namespace FlappyCrix.Native
             lock (gate) { into.AddRange(sounds); sounds.Clear(); }
         }
 
+        /// <summary>A log line from any thread (the online services).</summary>
+        public void AddLog(string m) { lock (gate) { if (logs.Count < 200) logs.Add(m); } }
+
         public void TakeLogs(List<string> into)
         {
             lock (gate) { into.AddRange(logs); logs.Clear(); }

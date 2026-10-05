@@ -6,7 +6,9 @@
 
 Play **Flappy Crix** ([crixgamingvr.com/flappycrix](https://crixgamingvr.com/flappycrix)) on a screen inside
 Gorilla Tag, with an arcade control deck in front of it. It's the website's game — same physics, coins, store,
-cosmetics, daily rewards, seasonal themes and awards — built into the mod with its own VR-friendly layout.
+cosmetics, daily rewards, seasonal themes and awards — built into the mod with its own VR-friendly layout. Link
+your crixgamingvr.com account to share your progress with the website, and play multiplayer with people on the
+website.
 
 ![The in-game version at Halloween](docs/screenshots/20-ingame-menu-halloween.png)
 
@@ -31,19 +33,33 @@ cosmetics, daily rewards, seasonal themes and awards — built into the mod with
 - **Portable**: opens in front of you when you load in. **B** hides it, **Y** brings it back.
 - **Silent when hidden**: the music and sounds stop while the screen is hidden and come back when you open it.
 - **Doesn't slow the game down**: the in-game version runs and draws on its own thread.
-- Left out because they need an account or don't work in VR: sign-in, multiplayer, voice and text chat.
-  Nothing opens in your desktop browser.
+- **Your crixgamingvr.com account.** Press **LINK ACCOUNT**: the game shows a code and a QR code. On your phone
+  or PC open **crixgamingvr.com/link**, sign in there (Google, or email and password) and enter the code — or
+  just scan the QR code. The game is then signed in to the same account (the site's own console-linking
+  feature) and stays signed in. Your coins, best score, games played, cosmetics, awards and level are saved to
+  the account and shared with the website both ways. The first time, the progress you made as a guest goes
+  to the account. Daily rewards and calendar doors stay per PC, as on the website.
+- **Multiplayer with website players**, on the website's own Photon servers and rooms: **PLAY ONLINE** shows
+  the open rooms, **CREATE ROOM** (Free Play, Race, Last One Standing, Coin Rush; everyone or code-only), and
+  **JOIN BY CODE** with an on-screen keyboard. Everyone gets the same pipes and coins from the host's seed;
+  other birds fly next to yours with their names, hats and trails; scores, a room menu (PAUSE) and the
+  results. Chat from website players shows (through the site's own filter). Ranked rooms and the seasonal
+  room modes stay on the website; voice chat isn't possible in the mod and nothing is typed.
+- Nothing opens in your desktop browser unless you press **OPEN ON THIS PC** on the account screen.
 - Local-only, no colliders (nothing can be climbed), no dependency on Gorilla Tag's internal code.
 - **Website mode** (optional, `UseWebsite = true`): streams the real crixgamingvr.com/flappycrix from a hidden
   browser instead (see [How it works](#website-mode)).
 
 | | |
 |---|---|
+| ![Playing online](docs/screenshots/33-online-playing.png) | ![Room list](docs/screenshots/30-online-room-list.png) |
+| ![Linking an account](docs/screenshots/35-account-link-code.png) | ![Results](docs/screenshots/34-online-results.png) |
 | ![Playing at Halloween](docs/screenshots/21-ingame-playing-halloween.png) | ![Trick or Treat calendar](docs/screenshots/23-ingame-trick-or-treat.png) |
 | ![Store](docs/screenshots/22-ingame-store.png) | ![Locker](docs/screenshots/24-ingame-locker.png) |
 | ![Christmas](docs/screenshots/25-ingame-christmas.png) | ![Easter](docs/screenshots/26-ingame-easter.png) |
 
-(Pictures from `tools/native-harness`, which runs the in-game version's code outside the game.)
+(Pictures from `tools/native-harness` and `tools/online-harness`, which run the in-game version's code outside
+the game; the account picture shows a test server's address instead of crixgamingvr.com/link.)
 
 ## Install
 
@@ -82,6 +98,10 @@ Gorilla Tag ─ BepInEx ─ FlappyCrix.dll
                           ├─ the in-game version (its own thread): the site's rules, menus and seasons,
                           │  drawn into one 960×640 picture ──► texture on the in-game screen
                           ├─ sounds: the site's mp3 files (Web/img), played from the screen
+                          ├─ account: crixgamingvr.com/api/device-link ─► Firebase Auth ─► Firestore users/{uid}
+                          │           (+ PlayFab statistics and bans), like the website
+                          ├─ multiplayer: Photon (the website's app, version and region), JSON over secure
+                          │           WebSockets like the website's Photon SDK; the site's rooms and events
                           └─ input: deck, X/A, laser, keyboard ──► the game
 ```
 
@@ -93,6 +113,14 @@ Gorilla Tag ─ BepInEx ─ FlappyCrix.dll
   music and calendar prizes (`Season.cs`).
 - **The layout is the mod's own**: your level, coins, power-ups and season on the left, the game in the middle,
   score, controls and messages on the right; the store and other menus fill the screen.
+- **Online, the same way the website does it.** Linking uses the site's device-link API (made for consoles);
+  the save is the site's `users/{uid}` document in its format (only the game's own fields are written, so the
+  site's other fields are untouched); multiplayer uses the site's Photon app, room names (`crix_XXXX`), room
+  properties, event codes and payloads, and its seeded pipe generator, so website and VR players share rooms.
+  The site's public settings are read from `crixgamingvr.com/api.json` when the game starts.
+- **Limits that come from the site:** the Photon app is on a plan with a limit of players online at once
+  (website and mod together); nothing on the site's servers checks coins or results, so the mod only ever
+  applies the website's own rules and never claims staff roles or sends host commands unless it is the host.
 
 ### Website mode
 
@@ -111,6 +139,7 @@ engine live in `%LOCALAPPDATA%\FlappyCrix`.
 | `Width` / `Distance` / `HeightOffset` | 0.6 m / 0.75 m / −0.43 m | Screen size, distance, and its **bottom edge** height (just above the deck, like an arcade cabinet). The deck's − / + change `Width`; the screen grows upwards. |
 | `InGameFrameRate` | 30 | Pictures per second of the in-game version (drawn on its own thread). |
 | `FlapStartsGame` | `true` | FLAP on the main menu starts a run. |
+| `OnlineFeatures` | `true` | Account linking and multiplayer. `false` = offline only. The linked account is remembered in `%LOCALAPPDATA%\FlappyCrix\account.txt` (delete it, or press SIGN OUT, to sign out). |
 | `UseGameFingertips` / `FingertipOffset` | `true` / (0, −0.02, 0.085) | Deck buttons use Gorilla Tag's fingertip points; the offset (metres from the controller) is the backup. |
 | `ShaderOverride` | empty | Advanced: if the screen or deck is invisible, a shader name to use instead (see the log). |
 | Website mode only: `UseRemoteWebsite`, `UseOfflineCopy`, `AutoFallbackToNative`, `ResolutionWidth/Height` (1280×800), `BrowserPath`, `DownloadEngine`, `BrowserFrameRate`, `StreamQuality`, `OpenLinksOnDesktop` | | See the descriptions in the settings file. |
@@ -149,7 +178,9 @@ src/FlappyCrix/        C# source of the BepInEx plugin
   Web/                 BrowserGame (page rules, bridge, self test), EdgeBrowserGame, UwbBrowserGame,
     Cdp/               DevTools protocol client: launcher, WebSocket, JSON, page controller (no Unity code)
   VR/                  XR input, screen, arcade deck, joystick, laser
-  Native/              the in-game version: FlappyApp (menus, store, seasons...), NativeSim (rules),
+  Online/              account linking + cloud save (Account, CloudSave, Firestore), Photon client + the site's
+                       multiplayer (PhotonClient, Multiplayer), ChatFilter, QrCode, SiteConfig - no Unity code
+  Native/              the in-game version: FlappyApp (menus, store, seasons, online screens...), NativeSim (rules),
                        NativeRenderer + Canvas (drawing), Season, Catalog, SaveData, AppRunner (its thread)
                        - no Unity code - and NativeFlappyGame (the Unity side: texture, sounds)
 mod/FlappyCrix/        the plugin folder as shipped (Web/ = packaged website + bridge.js)
@@ -177,6 +208,7 @@ tools/load-check/run.sh        # loads it like a normal install and runs the sta
 tools/api-audit/run.sh         # checks every Unity call against Unity's own source
 tools/live-harness/run.sh      # the website engine vs a slow / down / stalled stand-in live site
 tools/native-harness/run.sh    # the in-game version: rules, menus, seasons, its thread, a picture of every screen
+tools/online-harness/run.sh    # account + multiplayer vs stand-ins, and vs the website's own multiplayer code
 ```
 GitHub Actions does this automatically; pushing a version tag (e.g. `v1.0.0`) publishes a release with the zip attached.
 

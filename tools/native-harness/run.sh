@@ -9,11 +9,13 @@ HERE=$(dirname "$(realpath "$0")")
 ROOT="$HERE/../.."
 OUT=$(realpath -m "${1:-$(mktemp -d)}")
 mkdir -p "$OUT"
-N="$ROOT/src/FlappyCrix/Native"
+N="$ROOT/src/FlappyCrix/Native"; O="$ROOT/src/FlappyCrix/Online"; C="$ROOT/src/FlappyCrix/Web/Cdp"
 mcs -langversion:7.2 -optimize+ -nowarn:414,649 -out:"$OUT/nativetest.exe" \
     -resource:"$N/ui-font.bin",FlappyCrix.ui-font.bin -resource:"$N/sprites.bin",FlappyCrix.sprites.bin \
+    -resource:"$ROOT/mod/FlappyCrix/Web/filter.js",FlappyCrix.filter.js \
     "$N/Canvas.cs" "$N/Catalog.cs" "$N/SaveData.cs" "$N/Season.cs" "$N/SpriteSheet.cs" \
-    "$N/NativeSim.cs" "$N/NativeRenderer.cs" "$N/FlappyApp.cs" "$N/AppRunner.cs" "$HERE/NativeTest.cs"
+    "$N/NativeSim.cs" "$N/NativeRenderer.cs" "$N/FlappyApp.cs" "$N/FlappyApp.Online.cs" "$N/AppRunner.cs" \
+    "$O"/*.cs "$C/MiniJson.cs" "$C/WebSocketClient.cs" "$HERE/NativeTest.cs"
 R=0; mono "$OUT/nativetest.exe" "$OUT" || R=$?
 python3 - "$OUT" <<'PY'
 import glob, os, sys

@@ -17,6 +17,7 @@ What was verified while building the mod, how, and what still needs a real heads
 | Third test: "it's not connecting to the web" (the site's offline mode) | (1) The mod counted the live site as started only at the page's `load` event — every image/sound/script downloaded — and gave it 12 s from game start, then switched to the packaged copy, which is offline by design. (2) The site marks itself offline when its first `/robots.txt` check takes over 5 s (likely while the rest of the page is downloading) and only re-checks when a tab becomes visible, which never happens in a hidden browser. | Ready as soon as the game's code has run; 30 s to *start* loading (from browser start), then unlimited; the bridge re-triggers the site's own online check every 6 s while it says offline; the reason is shown on screen and logged, and the mod returns to the live site by itself when it can. `tools/live-harness` 9/9. |
 | Third test: "I have to use my palm to press the buttons" | Presses were measured at the controller's tracked point, which is in your palm. | Presses use Gorilla Tag's own fingertip points (found by reflection, no hard link to the game's code), else a fingertip 8.5 cm ahead of the controller; tighter press zone at the cap, ring glows under a fingertip. |
 | Sixth request: "switch back to the old UI but make it like the web version ... voice and text chat won't work well and sign-in doesn't work ... don't add a notification for it opening up in your browser ... mute the game when it isn't opened ... add the seasonal themes" | — | The in-game version is the default again, rebuilt as a port of the website's game with the site's store, locker, daily rewards, calendars, awards, levels and settings in the mod's own layout, and all four seasons; no sign-in, chat or multiplayer, nothing opens in the browser (and website mode no longer shows an "opened on your PC" message). Hidden screen = silent in both modes. Found while doing it: in website mode SELECT still flapped during a run (the C# side) — fixed. `tools/native-harness` 39/39, `test_deck.py` 10/10. |
+| Seventh request: "sign-in pages work on the browser ... the game will run on Photon but the servers will run off the website ... use the linking thing which will link your account to the game" | — | Account linking through the site's device-link API (code + QR code for crixgamingvr.com/link), Firebase/Firestore/PlayFab over REST, and a Photon client that speaks the website's JSON protocol and the site's room/event format. `tools/online-harness`: 21 account checks, 15 two-player UI checks, 26 checks against the website's own multiplayer code. |
 | Second test: "it won't work" (no screen at all) | The start-up method called `UwbBrowserGame.IsInstalled`, a member of the optional UnityWebBrowser engine's class. Without that engine's DLLs (the normal install) Mono can't load the class, so it refused to compile the **whole** start-up method: no engine started, and `Update` returned before the screen was ever placed. The earlier checks loaded the DLL *with* the UWB stand-ins present, so they missed it. | The check now only looks for the engine's files; every engine is created in its own `[NoInlining]` method inside a try/catch; the screen is placed and shown before any engine code runs, with a Loading / Could-not-start picture. The new `tools/load-check` reproduces the bug on the old DLL (`TypeLoadException` at engine start-up) and passes on the new one. |
 
 ## 1. Hidden-browser engine, end to end — `tools/engine-harness` (18/18)
@@ -79,6 +80,36 @@ pictures and font embedded as in the DLL, plays it, and saves a picture of every
 
 The pictures were checked by eye: main menu, playing, pause, game over, daily, calendar, store, locker,
 awards, settings, how to play, all four seasons and no season (some are in `docs/screenshots/20-29`).
+
+## 2b. Account and multiplayer — `tools/online-harness` (62/62)
+
+No online service could be reached from the build machine (crixgamingvr.com, Google, PlayFab and Photon are all
+blocked there), so everything was tested against stand-ins built from the website's source
+(github.com/CRIX447/crix-website): `api/device-link.js`, the Firebase/Firestore/PlayFab calls in
+`flappycrix.html`, and the Photon JS SDK the site ships.
+
+- **Accounts** (`AccountTest.cs` + `site_standin.py`, 21): the live `/api.json` settings are used; LINK MY
+  ACCOUNT shows a code; the QR code on the screen **scans** (OpenCV) to `…/link?code=<code>`; OPEN ON THIS PC
+  opens that page; approving it signs the game in with the account's name; the first sign-in uploads the guest
+  progress in the website's format (coinCount, highScore, gamesPlayed, owned, equipped, all 16 achievements,
+  savedAt, stats.*); a run saves right after the crash; the website's other fields (Discord link, ranked
+  points) survive thanks to update masks; the next start is still signed in and takes the website's newer save
+  and cosmetics; SIGN OUT returns to the untouched guest progress; expired codes, banned accounts (multiplayer
+  off) and revoked sign-ins are handled.
+- **Two players through the screens** (`OnlineUiTest.cs` + `photon_standin.py`, 15): PLAY ONLINE connects;
+  CREATE ROOM; the room in the other player's list; JOIN BY CODE with the on-screen keyboard; names and hats;
+  PAUSE opens the room menu; START MATCH; the other bird beside yours; chat; Last One Standing results on
+  both; CONTINUE; LEAVE.
+- **Against the website's own code** (`interop.py`, 26): the real `flappycrix.html` with its
+  `photon-realtime-browser.js` runs in Chromium, pointed at the Photon stand-in. Website-hosted Race joined by
+  the mod (room list, join by code, names/hat/trail/level both ways, **identical pipes from the website's
+  seed**, positions both ways, a coin the mod takes vanishes on the website, website chat filtered); host
+  hand-over when the website host leaves; mod-hosted Last One Standing joined by the website (the website sees
+  the mod as host, builds the mod's pipes, the mod ends the match and the website shows the mod won); mode
+  change and Freeplay END from the mod; no script errors on the website.
+
+Still unverified (needs the real services): whether Photon's servers accept this client exactly like the
+browser (Origin, protocol details), and whether the site's Firebase key works outside the website.
 
 ## 3. Website + bridge in Chromium (Playwright)
 
@@ -179,6 +210,7 @@ online and are sent to the desktop.
 
 - The in-game version in Gorilla Tag: its picture, its sounds and music (the site's mp3 files loaded by Unity),
   that it goes quiet when hidden, and the deck/laser driving its menus.
+- The real crixgamingvr.com link page, Firebase/Firestore/PlayFab and Photon servers (see 2b).
 
 - The hidden engine on Windows: Edge's `EdgeCore` copy or the downloaded Chrome for Testing headless shell (tested
   here with Chromium and its headless shell on Linux; same protocol). The self test will say whether it worked.

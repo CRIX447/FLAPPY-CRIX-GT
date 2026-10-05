@@ -30,6 +30,7 @@ namespace FlappyCrix
         public readonly ConfigEntry<bool> AutoFallbackToNative;
         public readonly ConfigEntry<bool> UseOfflineCopy;
         public readonly ConfigEntry<bool> ShowOnStart;
+        public readonly ConfigEntry<bool> OnlineFeatures;
         public readonly ConfigEntry<KeyCode> ToggleKey;
         public readonly ConfigEntry<KeyCode> RecenterKey;
 
@@ -95,6 +96,8 @@ namespace FlappyCrix
             UseOfflineCopy = cfg.Bind(G, "UseOfflineCopy", false,
                 "false (default) = only the live page; if it can't be reached the screen says so and keeps retrying. true = show the copy packaged with the mod (the site's offline mode) meanwhile.");
             ShowOnStart = cfg.Bind(G, "ShowOnStart", true, "Open the screen in front of you when you load in.");
+            OnlineFeatures = cfg.Bind(G, "OnlineFeatures", true,
+                "In-game version: link your crixgamingvr.com account (progress shared with the website) and play multiplayer with website players. false = offline only.");
             ToggleKey = cfg.Bind(G, "ToggleKey", KeyCode.F8, "Keyboard: show/hide. In VR: B hides, Y opens it in front of you.");
             RecenterKey = cfg.Bind(G, "RecenterKey", KeyCode.F9, "Keyboard: bring the screen and deck in front of you (same as Y in VR).");
 

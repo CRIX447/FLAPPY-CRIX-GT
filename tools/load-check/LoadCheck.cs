@@ -90,12 +90,24 @@ static class LoadCheck
             var saveType = asm.GetType("FlappyCrix.Native.SaveData");
             var save = Activator.CreateInstance(saveType, new object[] { null });
             var appType = asm.GetType("FlappyCrix.Native.FlappyApp");
-            var app = Activator.CreateInstance(appType, new object[] { save, sheet, 1, null });
+            var app = Activator.CreateInstance(appType, new object[] { save, sheet, 1, null, null });
             appType.GetMethod("Update").Invoke(app, new object[] { 0.016f });
             bool drew = (bool)appType.GetMethod("Render").Invoke(app, null);
             Check(count > 40 && drew, "the in-game version loads its pictures and font from the DLL and draws", count + " pictures");
         }
         catch (Exception e) { Check(false, "the in-game version loads its pictures and font from the DLL and draws", (e.InnerException ?? e).ToString()); }
+
+        // 3b. the online parts that need data from the DLL: the site's chat filter, QR codes
+        try
+        {
+            var filter = asm.GetType("FlappyCrix.Online.ChatFilter").GetMethod("Embedded").Invoke(null, null);
+            int words = (int)filter.GetType().GetProperty("WordCount").GetValue(filter);
+            string clean = (string)filter.GetType().GetMethod("Clean").Invoke(filter, new object[] { "what the fuck" });
+            var qr = asm.GetType("FlappyCrix.Online.QrCode").GetMethod("Encode").Invoke(null, new object[] { "https://crixgamingvr.com/link?code=ABC-123" });
+            int size = (int)qr.GetType().GetField("Size").GetValue(qr);
+            Check(words > 50 && clean == "what the ****" && size == 29, "the site's chat filter is built in, and QR codes encode", words + " words, QR " + size + "x" + size);
+        }
+        catch (Exception e) { Check(false, "the site's chat filter is built in, and QR codes encode", (e.InnerException ?? e).ToString()); }
 
         // 4. JIT every method (last, so step 2 sees the start-up method compiled for the first time, as in the game)
         Type[] types;

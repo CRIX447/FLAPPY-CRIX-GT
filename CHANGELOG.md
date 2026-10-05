@@ -112,3 +112,19 @@ The version stays at 1.0.0 until CRIX decides to change it.
 - The in-game version runs and draws on its own thread, so it doesn't cost Gorilla Tag frames.
 - Website mode: SELECT no longer flaps during a run (it is for menus only).
 
+### Added after the seventh request
+
+- **Link your crixgamingvr.com account** (LINK ACCOUNT): the game shows a code and a QR code; sign in on
+  crixgamingvr.com/link on your phone or PC (Google, or email and password) and enter the code. It uses the
+  site's own device-link feature, stays signed in, and saves coins, best score, games, cosmetics, awards and
+  level to the account in the website's format, shared both ways (the first sign-in takes your guest progress).
+  Banned accounts are recognised.
+- **Multiplayer with website players** (PLAY ONLINE) on the website's own Photon rooms: room list, create a room
+  (Free Play, Race, Last One Standing, Coin Rush; public or code-only), join by code with an on-screen keyboard,
+  the room menu (PAUSE), other birds with names and cosmetics, scores, results, the host's controls, chat from
+  website players through the site's filter. Ranked rooms, the seasonal room modes and voice chat stay on the
+  website.
+- Settings: `OnlineFeatures` (on).
+- Tested against stand-ins for crixgamingvr.com, Firebase, Firestore, PlayFab and Photon, and against the
+  website's own multiplayer code in Chromium (`tools/online-harness`, 62 checks). Two security problems found on the site are written up in SITE-NOTES.md.
+

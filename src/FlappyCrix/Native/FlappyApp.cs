@@ -19,10 +19,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using FlappyCrix.Online;
 
 namespace FlappyCrix.Native
 {
-    public sealed class FlappyApp
+    public sealed partial class FlappyApp
     {
         public const int W = 960, H = 640, PX = 280, PY = 20, PW = NativeSim.W, PH = NativeSim.H;
         public const string Version = "1.0.0";
@@ -30,7 +31,7 @@ namespace FlappyCrix.Native
 
         public readonly Canvas C = new Canvas(W, H);
         public readonly NativeSim Sim;
-        public readonly SaveData Save;
+        public SaveData Save { get; private set; }
         public readonly Assets Art;
 
         /// <summary>The wall clock (UTC). Replaceable for tests.</summary>
@@ -72,10 +73,12 @@ namespace FlappyCrix.Native
         List<Btn> buttons = new List<Btn>(), building = new List<Btn>();
         string focus, screenKey, defaultFocus;
 
-        public FlappyApp(SaveData save, Assets art, int seed = 0, Func<DateTime> clock = null)
+        public FlappyApp(SaveData save, Assets art, int seed = 0, Func<DateTime> clock = null, OnlineServices online = null)
         {
             if (clock != null) Clock = clock;
             Save = save;
+            guestSave = save;
+            Online = online;
             Art = art ?? new Assets();
             Sim = new NativeSim(seed);
             Sim.Sound += (n, v) => Sfx(n, v);
@@ -84,6 +87,7 @@ namespace FlappyCrix.Native
             Sim.Died += OnDied;
             Sim.PowerupGranted += (id, s) => Sfx("powerup", 1f);
             RefreshSeason(true);
+            InitOnline();
         }
 
         public string Screen => Sim.Screen;
@@ -100,6 +104,7 @@ namespace FlappyCrix.Native
             if (now - seasonCheckedAt >= 5) RefreshSeason(false);
 
             Sim.TickRealTime(dt);
+            UpdateOnline(dt);
             if (Sim.Screen == "playing")
             {
                 acc += dt;
@@ -127,7 +132,16 @@ namespace FlappyCrix.Native
             if (Save.Dirty && now - lastSave > 3) Flush();
         }
 
-        public void Flush() { lastSave = now; if (Save.Dirty) Save.Save(); }
+        public void Flush() => Flush(false);
+
+        void Flush(bool cloudNow)
+        {
+            lastSave = now;
+            if (!Save.Dirty) return;
+            Save.SavedAt = SaveData.NowMs();
+            Save.Save();
+            CloudSaveNow(cloudNow);
+        }
 
         void RefreshSeason(bool force)
         {
@@ -190,11 +204,12 @@ namespace FlappyCrix.Native
         void OnDied(int score)
         {
             diedAt = now;
+            if (InMatch) { Mp.OnDied(score); return; }
             // the site only saves the best after a floor death; here every death counts
             if (score > Save.Best) { Save.Best = score; newBest = true; }
             Save.Dirty = true;
             CheckAchievements(score);
-            Flush();
+            Flush(true);
         }
 
         // ------------------------------------------------------------------ achievements
@@ -256,6 +271,7 @@ namespace FlappyCrix.Native
 
         public void Flap()
         {
+            if (InRoom) { if (InMatch && Sim.Screen == "playing" && Sim.Flap()) Mp.OnFlap(); return; }
             if (Sim.Screen == "playing") { Sim.Flap(); return; }
             if (Sim.Screen == "menu" && modal == null && FlapStartsGame) { StartRun(); return; }
             if (Sim.Screen == "dead" && now - diedAt > 0.5) StartRun();       // the site: a tap after game over plays again
@@ -263,6 +279,7 @@ namespace FlappyCrix.Native
 
         public void StartButton()
         {
+            if (InRoom) { if (Mp.State == Multiplayer.Phase.Results) Mp.CloseResults(); else Mp.StartMatch(); Changed(); return; }
             switch (Sim.Screen)
             {
                 case "menu": StartRun(); break;
@@ -273,6 +290,7 @@ namespace FlappyCrix.Native
 
         public void TogglePause()
         {
+            if (InRoom) { if (modal == "online") CloseModal(); else Open("online"); return; }      // others keep playing: no pause online
             if (Sim.Screen == "playing") { Sim.Pause(); Flush(); }
             else if (Sim.Screen == "paused") Sim.Resume();
         }
@@ -281,6 +299,8 @@ namespace FlappyCrix.Native
         public void Back()
         {
             Changed();
+            if (modal == "keyboard") { modal = "online"; return; }
+            if (modal == "online" && onlineSub != null) { onlineSub = null; return; }
             if (modal != null) { CloseModal(); return; }
             if (Sim.Screen == "paused") Sim.Resume();
             else if (Sim.Screen == "dead") ToMenu();
@@ -543,7 +563,7 @@ namespace FlappyCrix.Native
             bool isModal = modal != null;
             if (isModal)
             {
-                string sig = uiVersion + "|" + focus + "|" + Save.Coins + "|" + PowerupKey() + "|" + ToastKey() + "|" + DailyReady + "|" + today;
+                string sig = uiVersion + "|" + focus + "|" + Save.Coins + "|" + PowerupKey() + "|" + ToastKey() + "|" + DailyReady + "|" + today + "|" + OnlineSig();
                 if (lastModal && sig == modalSig) return false;
                 modalSig = sig;
             }
@@ -569,6 +589,9 @@ namespace FlappyCrix.Native
                     case "achievements": AchievementsScreen(); break;
                     case "settings": SettingsScreen(); break;
                     case "help": HelpScreen(); break;
+                    case "account": AccountScreen(); break;
+                    case "online": OnlineScreen(); break;
+                    case "keyboard": KeyboardScreen(); break;
                 }
                 Toasts();
             }
@@ -577,15 +600,16 @@ namespace FlappyCrix.Native
                 Region(LeftEnd, RightStart);
                 DrawGame();
                 C.ClipX0 = LeftEnd; C.ClipX1 = RightStart;
-                if (Sim.Screen == "menu") MainMenu();
+                if (InRoom) RoomOverlay();
+                else if (Sim.Screen == "menu") MainMenu();
                 else if (Sim.Screen == "paused") PauseCard();
                 else if (Sim.Screen == "dead" && now - diedAt > 0.25) DeathCard();
 
                 string ls = Save.Level + "," + Save.Xp + "," + Save.Coins + "," + Save.Best + "," + Save.Achievements.Count + "," + Save.Games + "," +
-                            PowerupKey() + "," + (Season != null ? Season.Id : "-") + "," + SeasonForced + "," + today;
+                            PowerupKey() + "," + (Season != null ? Season.Id : "-") + "," + SeasonForced + "," + today + "," + AccountKey();
                 if (ls != leftSig) { leftSig = ls; Region(0, LeftEnd); LeftColumn(); }
 
-                string rs = Sim.Screen + "," + Sim.Score + "," + Save.Best + "," + Sim.RunCoins + "," + Sim.CoinMultiplier + "|" + ToastKey();
+                string rs = Sim.Screen + "," + Sim.Score + "," + Save.Best + "," + Sim.RunCoins + "," + Sim.CoinMultiplier + "|" + ToastKey() + "|" + OnlineRightKey();
                 if (rs != rightSig) { rightSig = rs; Region(RightStart, W); RightColumn(); Toasts(); }
             }
             C.OX = C.OY = 0; C.ResetClip();
@@ -627,11 +651,12 @@ namespace FlappyCrix.Native
                 if (p.Web != 0) NativeRenderer.Webs(C, p, p.X + shift);
             }
             foreach (var p in Sim.Pumpkins) NativeRenderer.Pumpkin(C, p, p.X + (p.Smashed > 0 ? 0 : shift));
-            foreach (var co in Sim.CoinList) NativeRenderer.Coin(C, co, co.X + shift, Sim.Frame, coin);
+            foreach (var co in Sim.CoinList) if (co.HiddenUntil <= Sim.Ticks) NativeRenderer.Coin(C, co, co.X + shift, Sim.Frame, coin);
             foreach (var p in Sim.Pumpkins) NativeRenderer.PrizeText(C, p, p.X, coin);
 
             var hat = Catalog.CosmeticById(Save.Hat);
             var trail = Catalog.CosmeticById(Save.Trail);
+            if (InRoom) DrawRemotes(shift);
             if (Sim.Screen != "menu")
             {
                 NativeRenderer.Trail(C, Sim.Trail, shift, trail, Sim.Frame);
@@ -640,7 +665,7 @@ namespace FlappyCrix.Native
                                     Sim.PowerupOn("shield"), Sim.Frame);
                 // the score, big, at the top of the play area
                 if (Sim.Screen == "playing" || Sim.Screen == "paused")
-                    C.Text(Sim.Score.ToString(CultureInfo.InvariantCulture), PW / 2f, 34, 48, White, 1, Align.Centre, true);
+                    C.Text((InMatch && Mp.Mode == "coinrush" ? Sim.CoinsThisMatch : Sim.Score).ToString(CultureInfo.InvariantCulture), PW / 2f, 34, 48, White, 1, Align.Centre, true);
             }
             if (popup != null && now < popupUntil) Popup();
 
@@ -674,7 +699,7 @@ namespace FlappyCrix.Native
             // title
             C.Text("FLAPPY", x + 4, y - 2, 34, White, 1, Align.Left, true);
             C.Text("CRIX", x + 4 + C.Measure("FLAPPY ", 34), y - 2, 34, Accent, 1, Align.Left, true);
-            C.Text("in Gorilla Tag  -  v" + Version, x + 6, y + 40, 13, Dim);
+            AccountLine(x + 6, y + 40);
             y += 66;
 
             // level card
@@ -773,6 +798,7 @@ namespace FlappyCrix.Native
         void RightColumn()
         {
             float x = 696, w = 248, y = 20;
+            if (InRoom) { OnlineRightColumn(x, y, w); return; }
             if (Sim.Screen == "playing" || Sim.Screen == "paused" || Sim.Screen == "dead")
             {
                 Card(x, y, w, 150);
@@ -826,11 +852,16 @@ namespace FlappyCrix.Native
             C.Text("FLAPPY CRIX", cx, PY + 28, 48, White, 1, Align.Centre, true);
             C.Text("tap  -  collect  -  drip", cx, PY + 84, 16, Gold, 1, Align.Centre, true);
 
-            float y = PY + 222;
-            Button("play", PX + 60, y, PW - 120, 60, "PLAY", "25b6", Style.Primary, true, StartRun, 34);
+            float y = PY + 206;
+            Button("play", PX + 60, y, PW - 120, 56, "PLAY", "25b6", Style.Primary, true, StartRun, 34);
             defaultFocus = "play";
-            y += 76;
-            float bw = (PW - 120 - 12) / 2f, bh = 50;
+            y += 64;
+            if (Online != null)
+            {
+                Button("online", PX + 60, y, PW - 120, 46, "PLAY ONLINE", "1f3ae", Style.On, true, () => Open("online"), 20);
+                y += 56;
+            }
+            float bw = (PW - 120 - 12) / 2f, bh = 44;
             var items = new List<object[]>
             {
                 new object[] { "daily", "DAILY", "1f381", (Action)(() => Open("daily")), DailyReady },
@@ -842,11 +873,12 @@ namespace FlappyCrix.Native
             items.Add(new object[] { "achievements", "AWARDS", "1f3c6", (Action)(() => Open("achievements")), false });
             items.Add(new object[] { "settings", "SETTINGS", "2699", (Action)(() => Open("settings")), false });
             items.Add(new object[] { "help", "HOW TO PLAY", "2753", (Action)(() => Open("help")), false });
+            if (Online != null) items.Add(new object[] { "account", SignedIn ? "ACCOUNT" : "LINK ACCOUNT", "1f513", (Action)(() => Open("account")), false });
             items.Add(new object[] { "music", Save.MusicOn ? "MUSIC ON" : "MUSIC OFF", Save.MusicOn ? "1f50a" : "1f507", (Action)(() => { Save.MusicOn = !Save.MusicOn; Save.Dirty = true; Sfx("pop", 0.4f); }), false });
             for (int i = 0; i < items.Count; i++)
             {
                 var it = items[i];
-                float bx = PX + 60 + (i % 2) * (bw + 12), by = y + (i / 2) * (bh + 10);
+                float bx = PX + 60 + (i % 2) * (bw + 12), by = y + (i / 2) * (bh + 8);
                 Button((string)it[0], bx, by, bw, bh, (string)it[1], (string)it[2], Style.Normal, true, (Action)it[3], 16);
                 if ((bool)it[4]) Dot(bx + bw - 8, by + 8);
             }
@@ -1270,6 +1302,10 @@ namespace FlappyCrix.Native
             C.RoundRect(x, y + 3, w, h, h / 3.2f, Ink, 0.35f * a);
             C.RoundRect(x, y, w, h, h / 3.2f, fill, a);
             if (st != Style.Normal) C.RoundRect(x + 3, y + 3, w - 6, h * 0.42f, h / 4, White, 0.10f * a);
+            // a label that doesn't fit gets a smaller size (down to the smallest)
+            int[] sizes = Canvas.Sizes;
+            for (int k = sizes.Length - 1; k >= 0 && C.Measure(label, size) + (icon != null ? size * 1.1f + 8 : 0) > w - 14; k--)
+                if (sizes[k] < size) size = sizes[k];
             float iconW = icon != null ? size * 1.1f + 8 : 0;
             float tw = C.Measure(label, size) + iconW;
             float lx = x + (w - tw) / 2;

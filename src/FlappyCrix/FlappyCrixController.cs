@@ -226,7 +226,7 @@ namespace FlappyCrix
         [MethodImpl(MethodImplOptions.NoInlining)]
         private IFlappyGame CreateNativeGame()
         {
-            var native = new NativeFlappyGame(panel != null ? panel.Root : station, ModFolder, this, Config.FlapStartsGame.Value);
+            var native = new NativeFlappyGame(panel != null ? panel.Root : station, ModFolder, this, Config.FlapStartsGame.Value, Config.OnlineFeatures.Value);
             native.Log += m => Logger.LogInfo(m);
             native.SetVisible(Visible || !placed);
             return native;

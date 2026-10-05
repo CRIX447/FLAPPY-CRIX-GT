@@ -27,6 +27,7 @@
     <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\__flappycrix\bridge.js" LogicalName="FlappyCrix.bridge.js" />
     <EmbeddedResource Include="Native\ui-font.bin" LogicalName="FlappyCrix.ui-font.bin" />
     <EmbeddedResource Include="Native\sprites.bin" LogicalName="FlappyCrix.sprites.bin" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\filter.js" LogicalName="FlappyCrix.filter.js" />
   </ItemGroup>
 
   <ItemGroup>

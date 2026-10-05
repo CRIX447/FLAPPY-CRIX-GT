@@ -1,11 +1,13 @@
-// Minimal RFC 6455 WebSocket client (text messages) for the DevTools protocol on
-// 127.0.0.1. Written directly on TcpClient so it behaves the same in Unity's Mono and
-// outside Unity, sends no Origin header (Chromium only checks Origin when one is sent),
-// and handles fragmented and large (~100 KB screencast) messages.
+// Minimal RFC 6455 WebSocket client (text messages): the DevTools protocol on 127.0.0.1, and
+// (with Tls = true) multiplayer's wss:// connections to Photon. Written directly on TcpClient
+// (+ SslStream) so it behaves the same in Unity's Mono and outside Unity, sends no Origin header
+// unless asked (Chromium only checks Origin when one is sent), and handles fragmented and large
+// (~100 KB screencast) messages.
 // Part of Flappy Crix for Gorilla Tag - made with AI (Claude by Anthropic).
 
 using System;
 using System.IO;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,9 +20,19 @@ namespace FlappyCrix.Web.Cdp
         public event Action<string> OnText;
         public event Action<string> OnClosed;
 
+        /// <summary>wss:// - TLS with the host name for SNI and certificate checks.</summary>
+        public bool Tls;
+        /// <summary>Sec-WebSocket-Protocol to ask for (e.g. "Json"), or null.</summary>
+        public string SubProtocol;
+        /// <summary>Origin header to send, or null for none.</summary>
+        public string Origin;
+        /// <summary>Accept any certificate (tests against a local stand-in only).</summary>
+        public static bool AcceptAnyCertificate;
+        public string Name = "FlappyCrix-DevTools";
+
         private TcpClient tcp;
         private Stream input;          // buffered, used only by the reader thread
-        private NetworkStream output;  // unbuffered, writes serialised by sendLock
+        private Stream output;         // unbuffered, writes serialised by sendLock
         private Thread reader;
         private readonly object sendLock = new object();
         private readonly RandomNumberGenerator rng = RandomNumberGenerator.Create();
@@ -37,6 +49,16 @@ namespace FlappyCrix.Web.Cdp
             // Separate read and write paths: a BufferedStream is not safe for a read on one
             // thread and a write on another at the same time.
             output = tcp.GetStream();
+            if (Tls)
+            {
+                var ssl = AcceptAnyCertificate
+                    ? new SslStream(output, false, (a, b, c, d) => true)
+                    : new SslStream(output, false);
+                tcp.ReceiveTimeout = timeoutMs; tcp.SendTimeout = timeoutMs;
+                ssl.AuthenticateAsClient(host, null, (System.Security.Authentication.SslProtocols)3072 /* TLS 1.2 */, false);
+                tcp.SendTimeout = 0;
+                output = ssl;
+            }
             input = new BufferedStream(output, 1 << 16);
 
             var keyBytes = new byte[16];
@@ -47,6 +69,8 @@ namespace FlappyCrix.Web.Cdp
                          "Upgrade: websocket\r\n" +
                          "Connection: Upgrade\r\n" +
                          "Sec-WebSocket-Key: " + key + "\r\n" +
+                         (SubProtocol != null ? "Sec-WebSocket-Protocol: " + SubProtocol + "\r\n" : "") +
+                         (Origin != null ? "Origin: " + Origin + "\r\n" : "") +
                          "Sec-WebSocket-Version: 13\r\n\r\n";
             byte[] rb = Encoding.ASCII.GetBytes(req);
             lock (sendLock) output.Write(rb, 0, rb.Length);
@@ -63,7 +87,7 @@ namespace FlappyCrix.Web.Cdp
             }
             tcp.ReceiveTimeout = 0;
             open = true;
-            reader = new Thread(ReadLoop) { IsBackground = true, Name = "FlappyCrix-DevTools" };
+            reader = new Thread(ReadLoop) { IsBackground = true, Name = Name };
             reader.Start();
         }
 
@@ -160,7 +184,7 @@ namespace FlappyCrix.Web.Cdp
                             }
                             break;
                         case 0x8: // close
-                            why = "closed by the browser";
+                            why = payload.Length >= 2 ? "closed (" + ((payload[0] << 8) | payload[1]) + ")" : "closed by the other side";
                             try { SendFrame(0x8, new byte[0]); } catch { }
                             open = false;
                             break;
