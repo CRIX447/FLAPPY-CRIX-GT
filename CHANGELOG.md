@@ -128,3 +128,12 @@ The version stays at 1.0.0 until CRIX decides to change it.
 - Tested against stand-ins for crixgamingvr.com, Firebase, Firestore, PlayFab and Photon, and against the
   website's own multiplayer code in Chromium (`tools/online-harness`, 62 checks). Two security problems found on the site are written up in SITE-NOTES.md.
 
+### Fixed after the eighth test
+
+- **No sound in game**: the plugin folder only had `FlappyCrix.dll` (no `Web` folder), and the sounds were read
+  from `Web/img`. All the sounds and music the game plays are now built into the DLL and unpacked once to
+  `%LOCALAPPDATA%\FlappyCrix\sounds`; the log says `Sounds ready: N of 26 loaded`.
+- **Menu navigation sounds** from the site's own files (github.com/CRIX447/crix-website `img/`): `hover.mp3` when
+  the highlight moves (joystick or laser), `click.mp3` when you press a button, `swoosh.mp3` between screens, as
+  well as the site's `woosh`/`pop`/`error`. Settings > "Menu sounds" (on).
+

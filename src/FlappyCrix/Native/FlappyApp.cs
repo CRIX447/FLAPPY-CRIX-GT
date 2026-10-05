@@ -255,8 +255,11 @@ namespace FlappyCrix.Native
             Sound?.Invoke(name, vol * Save.SfxVol / 100f);
         }
 
-        /// <summary>Menu taps click only if "Menu click sounds" is on (the site's default is off).</summary>
-        void Click() { if (Save.MenuClicks) Sfx("select", 1f); }
+        // Menu navigation sounds, from the site's own files: hover.mp3 when the highlight moves (joystick or
+        // pointer), click.mp3 when a button is pressed, swoosh.mp3 between screens. "Menu sounds" in Settings.
+        void Hover() { if (Save.MenuClicks) Sfx("hover", 0.55f); }
+        void Click() { if (Save.MenuClicks) Sfx("click", 0.8f); }
+        void Swoosh() { if (Save.MenuClicks) Sfx("swoosh", 0.5f); }
 
         void AddToast(string icon, string title, string body, uint col)
         {
@@ -326,7 +329,7 @@ namespace FlappyCrix.Native
                 float score = along + across * 2.2f;
                 if (score < bestScore) { bestScore = score; best = b; }
             }
-            if (best != null) { focus = best.Id; Click(); Changed(); }
+            if (best != null) { focus = best.Id; Hover(); Changed(); }
         }
 
         /// <summary>SELECT: presses the highlighted button. It never flaps.</summary>
@@ -362,7 +365,7 @@ namespace FlappyCrix.Native
         public void PointerMove(float u, float v)
         {
             var b = HitButton(u, v);
-            if (b != null && b.Id != focus) { focus = b.Id; Changed(); }
+            if (b != null && b.Id != focus) { focus = b.Id; Hover(); Changed(); }
         }
 
         public void PointerDown(float u, float v)
@@ -1175,7 +1178,7 @@ namespace FlappyCrix.Native
             VolumeRow("musicvol", x, y + 92, w, "Music volume", () => Save.MusicVol, v => Save.MusicVol = v);
             SettingRow("sfx", x, y + 150, w, "Sound effects", Save.SfxOn, v => { Save.SfxOn = v; });
             VolumeRow("sfxvol", x, y + 208, w, "Effects volume", () => Save.SfxVol, v => { Save.SfxVol = v; Sfx("coin", 1f); });
-            SettingRow("clicks", x, y + 266, w, "Menu click sounds", Save.MenuClicks, v => { Save.MenuClicks = v; });
+            SettingRow("clicks", x, y + 266, w, "Menu sounds", Save.MenuClicks, v => { Save.MenuClicks = v; });
             C.TextWrapped("Everything goes quiet while the screen is hidden (B), and comes back when you open it (Y).",
                           x, y + 330, w, 13, Dim);
 

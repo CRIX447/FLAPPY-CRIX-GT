@@ -12,7 +12,10 @@ mcs $L -target:library -out:UnityEngine.dll UnityEngine.ref.cs
 mcs $L -target:library -out:VoltstroStudios.UnityWebBrowser.Shared.dll VoltstroStudios.UnityWebBrowser.Shared.ref.cs
 mcs $L -target:library -r:UnityEngine.dll -r:VoltstroStudios.UnityWebBrowser.Shared.dll \
     -out:VoltstroStudios.UnityWebBrowser.dll VoltstroStudios.UnityWebBrowser.ref.cs
-mcs $L -target:library -optimize+ -warn:4 -r:UnityEngine.dll -r:BepInEx.dll \
+# the site's sounds, built in (unpacked to %LOCALAPPDATA%\\FlappyCrix\\sounds at start)
+SOUNDS=""
+for n in jump coin death milestone 67 boom victory ach powerup purchase unlock select rank woosh pop error smash witch1 santahohoho fail hover click swoosh music halloweenmusic christmasmusic; do SOUNDS="$SOUNDS -resource:../../mod/FlappyCrix/Web/img/$n.mp3,FlappyCrix.sound.$n.mp3"; done
+mcs $L -target:library -optimize+ -warn:4 -r:UnityEngine.dll -r:BepInEx.dll $SOUNDS \
     -resource:../../mod/FlappyCrix/Web/__flappycrix/bridge.js,FlappyCrix.bridge.js \
     -resource:../../src/FlappyCrix/Native/ui-font.bin,FlappyCrix.ui-font.bin \
     -resource:../../src/FlappyCrix/Native/sprites.bin,FlappyCrix.sprites.bin \

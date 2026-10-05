@@ -28,7 +28,7 @@ namespace FlappyCrix.Native
         public Dictionary<string, double> PowerupEnds = new Dictionary<string, double>();   // not saved
 
         // Settings (the site's defaults)
-        public bool MusicOn = true, SfxOn = true, MenuClicks = false, LightTheme = false, ReducedMotion = false;
+        public bool MusicOn = true, SfxOn = true, MenuClicks = true, LightTheme = false, ReducedMotion = false;
         public int MusicVol = 30, SfxVol = 100;
         public string SeasonChoice = "auto";
 
@@ -100,7 +100,7 @@ namespace FlappyCrix.Native
                 case "dailyStreak": if (int.TryParse(v, out i)) DailyStreak = i; break;
                 case "music": MusicOn = v == "1"; break;
                 case "sfx": SfxOn = v == "1"; break;
-                case "menuClicks": MenuClicks = v == "1"; break;
+                case "uiSounds": MenuClicks = v == "1"; break;      // menu navigation sounds (the old "menuClicks" key, off by default, is ignored)
                 case "light": LightTheme = v == "1"; break;
                 case "reducedMotion": ReducedMotion = v == "1"; break;
                 case "musicVol": if (int.TryParse(v, out i)) MusicVol = Math.Max(0, Math.Min(100, i)); break;
@@ -147,7 +147,7 @@ namespace FlappyCrix.Native
             b.Append("musicVol=").Append(MusicVol).AppendLine();
             b.Append("sfx=").Append(SfxOn ? 1 : 0).AppendLine();
             b.Append("sfxVol=").Append(SfxVol).AppendLine();
-            b.Append("menuClicks=").Append(MenuClicks ? 1 : 0).AppendLine();
+            b.Append("uiSounds=").Append(MenuClicks ? 1 : 0).AppendLine();
             b.Append("light=").Append(LightTheme ? 1 : 0).AppendLine();
             b.Append("reducedMotion=").Append(ReducedMotion ? 1 : 0).AppendLine();
             b.Append("season=").Append(SeasonChoice).AppendLine();

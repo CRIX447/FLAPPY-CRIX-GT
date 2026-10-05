@@ -29,17 +29,22 @@ namespace FlappyCrix.Native
         public int Score => runner.Score;
 
         // Sounds that restart instead of stacking (as on the site)
-        static readonly HashSet<string> Mono = new HashSet<string> { "jump", "coin", "death", "ach", "powerup", "select", "error" };
-        static readonly string[] Effects =
+        static readonly HashSet<string> Mono = new HashSet<string> { "jump", "coin", "death", "ach", "powerup", "select", "error", "hover", "click", "fail", "victory", "67", "boom" };
+        /// <summary>Every sound the game plays (the site's own mp3 files, built into the DLL).</summary>
+        public static readonly string[] Effects =
         {
             "jump", "coin", "death", "milestone", "67", "boom", "victory", "ach", "powerup", "purchase", "unlock",
             "select", "rank", "woosh", "pop", "error", "smash", "witch1", "santahohoho", "fail",
+            "hover", "click", "swoosh",                      // menu navigation
         };
+        public static readonly string[] Music = { "music", "halloweenmusic", "christmasmusic" };
 
         private readonly AppRunner runner;
         private readonly Texture2D texture;
         private bool uploaded, visible = true;
-        private readonly string imgFolder;
+        private readonly string soundFolder;
+        private readonly List<string> early = new List<string>();      // log lines from before Log had listeners
+        private bool soundsReported;
         private readonly MonoBehaviour host;
         private readonly GameObject audioRoot;
         private readonly AudioSource music, effects;
@@ -57,15 +62,15 @@ namespace FlappyCrix.Native
         public NativeFlappyGame(Transform audioAnchor, string modFolder, MonoBehaviour host, bool flapStartsGame, bool onlineFeatures = true)
         {
             this.host = host;
-            imgFolder = Path.Combine(Path.Combine(modFolder, "Web"), "img");
             string data = ModPaths.DataRoot(modFolder);
+            soundFolder = UnpackSounds(Path.Combine(data, "sounds"), Path.Combine(Path.Combine(modFolder, "Web"), "img"));
             string savePath = Path.Combine(data, "save.txt");
-            var save = SaveData.Load(savePath, m => Log?.Invoke(m));
+            var save = SaveData.Load(savePath, m => early.Add(m));
             if (!File.Exists(savePath)) ImportOldBest(save, data, modFolder);
 
             Assets art;
             try { art = SpriteSheet.LoadEmbedded(); }
-            catch (Exception e) { art = new Assets(); Log?.Invoke("Pictures unavailable: " + e.Message); }
+            catch (Exception e) { art = new Assets(); early.Add("Pictures unavailable: " + e.Message); }
 
             // the crixgamingvr.com account and multiplayer (their own threads; log lines go through the runner)
             AppRunner r0 = null;
@@ -87,8 +92,8 @@ namespace FlappyCrix.Native
             music.loop = true; music.playOnAwake = false; music.spatialBlend = 0.6f;
             effects = audioRoot.AddComponent<AudioSource>();
             effects.playOnAwake = false; effects.spatialBlend = 0.6f;
-            if (Directory.Exists(imgFolder)) foreach (var n in Effects) LoadClip(n);
-            else Log?.Invoke("No sound files (Web/img isn't next to the DLL), so the in-game version is silent.");
+            if (soundFolder != null) { foreach (var n in Effects) LoadClip(n); foreach (var n in Music) LoadClip(n); }
+            else early.Add("No sound files could be found or unpacked, so the in-game version is silent.");
 
             runner.Start();
         }
@@ -100,10 +105,44 @@ namespace FlappyCrix.Native
                 try { int b; if (File.Exists(f) && int.TryParse(File.ReadAllText(f).Trim(), out b) && b > save.Best) save.Best = b; } catch { }
         }
 
+        /// <summary>
+        /// The sounds are built into the DLL; they're written once to %LOCALAPPDATA%\FlappyCrix\sounds (Unity
+        /// loads mp3 from files), so they work with only FlappyCrix.dll installed. Falls back to Web/img.
+        /// </summary>
+        private string UnpackSounds(string folder, string webImg)
+        {
+            var asm = typeof(NativeFlappyGame).Assembly;
+            int written = 0, found = 0;
+            try
+            {
+                Directory.CreateDirectory(folder);
+                foreach (var res in asm.GetManifestResourceNames())
+                {
+                    if (!res.StartsWith("FlappyCrix.sound.", StringComparison.Ordinal)) continue;
+                    found++;
+                    string path = Path.Combine(folder, res.Substring("FlappyCrix.sound.".Length));
+                    using (var s = asm.GetManifestResourceStream(res))
+                    {
+                        if (File.Exists(path) && new FileInfo(path).Length == s.Length) continue;
+                        using (var f = File.Create(path)) s.CopyTo(f);
+                        written++;
+                    }
+                }
+                if (found > 0)
+                {
+                    early.Add("Sounds: " + found + " built in" + (written > 0 ? ", " + written + " written to " + folder : "") + ".");
+                    return folder;
+                }
+            }
+            catch (Exception e) { early.Add("Couldn't unpack the sounds (" + e.Message + ")."); }
+            if (Directory.Exists(webImg)) { early.Add("Sounds: using " + webImg); return webImg; }
+            return null;
+        }
+
         private void LoadClip(string name)
         {
-            if (clips.ContainsKey(name) || loading.Contains(name)) return;
-            string path = Path.Combine(imgFolder, name + ".mp3");
+            if (soundFolder == null || clips.ContainsKey(name) || loading.Contains(name)) return;
+            string path = Path.Combine(soundFolder, name + ".mp3");
             if (!File.Exists(path)) return;
             loading.Add(name);
             host.StartCoroutine(LoadClipRoutine(name, path));
@@ -114,15 +153,26 @@ namespace FlappyCrix.Native
             using (var req = UnityWebRequestMultimedia.GetAudioClip(new Uri(path).AbsoluteUri, AudioType.MPEG))
             {
                 yield return req.SendWebRequest();
-                if (req.result == UnityWebRequest.Result.Success) clips[name] = DownloadHandlerAudioClip.GetContent(req);
-                else Log?.Invoke("Couldn't load sound " + name + ": " + req.error);
+                if (req.result == UnityWebRequest.Result.Success)
+                {
+                    var clip = DownloadHandlerAudioClip.GetContent(req);
+                    if (clip != null) clips[name] = clip;
+                    else early.Add("Sound " + name + " didn't decode.");
+                }
+                else early.Add("Couldn't load sound " + name + ": " + req.error);
             }
             loading.Remove(name);
+            if (loading.Count == 0 && !soundsReported)
+            {
+                soundsReported = true;
+                early.Add("Sounds ready: " + clips.Count + " of " + (Effects.Length + Music.Length) + " loaded.");
+            }
         }
 
         public void Tick()
         {
             if (visible) runner.Nudge();
+            if (early.Count > 0) { foreach (var m in early.ToArray()) Log?.Invoke(m); early.Clear(); }
 
             var frame = runner.TakeFrame();
             if (frame != null)

@@ -109,6 +109,17 @@ static class LoadCheck
         }
         catch (Exception e) { Check(false, "the site's chat filter is built in, and QR codes encode", (e.InnerException ?? e).ToString()); }
 
+        // 3c. the site's sounds are built in
+        int soundCount = asm.GetManifestResourceNames().Count(n => n.StartsWith("FlappyCrix.sound.") && n.EndsWith(".mp3"));
+        var soundType = asm.GetType("FlappyCrix.Native.NativeFlappyGame");
+        int wanted = soundType == null ? -1 : ((string[])soundType.GetField("Effects").GetValue(null)).Length + ((string[])soundType.GetField("Music").GetValue(null)).Length;
+        var missingSounds = new List<string>();
+        if (soundType != null)
+            foreach (var arr in new[] { "Effects", "Music" })
+                foreach (var n in (string[])soundType.GetField(arr).GetValue(null))
+                    if (asm.GetManifestResourceInfo("FlappyCrix.sound." + n + ".mp3") == null) missingSounds.Add(n);
+        Check(soundCount > 0 && missingSounds.Count == 0, "every sound the game plays is built into the DLL", soundCount + " of " + wanted + (missingSounds.Count > 0 ? ", missing " + string.Join(",", missingSounds.ToArray()) : ""));
+
         // 4. JIT every method (last, so step 2 sees the start-up method compiled for the first time, as in the game)
         Type[] types;
         try { types = asm.GetTypes(); }

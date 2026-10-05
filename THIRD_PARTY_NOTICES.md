@@ -20,7 +20,8 @@ owner's permission. Changes: none to the website's files; `api.json` is replaced
   SIL Open Font License 1.1 (`LICENSES/OFL-1.1-BubbleSans.txt`) — drawn into small bitmaps at six sizes.
 - **Chat filter**: the site's `filter.js` (CRIX's code, as above) is built in and read by the mod to clean
   multiplayer chat the way the website does.
-- Sounds and music are not built in: the in-game version plays the site's mp3 files from `Web/img`.
+- **Sounds and music**: the site's own mp3 files (CRIX's, as above) are built in unchanged and unpacked to
+  `%LOCALAPPDATA%\FlappyCrix\sounds` for Unity to load.
 - No online service's code is included: the mod talks to crixgamingvr.com, Firebase/Firestore, PlayFab and
   Photon with its own code, using the website's public client settings.
 

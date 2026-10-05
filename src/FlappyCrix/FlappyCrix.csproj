@@ -28,6 +28,32 @@
     <EmbeddedResource Include="Native\ui-font.bin" LogicalName="FlappyCrix.ui-font.bin" />
     <EmbeddedResource Include="Native\sprites.bin" LogicalName="FlappyCrix.sprites.bin" />
     <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\filter.js" LogicalName="FlappyCrix.filter.js" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\jump.mp3" LogicalName="FlappyCrix.sound.jump.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\coin.mp3" LogicalName="FlappyCrix.sound.coin.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\death.mp3" LogicalName="FlappyCrix.sound.death.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\milestone.mp3" LogicalName="FlappyCrix.sound.milestone.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\67.mp3" LogicalName="FlappyCrix.sound.67.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\boom.mp3" LogicalName="FlappyCrix.sound.boom.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\victory.mp3" LogicalName="FlappyCrix.sound.victory.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\ach.mp3" LogicalName="FlappyCrix.sound.ach.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\powerup.mp3" LogicalName="FlappyCrix.sound.powerup.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\purchase.mp3" LogicalName="FlappyCrix.sound.purchase.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\unlock.mp3" LogicalName="FlappyCrix.sound.unlock.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\select.mp3" LogicalName="FlappyCrix.sound.select.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\rank.mp3" LogicalName="FlappyCrix.sound.rank.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\woosh.mp3" LogicalName="FlappyCrix.sound.woosh.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\pop.mp3" LogicalName="FlappyCrix.sound.pop.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\error.mp3" LogicalName="FlappyCrix.sound.error.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\smash.mp3" LogicalName="FlappyCrix.sound.smash.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\witch1.mp3" LogicalName="FlappyCrix.sound.witch1.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\santahohoho.mp3" LogicalName="FlappyCrix.sound.santahohoho.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\fail.mp3" LogicalName="FlappyCrix.sound.fail.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\hover.mp3" LogicalName="FlappyCrix.sound.hover.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\click.mp3" LogicalName="FlappyCrix.sound.click.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\swoosh.mp3" LogicalName="FlappyCrix.sound.swoosh.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\music.mp3" LogicalName="FlappyCrix.sound.music.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\halloweenmusic.mp3" LogicalName="FlappyCrix.sound.halloweenmusic.mp3" />
+    <EmbeddedResource Include="..\..\mod\FlappyCrix\Web\img\christmasmusic.mp3" LogicalName="FlappyCrix.sound.christmasmusic.mp3" />
   </ItemGroup>
 
   <ItemGroup>

@@ -66,8 +66,8 @@ the game; the account picture shows a test server's address instead of crixgamin
 1. Install [BepInEx 5](https://github.com/BepInEx/BepInEx/releases) (x64) into Gorilla Tag and run the game once.
 2. Download `FlappyCrix-vX.Y.Z.zip` from [Releases](../../releases) and unzip **the whole `FlappyCrix` folder**
    into `Gorilla Tag/BepInEx/plugins/`, so you have `BepInEx/plugins/FlappyCrix/FlappyCrix.dll` **and**
-   `BepInEx/plugins/FlappyCrix/Web/`. (The game and its pictures are inside the DLL; the `Web` folder has the
-   music and sounds. With only the DLL it plays silently.)
+   `BepInEx/plugins/FlappyCrix/Web/`. (The in-game version - pictures, sounds and music - is all inside the DLL,
+   so the DLL alone is enough for it; the `Web` folder is only for the optional website mode.)
 3. Start Gorilla Tag. The screen appears in front of you once you've loaded in.
 
 Settings live in `BepInEx/config/com.crix.flappycrix.cfg` (created on first run).

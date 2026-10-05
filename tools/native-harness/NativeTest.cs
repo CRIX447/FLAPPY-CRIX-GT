@@ -98,10 +98,14 @@ class NativeTest
         app.Update(0.2f); app.Update(0.2f);
         Shot(app, "04-game-over");
         Check(app.Focus == "retry", "game over: RETRY is highlighted");
+        sounds.Clear();
         app.Navigate(0, -1);
         Check(app.Focus == "menu", "joystick down moves to MAIN MENU");
+        Check(sounds.Contains("hover"), "moving the highlight plays the site's hover sound");
+        sounds.Clear();
         app.Select();
         Check(app.Screen == "menu", "MAIN MENU goes back");
+        Check(sounds.Contains("click") && sounds.Contains("woosh"), "pressing a button plays the site's click sound (and woosh for the menu)");
 
         // ---- store, locker, daily, calendar, awards, settings, help
         app.Save.Coins = 5000;

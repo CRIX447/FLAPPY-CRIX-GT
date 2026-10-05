@@ -325,8 +325,8 @@ namespace FlappyCrix.Native
             if (onlineSub == "create") { CreateRoomScreen(x, y, w); return; }
 
             // the room list (the website's: public, open, casual rooms)
-            Button("create_room", x, y, 230, 50, "CREATE ROOM", "2728", Style.Primary, true, () => { onlineSub = "create"; Sfx("pop", 0.35f); }, 16);
-            Button("join_code", x + 244, y, 230, 50, "JOIN BY CODE", "1f513", Style.On, true, () => { codeEntry = ""; modal = "keyboard"; Sfx("pop", 0.35f); }, 16);
+            Button("create_room", x, y, 230, 50, "CREATE ROOM", "2728", Style.Primary, true, () => { onlineSub = "create"; Swoosh(); }, 16);
+            Button("join_code", x + 244, y, 230, 50, "JOIN BY CODE", "1f513", Style.On, true, () => { codeEntry = ""; modal = "keyboard"; Swoosh(); }, 16);
             defaultFocus = "create_room";
             var rooms = Mp.ListRooms();
             float gy = y + 66, cw = (w - 12) / 2f, ch = 96;
