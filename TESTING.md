@@ -16,6 +16,7 @@ What was verified while building the mod, how, and what still needs a real heads
 | Fourth test: "move the screen closer to the gamepad thing" | Screen 1.3 m away, deck at 0.42 m. | Screen 0.75 m away, 0.36 m wide, bottom edge just above the deck (`docs/screenshots/16-screen-behind-deck.png`); settings upgraded once. |
 | Third test: "it's not connecting to the web" (the site's offline mode) | (1) The mod counted the live site as started only at the page's `load` event — every image/sound/script downloaded — and gave it 12 s from game start, then switched to the packaged copy, which is offline by design. (2) The site marks itself offline when its first `/robots.txt` check takes over 5 s (likely while the rest of the page is downloading) and only re-checks when a tab becomes visible, which never happens in a hidden browser. | Ready as soon as the game's code has run; 30 s to *start* loading (from browser start), then unlimited; the bridge re-triggers the site's own online check every 6 s while it says offline; the reason is shown on screen and logged, and the mod returns to the live site by itself when it can. `tools/live-harness` 9/9. |
 | Third test: "I have to use my palm to press the buttons" | Presses were measured at the controller's tracked point, which is in your palm. | Presses use Gorilla Tag's own fingertip points (found by reflection, no hard link to the game's code), else a fingertip 8.5 cm ahead of the controller; tighter press zone at the cap, ring glows under a fingertip. |
+| Sixth request: "switch back to the old UI but make it like the web version ... voice and text chat won't work well and sign-in doesn't work ... don't add a notification for it opening up in your browser ... mute the game when it isn't opened ... add the seasonal themes" | — | The in-game version is the default again, rebuilt as a port of the website's game with the site's store, locker, daily rewards, calendars, awards, levels and settings in the mod's own layout, and all four seasons; no sign-in, chat or multiplayer, nothing opens in the browser (and website mode no longer shows an "opened on your PC" message). Hidden screen = silent in both modes. Found while doing it: in website mode SELECT still flapped during a run (the C# side) — fixed. `tools/native-harness` 39/39, `test_deck.py` 10/10. |
 | Second test: "it won't work" (no screen at all) | The start-up method called `UwbBrowserGame.IsInstalled`, a member of the optional UnityWebBrowser engine's class. Without that engine's DLLs (the normal install) Mono can't load the class, so it refused to compile the **whole** start-up method: no engine started, and `Update` returned before the screen was ever placed. The earlier checks loaded the DLL *with* the UWB stand-ins present, so they missed it. | The check now only looks for the engine's files; every engine is created in its own `[NoInlining]` method inside a try/catch; the screen is placed and shown before any engine code runs, with a Loading / Could-not-start picture. The new `tools/load-check` reproduces the bug on the old DLL (`TypeLoadException` at engine start-up) and passes on the new one. |
 
 ## 1. Hidden-browser engine, end to end — `tools/engine-harness` (18/18)
@@ -55,18 +56,36 @@ Problems found and fixed during this testing:
 
 Run it: see the header of `tools/engine-harness/EngineTest.cs`.
 
-## 2. Native fallback — `tools/native-harness` (5/5)
+## 2. The in-game version — `tools/native-harness` (39/39)
 
-Game rules (`NativeSim`) and renderer (`NativeRenderer`) run outside Unity: FLAP starts a run, pipes score
-(5 in 12 s of autopilot), falling ends the run, sounds fire, and drawing a 400×600 frame takes ~0.13 ms.
-Frames were dumped and checked by eye (menu, playing, paused, game over).
+`tools/native-harness/run.sh` builds everything the in-game version is made of (no Unity code: `FlappyApp`,
+`NativeSim`, `NativeRenderer`, `Canvas`, `Season`, `Catalog`, `SaveData`, `SpriteSheet`, `AppRunner`) with the
+pictures and font embedded as in the DLL, plays it, and saves a picture of every screen:
+
+- pictures and font load from the embedded data; 5 October 2026 is Halloween in Sydney time;
+- main menu: PLAY highlighted, SELECT starts, **SELECT never flaps**, autopilot scores, flap/coin sounds;
+- PAUSE pauses and stops the music, START resumes, falling ends the run, the best is saved, game over
+  highlights RETRY, joystick down reaches MAIN MENU;
+- joystick from PLAY reaches DAILY; daily reward (+100); Back closes; Trick or Treat doors 1–5 open (+72…+120),
+  door 6 stays locked; Shield bought and refused the second time; a hat and a trail bought and worn; DRIPPED
+  OUT unlocked; progress saved to a file and read back;
+- **no sounds while the screen is hidden**;
+- 10 Dec 2026 = Christmas, 26 Mar 2027 = Easter, 10 Mar 2027 = Birthday, 10 Nov 2026 = none; 18 Mar 2027 is the
+  birthday even in Easter week; no birthday theme in 2026; Christmas ends on 26 December; the witch flies over
+  with her sound;
+- its own thread: SELECT through the queue starts a run, ~30 pictures a second, sounds reach the Unity side;
+  hidden = no pictures, no sounds, no music;
+- drawing a full 960×640 frame while playing: ~6.5 ms on Mono (on the game's own thread, not Gorilla Tag's).
+
+The pictures were checked by eye: main menu, playing, pause, game over, daily, calendar, store, locker,
+awards, settings, how to play, all four seasons and no season (some are in `docs/screenshots/20-29`).
 
 ## 3. Website + bridge in Chromium (Playwright)
 
 | Suite | Result | Covers |
 |---|---|---|
 | `tools/test_web.py` | 26/26 | offline packaged copy: JS, CSS, font, images, audio, canvas, Space flaps, music, scoring, pause/resume, game over, retry, link routing, no page errors |
-| `tools/test_deck.py` | 11/11 | joystick navigation (site's `padMove`), SELECT (as FLAP: start/flap/retry; presses a highlighted item), START (start/resume/retry), PAUSE |
+| `tools/test_deck.py` | 10/10 | joystick navigation (site's `padMove`), SELECT (menus only: presses the highlighted item, never flaps), START (start/resume/retry), PAUSE, hidden screen mutes every sound and opening it restores them |
 | `tools/test_links.py --inject` | 13/13 | sign-in, Discord/YouTube/shop, other site pages and pop-ups → desktop; game page stays |
 | `tools/test_live_injection.py` | pass | bridge injected after load on the unmodified site |
 
@@ -79,7 +98,8 @@ UnityWebBrowser (`tools/refs`). Two checks run on every build (locally and in Gi
 
 **`tools/load-check`** loads the DLL the way a normal install has it (BepInEx and Unity, **no** UnityWebBrowser
 DLLs). It binds the settings against the real BepInEx `ConfigFile` (with BepInEx's own Vector3/Color converters),
-runs the controller's engine start-up through the unavailable engines, then JIT-compiles every method:
+checks the in-game version is the default, runs the controller's engine start-up through the unavailable engines,
+loads the in-game version's embedded pictures and font and draws a frame, then JIT-compiles every method:
 
 ```
 DLL from the second in-game test:                         This build:
@@ -89,10 +109,9 @@ FAIL engine start-up ... TypeLoadException:               PASS engine start-up s
 1 FAILED                                                  ALL PASSED
 ```
 
-**`tools/api-audit`** disassembles the DLL, lists every UnityEngine member it calls (169: type, name, parameter
-types, field vs property vs method) and finds each one in Unity's own C# source
-([UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference)). All 169 are found in **2021.3, 2022.3,
-Unity 6 (6000.0) and 6000.2 — the version Gorilla Tag runs (`Running under Unity v6000.2.9` in CRIX's log)**. The audit itself was tested by planting five wrong members (a missing overload, a missing
+**`tools/api-audit`** disassembles the DLL, lists every UnityEngine member it calls (179: type, name, parameter
+types, field vs property vs method, generic methods such as `Texture2D.SetPixelData<T>`) and finds each one in Unity's own C# source
+([UnityCsReference](https://github.com/Unity-Technologies/UnityCsReference)). All 179 are found in **2021.3, 2022.3 and 6000.2 — the version Gorilla Tag runs (`Running under Unity v6000.2.9` in CRIX's log)**. The audit itself was tested by planting five wrong members (a missing overload, a missing
 property, a missing field, a wrong parameter type, an extra parameter); it flagged all five.
 
 The DLL references only `mscorlib`, `System` and `System.Core` (all shipped with every Unity game), BepInEx and
@@ -157,6 +176,9 @@ where that can't happen; the stand-in now slows only two images (enough to hold 
 online and are sent to the desktop.
 
 ## Still needs a real headset
+
+- The in-game version in Gorilla Tag: its picture, its sounds and music (the site's mp3 files loaded by Unity),
+  that it goes quiet when hidden, and the deck/laser driving its menus.
 
 - The hidden engine on Windows: Edge's `EdgeCore` copy or the downloaded Chrome for Testing headless shell (tested
   here with Chromium and its headless shell on Linux; same protocol). The self test will say whether it worked.

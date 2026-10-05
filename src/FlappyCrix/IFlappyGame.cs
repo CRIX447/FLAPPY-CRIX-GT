@@ -4,8 +4,8 @@ using UnityEngine;
 namespace FlappyCrix
 {
     /// <summary>
-    /// Common surface for the website engines (hidden Edge/Chrome, UnityWebBrowser) and the
-    /// native fallback.
+    /// Common surface for the in-game version (NativeFlappyGame, the default) and the website
+    /// engines (hidden Edge/Chrome, UnityWebBrowser).
     /// Part of Flappy Crix for Gorilla Tag - made with AI (Claude by Anthropic).
     /// </summary>
     public interface IFlappyGame : IDisposable
@@ -50,6 +50,9 @@ namespace FlappyCrix
         void PointerDown(Vector2 uv);
         void PointerUp(Vector2 uv);
         void Scroll(Vector2 uv, int delta);
+
+        /// <summary>The screen was opened (true) or hidden (false). Hidden = silent.</summary>
+        void SetVisible(bool visible);
 
         /// <summary>Called every frame by the controller.</summary>
         void Tick();

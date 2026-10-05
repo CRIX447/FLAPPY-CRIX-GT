@@ -14,6 +14,8 @@ mcs $L -target:library -r:UnityEngine.dll -r:VoltstroStudios.UnityWebBrowser.Sha
     -out:VoltstroStudios.UnityWebBrowser.dll VoltstroStudios.UnityWebBrowser.ref.cs
 mcs $L -target:library -optimize+ -warn:4 -r:UnityEngine.dll -r:BepInEx.dll \
     -resource:../../mod/FlappyCrix/Web/__flappycrix/bridge.js,FlappyCrix.bridge.js \
+    -resource:../../src/FlappyCrix/Native/ui-font.bin,FlappyCrix.ui-font.bin \
+    -resource:../../src/FlappyCrix/Native/sprites.bin,FlappyCrix.sprites.bin \
     -r:VoltstroStudios.UnityWebBrowser.dll -r:VoltstroStudios.UnityWebBrowser.Shared.dll \
     -out:../../mod/FlappyCrix/FlappyCrix.dll -recurse:'../../src/FlappyCrix/*.cs'
 rm -f UnityEngine.dll VoltstroStudios.UnityWebBrowser.dll VoltstroStudios.UnityWebBrowser.Shared.dll

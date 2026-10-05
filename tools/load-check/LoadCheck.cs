@@ -57,7 +57,9 @@ static class LoadCheck
         {
             var cfgFile = new BepInEx.Configuration.ConfigFile(cfgPath, true);
             config = Activator.CreateInstance(asm.GetType("FlappyCrix.FlappyCrixConfig"), cfgFile);
-            Check(File.Exists(cfgPath) && File.ReadAllText(cfgPath).Contains("SettingsRevision = 5"), "settings bind against the real BepInEx ConfigFile and are written");
+            Check(File.Exists(cfgPath) && File.ReadAllText(cfgPath).Contains("SettingsRevision = 6"), "settings bind against the real BepInEx ConfigFile and are written");
+            var useWebsite = config.GetType().GetField("UseWebsite").GetValue(config);
+            Check(!(bool)useWebsite.GetType().GetProperty("Value").GetValue(useWebsite), "the in-game version is the default (UseWebsite = false)");
         }
         catch (Exception e) { Check(false, "settings bind against the real BepInEx ConfigFile", (e.InnerException ?? e).ToString()); }
         finally { try { File.Delete(cfgPath); } catch { } }
@@ -80,7 +82,22 @@ static class LoadCheck
             catch (TargetInvocationException e) { Check(false, "engine start-up skips the unavailable engines without throwing", e.InnerException.GetType().Name + ": " + e.InnerException.Message); }
         }
 
-        // 3. JIT every method (last, so step 2 sees the start-up method compiled for the first time, as in the game)
+        // 3. the in-game version's pictures and font are inside the DLL, and it draws
+        try
+        {
+            var sheet = asm.GetType("FlappyCrix.Native.SpriteSheet").GetMethod("LoadEmbedded").Invoke(null, null);
+            int count = (int)sheet.GetType().GetProperty("Count").GetValue(sheet);
+            var saveType = asm.GetType("FlappyCrix.Native.SaveData");
+            var save = Activator.CreateInstance(saveType, new object[] { null });
+            var appType = asm.GetType("FlappyCrix.Native.FlappyApp");
+            var app = Activator.CreateInstance(appType, new object[] { save, sheet, 1, null });
+            appType.GetMethod("Update").Invoke(app, new object[] { 0.016f });
+            bool drew = (bool)appType.GetMethod("Render").Invoke(app, null);
+            Check(count > 40 && drew, "the in-game version loads its pictures and font from the DLL and draws", count + " pictures");
+        }
+        catch (Exception e) { Check(false, "the in-game version loads its pictures and font from the DLL and draws", (e.InnerException ?? e).ToString()); }
+
+        // 4. JIT every method (last, so step 2 sees the start-up method compiled for the first time, as in the game)
         Type[] types;
         try { types = asm.GetTypes(); }
         catch (ReflectionTypeLoadException e) { types = e.Types.Where(t => t != null).ToArray(); }

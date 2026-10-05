@@ -41,6 +41,7 @@ namespace FlappyCrix
         public readonly ConfigEntry<int> ResolutionHeight;
         public readonly ConfigEntry<int> BrowserFrameRate;
         public readonly ConfigEntry<bool> MuteWebAudio;
+        public readonly ConfigEntry<int> InGameFrameRate;
 
         // Input
         public readonly ConfigEntry<bool> KeyboardSpaceFlaps;
@@ -76,8 +77,8 @@ namespace FlappyCrix
         {
             const string G = "1. General", D = "2. Display", I = "3. Input", J = "4. Arcade deck", W = "5. Website";
 
-            UseWebsite = cfg.Bind(G, "UseWebsite", true,
-                "true = play the real Flappy Crix website. false = the native Unity version.");
+            UseWebsite = cfg.Bind(G, "UseWebsite", false,
+                "false (default) = the in-game version built into the mod: the website's game with its store, locker, daily rewards, seasonal themes and awards, in the mod's own layout. true = stream the real crixgamingvr.com/flappycrix from a hidden browser instead.");
             Engine = cfg.Bind(G, "Engine", WebEngine.Auto,
                 "What runs the website. Auto/SystemBrowser = the Microsoft Edge (or Chrome) already on your PC, started hidden - no window opens, the page is streamed onto the in-game screen. UnityWebBrowser = optional bundled engine (see README).");
             UseRemoteWebsite = cfg.Bind(G, "UseRemoteWebsite", true,
@@ -105,7 +106,8 @@ namespace FlappyCrix
             BrowserFrameRate = cfg.Bind(D, "BrowserFrameRate", 30, new ConfigDescription("Most screen updates per second from the website. 30 is smooth and light on VR performance; up to 60.", new AcceptableValueRange<int>(10, 60)));
             JpegQuality = cfg.Bind(D, "StreamQuality", 80, new ConfigDescription("Picture quality of the website stream (hidden Edge engine), 50-95.", new AcceptableValueRange<int>(50, 95)));
             ShaderOverride = cfg.Bind(D, "ShaderOverride", "", "Advanced: a shader name to draw the screen and deck with, if the default doesn't show up.");
-            MuteWebAudio = cfg.Bind(D, "MuteWebAudio", false, "Mute the website's music and sound effects.");
+            MuteWebAudio = cfg.Bind(D, "MuteWebAudio", false, "Mute the website's music and sound effects (website mode). Either way, everything is silent while the screen is hidden.");
+            InGameFrameRate = cfg.Bind(D, "InGameFrameRate", 30, new ConfigDescription("Pictures per second of the in-game version (it draws on its own thread, so it doesn't slow the game down).", new AcceptableValueRange<int>(10, 60)));
 
             KeyboardSpaceFlaps = cfg.Bind(I, "KeyboardSpaceFlaps", true, "SPACE on the PC keyboard = flap.");
             PrimaryButtonsFlap = cfg.Bind(I, "PrimaryButtonsFlap", true, "Left X / right A = flap.");
@@ -178,7 +180,14 @@ namespace FlappyCrix
                 Width.Value = (float)Width.DefaultValue;
                 UpgradedFromOlderConfig = true;
             }
-            if (revision.Value < 5) revision.Value = 5;
+            // Revision 6: back to the in-game version (with the website's features and seasons) by default.
+            if (revision.Value < 6)
+            {
+                UseWebsite.Value = false;
+                Width.Value = (float)Width.DefaultValue;
+                UpgradedFromOlderConfig = true;
+            }
+            if (revision.Value < 6) revision.Value = 6;
         }
     }
 }

@@ -224,6 +224,7 @@ namespace UnityEngine
         public Color GetPixel(int x, int y) { return default(Color); }
         public Color32[] GetPixels32() { return null; }
         public void SetPixels32(Color32[] colors) { }
+        public void SetPixelData<T>(T[] data, int mipLevel, int sourceDataStartIndex = 0) { }
         public void Apply(bool updateMipmaps) { }
     }
     public static class ImageConversion { public static bool LoadImage(this Texture2D tex, byte[] data) { return false; } public static bool LoadImage(this Texture2D tex, byte[] data, bool markNonReadable) { return false; } }
@@ -263,6 +264,14 @@ namespace UnityEngine
     {
         public float spatialBlend { get { return 0; } set { } }
         public bool playOnAwake { get { return false; } set { } }
+        public AudioClip clip { get { return null; } set { } }
+        public bool loop { get { return false; } set { } }
+        public float volume { get { return 0; } set { } }
+        public bool isPlaying { get { return false; } }
+        public void Play() { }
+        public void Pause() { }
+        public void UnPause() { }
+        public void Stop() { }
         public void PlayOneShot(AudioClip clip, float volumeScale) { }
     }
     public enum AudioType { UNKNOWN = 0, MPEG = 13, OGGVORBIS = 14, WAV = 20 }
@@ -285,6 +294,7 @@ namespace UnityEngine.Networking
     {
         public enum Result { InProgress = 0, Success = 1, ConnectionError = 2, ProtocolError = 3, DataProcessingError = 4 }
         public Result result { get { return 0; } }
+        public string error { get { return null; } }
         public UnityWebRequestAsyncOperation SendWebRequest() { return null; }
         public void Dispose() { }
     }

@@ -4,58 +4,72 @@
 > with Claude (an AI model by Anthropic), directed and tested by CRIX. Please report anything that
 > doesn't work in [Issues](../../issues).
 
-Play the real **Flappy Crix** website game ([crixgamingvr.com/flappycrix](https://crixgamingvr.com/flappycrix))
-on a screen inside Gorilla Tag, with an arcade control deck in front of it.
+Play **Flappy Crix** ([crixgamingvr.com/flappycrix](https://crixgamingvr.com/flappycrix)) on a screen inside
+Gorilla Tag, with an arcade control deck in front of it. It's the website's game — same physics, coins, store,
+cosmetics, daily rewards, seasonal themes and awards — built into the mod with its own VR-friendly layout.
 
-![Size before/after mock-up in the stump](docs/screenshots/13-size-before-after-mockup.png)
-<sub>Mock-up: the screen and deck composited onto a stump screenshot at the old and new sizes, showing a real frame from the website engine. Not a capture of the running mod yet.</sub>
+![The in-game version at Halloween](docs/screenshots/20-ingame-menu-halloween.png)
 
 ## Features
 
-- **The actual website game, whatever browser you use.** The website runs in a **hidden engine** — headless:
-  no window, nothing appears on your desktop — and the page is streamed onto the in-game screen. The engine is
-  a browser already on your PC that can run hidden (Edge, Chrome, Brave, Vivaldi, Chromium..., even Edge's
-  leftover engine on PCs where Edge was removed). If you only have browsers that can't (Opera / Opera GX,
-  Firefox), the mod downloads Google's official Chrome for Testing headless shell once (about 100 MB).
-  Plays the live page by default and falls back to a copy packaged with the mod if it can't load.
-- **Arcade cabinet**: the screen stands just behind the control deck. Joystick to move through the menus,
-  **FLAP**, **SELECT** (works as FLAP, or presses what the joystick highlighted), **START**, **PAUSE**, and
-  **− / +** to resize the screen. Press the buttons with your fingertip.
-- **Portable**: opens in front of you when you load in. **B** hides it, **Y** brings it back in front of you.
-- **Sign-in, Discord, YouTube, TikTok, the shop and other site pages open in your PC's normal browser**, never in-game.
-- Laser pointer (right hand + trigger) to click anything on the screen.
-- **Native fallback**: if no website engine can run, a Unity version of Flappy Crix runs instead.
+- **The website's game, built in.** The bird, pipes, gaps, gravity, coins, scoring and power-ups follow the
+  website's code tick for tick (60 updates a second), drawn with the site's own pictures, font and sounds.
+- **Everything the site has offline**, in the mod's own layout: Store (2X Coins, Shield, Magnet, hats and
+  trails), Locker, Daily reward streak, 16 awards, account levels, Settings, How to play, pause and game over.
+  Your progress is saved on your PC (`%LOCALAPPDATA%\FlappyCrix\save.txt`).
+- **Seasonal themes, on the site's dates** (Sydney time, like the site):
+  - **Halloween** (October): purple sky, moon, bats, pumpkins to smash for prizes, cobwebs, the witch flying
+    over, Halloween music, and the **Trick or Treat** calendar (31 doors; Witch Hat, Skeleton Mask, Ghost Trail,
+    Pumpkin Head).
+  - **Christmas** (1–26 December): snow, Santa's sleigh, Christmas music, the **Advent** calendar
+    (Reindeer Ears, Tinsel Trail, Santa's Hat).
+  - **Easter** (Palm Sunday – Easter Monday): eggs and the **Egg Hunt** (Bunny Ears, Pastel Trail).
+  - **Birthday** (March, from 2027): confetti, and the Golden Party Hat on 18 March.
+  - Settings can pick a season or turn them off.
+- **Arcade cabinet**: joystick to move through the menus, **FLAP**, **SELECT** (menus only — it never flaps),
+  **START**, **PAUSE**, **− / +** to resize. Press the buttons with your fingertip. The laser pointer clicks too.
+- **Portable**: opens in front of you when you load in. **B** hides it, **Y** brings it back.
+- **Silent when hidden**: the music and sounds stop while the screen is hidden and come back when you open it.
+- **Doesn't slow the game down**: the in-game version runs and draws on its own thread.
+- Left out because they need an account or don't work in VR: sign-in, multiplayer, voice and text chat.
+  Nothing opens in your desktop browser.
 - Local-only, no colliders (nothing can be climbed), no dependency on Gorilla Tag's internal code.
+- **Website mode** (optional, `UseWebsite = true`): streams the real crixgamingvr.com/flappycrix from a hidden
+  browser instead (see [How it works](#website-mode)).
 
-More pictures in [`docs/screenshots`](docs/screenshots): a real frame from the website engine
-(`15-edge-engine-stream-frame.png`), the native fallback (`14-native-fallback.png`), and mock-ups.
+| | |
+|---|---|
+| ![Playing at Halloween](docs/screenshots/21-ingame-playing-halloween.png) | ![Trick or Treat calendar](docs/screenshots/23-ingame-trick-or-treat.png) |
+| ![Store](docs/screenshots/22-ingame-store.png) | ![Locker](docs/screenshots/24-ingame-locker.png) |
+| ![Christmas](docs/screenshots/25-ingame-christmas.png) | ![Easter](docs/screenshots/26-ingame-easter.png) |
+
+(Pictures from `tools/native-harness`, which runs the in-game version's code outside the game.)
 
 ## Install
 
 1. Install [BepInEx 5](https://github.com/BepInEx/BepInEx/releases) (x64) into Gorilla Tag and run the game once.
 2. Download `FlappyCrix-vX.Y.Z.zip` from [Releases](../../releases) and unzip **the whole `FlappyCrix` folder**
    into `Gorilla Tag/BepInEx/plugins/`, so you have `BepInEx/plugins/FlappyCrix/FlappyCrix.dll` **and**
-   `BepInEx/plugins/FlappyCrix/Web/`. (With only the DLL the live site still works, but there's no offline copy.)
+   `BepInEx/plugins/FlappyCrix/Web/`. (The game and its pictures are inside the DLL; the `Web` folder has the
+   music and sounds. With only the DLL it plays silently.)
 3. Start Gorilla Tag. The screen appears in front of you once you've loaded in.
 
-That's it. If your PC has no browser that can run hidden, the first start shows **Getting the website engine**
-with a percentage while it downloads (one time). Settings live in `BepInEx/config/com.crix.flappycrix.cfg`
-(created on first run); browser profiles, the downloaded engine and `selftest.txt` live in
-`%LOCALAPPDATA%\FlappyCrix`.
+Settings live in `BepInEx/config/com.crix.flappycrix.cfg` (created on first run).
 
 ## Controls
 
 | | VR | Keyboard |
 |---|---|---|
 | Open in front of you | **Y** | F9 |
-| Hide (pauses a run) | **B** | F8 |
-| Flap | Deck **FLAP**, or **X** / **A** | Space |
+| Hide (pauses a run, goes quiet) | **B** | F8 |
+| Flap (on the main menu: play) | Deck **FLAP**, or **X** / **A** | Space |
 | Move the menu highlight | Deck **joystick** (hold grip on the red knob, push) | Arrow keys |
-| Press the highlighted menu item | Deck **SELECT** (menus only, never flaps) | Enter |
-| Start / retry / resume | Deck **START** | F5 |
+| Press the highlighted button | Deck **SELECT** (menus only, never flaps) | Enter |
+| Play / retry / resume | Deck **START** | F5 |
 | Pause / resume | Deck **PAUSE** | P |
+| Back (close a menu) | — | Backspace |
 | Screen smaller / bigger | Deck **−** / **+** | − / = |
-| Click on the screen | Laser + trigger | Mouse |
+| Click a button, or flap by clicking the game | Laser + trigger | Mouse |
 
 Press deck buttons with your **index fingertip**, like Gorilla Tag's own buttons. A button's ring lights up
 while your fingertip is over it, and you feel a buzz when it presses. (The mod uses the game's own fingertip
@@ -65,61 +79,60 @@ points; if a game update moves them, it works the fingertip out from your contro
 
 ```
 Gorilla Tag ─ BepInEx ─ FlappyCrix.dll
-                          ├─ hidden engine: a browser on the PC that can run headless, or the
-                          │  downloaded Chrome for Testing headless shell (profile in %LOCALAPPDATA%\FlappyCrix)
-                          │     ├─ loads crixgamingvr.com/flappycrix (or the packaged copy)
-                          │     ├─ bridge.js injected before the site's scripts
-                          │     └─ frames ──DevTools protocol──► texture on the in-game screen
-                          ├─ input: real key/mouse events into the page (deck, X/A, laser, keyboard)
-                          └─ anything that isn't the game ──► your desktop browser
+                          ├─ the in-game version (its own thread): the site's rules, menus and seasons,
+                          │  drawn into one 960×640 picture ──► texture on the in-game screen
+                          ├─ sounds: the site's mp3 files (Web/img), played from the screen
+                          └─ input: deck, X/A, laser, keyboard ──► the game
 ```
 
-- **Input reaches the website's own code.** A flap while playing is a real Space key press, which the site's
-  own keydown handler turns into `jump()`. Laser clicks are real mouse clicks. The joystick drives the site's
-  own controller navigation (`padMove` / `padActivate`). Nothing in the game's logic is rewritten.
-- **Only the game page may load in the panel.** Every page load is checked before it happens; anything else
-  (sign-in, Discord login, other site pages) is cancelled and opened in your desktop browser instead.
-- **Browser dialogs** (`confirm()`, e.g. "Remove friend?") can't be answered in VR, so they answer "no" and
-  show the site's own message; `alert()` becomes a site toast.
-- **The hidden browser closes with the game**, even if the game crashes (it is tied to Gorilla Tag's process).
-- **Save data** (coins, cosmetics, best score as a guest) lives in `%LOCALAPPDATA%\FlappyCrix\Profile-<browser>`.
-  Signing in happens in your desktop browser, not in the panel.
+- **Same rules as the website.** `NativeSim` is a tick-for-tick port of the site's game loop (gravity,
+  flap, terminal speed, the elliptical hitbox, the gap that narrows with your score, the pipe beat chosen one
+  pipe ahead, coin lanes, magnet, shield bounce, Halloween pumpkins and cobwebs). The one deliberate
+  difference: the site forgets to save your best after a pipe crash; here every crash counts.
+- **Seasons use the site's calendar** in Sydney time, with the site's colours, sky decorations, fly-bys,
+  music and calendar prizes (`Season.cs`).
+- **The layout is the mod's own**: your level, coins, power-ups and season on the left, the game in the middle,
+  score, controls and messages on the right; the store and other menus fill the screen.
+
+### Website mode
+
+With `UseWebsite = true`, the real crixgamingvr.com/flappycrix is streamed instead: a browser already on your
+PC that can run hidden (Edge, Chrome, Brave, Vivaldi, Chromium... — or, if there's none, Google's Chrome for
+Testing headless shell, downloaded once) loads the page with no window, and the frames are streamed onto the
+screen over the DevTools protocol. Input goes into the page as real key and mouse events; only the game page
+may load in the panel; it also goes quiet while the screen is hidden. Browser profiles and the downloaded
+engine live in `%LOCALAPPDATA%\FlappyCrix`.
 
 ## Settings worth knowing (`com.crix.flappycrix.cfg`)
 
 | Setting | Default | |
 |---|---|---|
-| `Width` / `Distance` / `HeightOffset` | 0.6 m / 0.75 m / −0.43 m | Screen size, distance, and its **bottom edge** height (just above the deck, like an arcade cabinet; about 27° × 33° of your view). The deck's − / + change `Width`; the screen grows upwards. |
-| `UseRemoteWebsite` | `true` | Live page; `false` = packaged copy (offline). |
-| `UseOfflineCopy` / `AutoFallbackToNative` | `false` / `false` | By default only the real crixgamingvr.com/flappycrix is ever shown; if it can't be reached the screen says so and retries. Turn these on to fall back to the packaged copy / the Unity remake. |
-| `ResolutionWidth` / `ResolutionHeight` | 1280 / 800 | The hidden browser's window: the site's desktop layout, same as a desktop browser. 768 / 960 = tablet layout. |
-| `RemoteTimeoutSeconds` | 30 | How long crixgamingvr.com gets to *start* loading before the packaged copy is shown. Once it has started, it gets as long as it needs. |
-| `ReconnectSeconds` | 45 | While the packaged copy is showing because the live site couldn't be reached, how often to check again; it switches back by itself between runs. |
+| `UseWebsite` | `false` | `false` = the in-game version. `true` = website mode (streams crixgamingvr.com/flappycrix). |
+| `Width` / `Distance` / `HeightOffset` | 0.6 m / 0.75 m / −0.43 m | Screen size, distance, and its **bottom edge** height (just above the deck, like an arcade cabinet). The deck's − / + change `Width`; the screen grows upwards. |
+| `InGameFrameRate` | 30 | Pictures per second of the in-game version (drawn on its own thread). |
+| `FlapStartsGame` | `true` | FLAP on the main menu starts a run. |
 | `UseGameFingertips` / `FingertipOffset` | `true` / (0, −0.02, 0.085) | Deck buttons use Gorilla Tag's fingertip points; the offset (metres from the controller) is the backup. |
-| `Engine` | `Auto` | `Auto` = a hidden browser from the PC → the downloaded engine → UnityWebBrowser (if installed) → native version. |
-| `BrowserPath` | empty | Use a specific browser first. (Opera / Opera GX and Firefox can't run hidden, so they aren't picked automatically.) |
-| `DownloadEngine` | `true` | If no browser on the PC can run hidden, download Google's Chrome for Testing headless shell once (~100 MB). `false` = the built-in version instead. |
-| `BrowserFrameRate` / `StreamQuality` | 30 / 80 | Screen updates per second and picture quality. Lower these if Gorilla Tag's frame rate drops. |
-| `OpenLinksOnDesktop` | `true` | Sign-in/socials/other pages open in your desktop browser. |
 | `ShaderOverride` | empty | Advanced: if the screen or deck is invisible, a shader name to use instead (see the log). |
+| Website mode only: `UseRemoteWebsite`, `UseOfflineCopy`, `AutoFallbackToNative`, `ResolutionWidth/Height` (1280×800), `BrowserPath`, `DownloadEngine`, `BrowserFrameRate`, `StreamQuality`, `OpenLinksOnDesktop` | | See the descriptions in the settings file. |
 
-Older settings files are moved to the current screen placement once (and get the longer live-site time once).
+Music, sound volumes, the light theme, reduced motion and the seasonal theme are set in the game's own
+**Settings** menu (saved with your progress).
 
 ## If something's wrong
 
-Send `BepInEx/LogOutput.log` and `%LOCALAPPDATA%\FlappyCrix\selftest.txt`. The log says which
-browsers were found and which engine was used (`Mode: Website (...) via hidden msedge ...`), which shader draws the screen, the stream's frame
-rate and decode time, and why an engine was skipped. The self test checks JavaScript, CSS, images, audio, the
-canvas, frames reaching the screen, key input reaching the page, and the page's frame rate.
+Send `BepInEx/LogOutput.log`. It says which mode runs (`Mode: In-game version ...`), which shader draws the
+screen, the season, and any sound file that couldn't load. In website mode it also says which browsers were
+found and why an engine was skipped, and `%LOCALAPPDATA%\FlappyCrix\selftest.txt` has the website self test.
 
-When the mod starts, the screen opens in front of you straight away and shows **Loading...** until the website
-is ready (usually a few seconds). If no screen appears at all, open `BepInEx/LogOutput.log` and search for
+When the mod starts, the screen opens in front of you straight away. If no screen appears at all, open `BepInEx/LogOutput.log` and search for
 `Flappy Crix`. No lines means BepInEx didn't load the mod (check the folder is `BepInEx/plugins/FlappyCrix/` with
 `FlappyCrix.dll` inside); otherwise the lines after it say what went wrong.
 
 | Log says | What to do |
 |---|---|
 | `Still waiting for the player's camera` | The game hasn't created the player yet; the screen opens as soon as it does. |
+| `No sound files (Web/img isn't next to the DLL)` | Unzip the whole `FlappyCrix` folder, including `Web`, for the music and sounds. |
+| `The in-game version stopped: ...` | Please report it with the log. |
 | `Couldn't load the live site (...)` | The reason is in brackets, and the screen shows it too. The packaged copy (the site's offline mode) plays meanwhile, and the mod switches back to crixgamingvr.com by itself when it can. |
 | `The website says it is offline` while on the live site | The site's own connection check failed; the mod asks it to check again every 6 s. If it never says `online`, something on the PC is blocking crixgamingvr.com for the hidden browser (firewall, antivirus, VPN). |
 | `No browser on this PC can run the website hidden` | Normal with only Opera / Opera GX / Firefox: the engine is downloaded once. |
@@ -136,7 +149,9 @@ src/FlappyCrix/        C# source of the BepInEx plugin
   Web/                 BrowserGame (page rules, bridge, self test), EdgeBrowserGame, UwbBrowserGame,
     Cdp/               DevTools protocol client: launcher, WebSocket, JSON, page controller (no Unity code)
   VR/                  XR input, screen, arcade deck, joystick, laser
-  Native/              native fallback: rules + renderer (no Unity code) + Unity glue
+  Native/              the in-game version: FlappyApp (menus, store, seasons...), NativeSim (rules),
+                       NativeRenderer + Canvas (drawing), Season, Catalog, SaveData, AppRunner (its thread)
+                       - no Unity code - and NativeFlappyGame (the Unity side: texture, sounds)
 mod/FlappyCrix/        the plugin folder as shipped (Web/ = packaged website + bridge.js)
 tools/                 tests (engine-harness, native-harness, live-harness, load-check, api-audit, Playwright suites),
                        packaging, build scripts
@@ -161,6 +176,7 @@ tools/refs/build_dll.sh        # -> mod/FlappyCrix/FlappyCrix.dll
 tools/load-check/run.sh        # loads it like a normal install and runs the start-up
 tools/api-audit/run.sh         # checks every Unity call against Unity's own source
 tools/live-harness/run.sh      # the website engine vs a slow / down / stalled stand-in live site
+tools/native-harness/run.sh    # the in-game version: rules, menus, seasons, its thread, a picture of every screen
 ```
 GitHub Actions does this automatically; pushing a version tag (e.g. `v1.0.0`) publishes a release with the zip attached.
 
@@ -176,7 +192,8 @@ What was verified, how, and what still needs a real headset: [TESTING.md](TESTIN
 
 ## Credits & licences
 
-- Flappy Crix game, art, sounds and font © CRIX — [CRIX447/crix-website](https://github.com/CRIX447/crix-website).
+- Flappy Crix game, art, sounds and music © CRIX — [CRIX447/crix-website](https://github.com/CRIX447/crix-website).
+  The UI font is Bubble Sans (SIL OFL 1.1); emoji are Noto Color Emoji (Apache 2.0).
 - Mod source code: MIT licence ([LICENSE](LICENSE)). Website content in `mod/FlappyCrix/Web/` is **not** covered by the MIT licence.
 - Made with AI: Claude by Anthropic.
 - Third-party components: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

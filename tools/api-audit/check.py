@@ -70,6 +70,11 @@ OPS = {"op_Equality": "==", "op_Inequality": "!=", "op_Addition": "+", "op_Subtr
        "op_Multiply": "*", "op_Division": "/", "op_UnaryNegation": "-"}
 ARG = r"(?:\[[^\]]*\]\s*)*(?:this |ref |out |in |params )?{t}\s+\w+(?:\s*=\s*[^,)]+)?"
 
+
+def tre(p):
+    """A parameter type as a pattern; a generic method's own type parameter (IL !!0) matches any name (T)."""
+    return re.sub(r"!!\d+", r"\\w+", re.escape(p))
+
 ok, bad = 0, []
 for m in sorted(members):
     mm = re.match(r"(instance\s+)?(.*?)\s*(\S*\[UnityEngine\]UnityEngine[\w.]*?)::([\w.]+)(<[^>]*>)?(\((.*)\))?$", m)
@@ -86,13 +91,13 @@ for m in sorted(members):
     elif name.startswith(("get_", "set_")):                      # property
         found = re.search(r"\b" + re.escape(name[4:]) + r"\s*(\{|=>)", body)
     elif name == ".ctor":
-        found = re.search(r"\b" + re.escape(type_name) + r"\s*\(\s*" + r"\s*,\s*".join(ARG.format(t=re.escape(p)) for p in ps) + r"\s*\)", body)
+        found = re.search(r"\b" + re.escape(type_name) + r"\s*\(\s*" + r"\s*,\s*".join(ARG.format(t=tre(p)) for p in ps) + r"\s*\)", body)
     elif name == "op_Implicit":
         found = re.search(r"implicit\s+operator\s+" + re.escape(cs(ret)) + r"\s*\(\s*" + re.escape(ps[0]) + r"\s", body)
     elif name in OPS:
         found = re.search(r"operator\s*" + re.escape(OPS[name]) + r"\s*\(\s*" + r"\s*,\s*".join(re.escape(p) + r"\s+\w+" for p in ps) + r"\s*\)", body)
     else:                                                        # method (exact parameter list)
-        found = re.search(r"\b" + re.escape(name) + r"(?:<[^>]*>)?\s*\(\s*" + r"\s*,\s*".join(ARG.format(t=re.escape(p)) for p in ps) + r"\s*\)", body)
+        found = re.search(r"\b" + re.escape(name) + r"(?:<[^>]*>)?\s*\(\s*" + r"\s*,\s*".join(ARG.format(t=tre(p)) for p in ps) + r"\s*\)", body)
     if found:
         ok += 1
     else:

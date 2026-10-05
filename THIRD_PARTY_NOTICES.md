@@ -2,13 +2,23 @@
 
 ## Flappy Crix website (packaged in `Web/`)
 From <https://github.com/CRIX447/crix-website> (commit recorded in `Web/FLAPPYCRIX_MANIFEST.json`).
-Game code, art, sounds, music and the `CrixCustom` font belong to CRIX / the repository owner and are
-included with the mod for offline play. The repository has no licence file, so redistribution relies on the
+Game code, art, sounds and music belong to CRIX / the repository owner and are
+included with the mod for offline play and the in-game version's sounds. The site's UI font (`img/font.otf`, which the site calls
+`CrixCustom`) is Bubble Sans, under the SIL Open Font License 1.1 (see below). The repository has no licence file, so redistribution relies on the
 owner's permission. Changes: none to the website's files; `api.json` is replaced with an empty offline config,
 `_vercel/insights/script.js` is an empty stub, `robots.txt` and `photon-realtime-browser.js` are not included.
 
 **Noto Color Emoji** images (`Web/img/emoji/72/`, credited in the site as "Noto Color Emoji") —
-© Google, Apache License 2.0. <https://github.com/googlefonts/noto-emoji>
+© Google, Apache License 2.0 (`LICENSES/Apache-2.0.txt`). <https://github.com/googlefonts/noto-emoji>
+
+## Built into FlappyCrix.dll (the in-game version)
+- **Pictures** (`sprites.bin`, made by `tools/make_sprites.py`): smaller copies of the site's own bird, coin,
+  hat, witch and sleigh images (CRIX's art, as above) and of 47 Noto Color Emoji images (© Google, Apache
+  License 2.0, `LICENSES/Apache-2.0.txt`; resized, otherwise unchanged).
+- **Text font** (`ui-font.bin`, made by `tools/make_font.py`): the site's UI font file `img/font.otf`, which is
+  **Bubble Sans** — Copyright 2025 The Bubble Sans Project Authors (https://github.com/abayemes/bubblesans),
+  SIL Open Font License 1.1 (`LICENSES/OFL-1.1-BubbleSans.txt`) — drawn into small bitmaps at six sizes.
+- Sounds and music are not built in: the in-game version plays the site's mp3 files from `Web/img`.
 
 ## Downloaded website engine (not included)
 Google's **Chrome for Testing headless shell** (Chromium; BSD-3-Clause © The Chromium Authors, plus

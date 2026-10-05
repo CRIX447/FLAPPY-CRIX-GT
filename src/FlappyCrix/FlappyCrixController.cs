@@ -18,9 +18,9 @@ namespace FlappyCrix
     ///   Controllers: Y = open in front of you, B = hide, X / A = flap, laser + trigger = click
     ///   Keyboard:    SPACE flap, arrows navigate, ENTER select, F5 start, P pause, F8 show/hide, F9 bring here
     ///        |
-    ///   IFlappyGame = EdgeBrowserGame (the real website, PC's Edge/Chrome running hidden)
+    ///   IFlappyGame = NativeFlappyGame (the in-game version, the default)
+    ///              or EdgeBrowserGame (the real website, PC's Edge/Chrome running hidden; UseWebsite = true)
     ///              or UwbBrowserGame (the real website, optional UnityWebBrowser engine)
-    ///              or NativeFlappyGame (offline fallback)
     ///
     /// Portable: it opens in front of you when you load in and every time you press Y,
     /// then stays put (it never drifts after you). B hides it.
@@ -148,6 +148,7 @@ namespace FlappyCrix
                     if (g == null) continue;
                     game = g;
                     engineStartedAt = Time.realtimeSinceStartup;
+                    if (placed && !Visible) Guard("mute", () => game.SetVisible(false));
                     Logger.LogInfo("Mode: " + game.ModeName);
                     return;
                 }
@@ -225,8 +226,9 @@ namespace FlappyCrix
         [MethodImpl(MethodImplOptions.NoInlining)]
         private IFlappyGame CreateNativeGame()
         {
-            var native = new NativeFlappyGame(panel != null ? panel.Root : station, ModFolder, this);
+            var native = new NativeFlappyGame(panel != null ? panel.Root : station, ModFolder, this, Config.FlapStartsGame.Value);
             native.Log += m => Logger.LogInfo(m);
+            native.SetVisible(Visible || !placed);
             return native;
         }
 
@@ -244,6 +246,7 @@ namespace FlappyCrix
                 placed = true;
                 PlaceHere();
                 station.gameObject.SetActive(Config.ShowOnStart.Value);
+                if (game != null) Guard("show", () => game.SetVisible(Visible));
                 Logger.LogInfo("Screen opened in front of you (B hides it, Y brings it back)");
             }
             Guard("system input", HandleSystemInput);
@@ -347,6 +350,7 @@ namespace FlappyCrix
         {
             PlaceHere();
             if (!Visible) { station.gameObject.SetActive(true); Logger.LogInfo("Screen opened"); }
+            if (game != null) Guard("show", () => game.SetVisible(true));
         }
 
         /// <summary>B / F8: hide. A run in progress is paused so you don't die while it's away.</summary>
@@ -354,6 +358,7 @@ namespace FlappyCrix
         {
             if (!Visible) return;
             if (game != null && game.Screen == "playing") game.TogglePause();
+            if (game != null) Guard("hide", () => game.SetVisible(false));      // and silent until it's opened again
             station.gameObject.SetActive(false);
             Logger.LogInfo("Screen hidden");
         }

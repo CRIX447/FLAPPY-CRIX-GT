@@ -13,6 +13,13 @@ async def main():
         await pg.route("**/*", lambda r: r.continue_() if r.request.url.startswith("http://127.0.0.1") else r.abort())
         await pg.goto("http://127.0.0.1:47321/flappycrix.html", wait_until="load"); await pg.wait_for_timeout(3000)
         st=lambda: pg.evaluate("JSON.parse(FlappyCrixBridge.state()).screen")
+        # Hiding the screen silences the page (B), opening it restores the sound (Y)
+        m=await pg.evaluate("""(async()=>{ const a=new Audio(); a.src='/img/coin.mp3'; try{await a.play();}catch(e){}
+            const ctx=new AudioContext(); const r1=FlappyCrixBridge.setMuted(true); await new Promise(r=>setTimeout(r,100));
+            const muted=a.muted && ctx.state==='suspended'; const b=new Audio(); b.src='/img/jump.mp3'; try{await b.play();}catch(e){}
+            const newMuted=b.muted; FlappyCrixBridge.setMuted(false); await new Promise(r=>setTimeout(r,100));
+            return {r1, muted, newMuted, back: !a.muted && !b.muted && ctx.state!=='suspended'}; })()""")
+        check("hidden screen mutes every sound, opening it restores them", m["muted"] and m["newMuted"] and m["back"], str(m))
         # Tutorial modal is open on first run: joystick + SELECT should be able to work it
         tut=await pg.evaluate("document.getElementById('tutorialModal').classList.contains('active')")
         r=await pg.evaluate("FlappyCrixBridge.navigate(0,-1)"); await pg.wait_for_timeout(200)

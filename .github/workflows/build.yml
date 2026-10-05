@@ -33,6 +33,9 @@ jobs:
       - name: Start-up check (loads the DLL like a normal install, without UnityWebBrowser)
         run: tools/load-check/run.sh
 
+      - name: In-game version (rules, menus, seasons, its thread, every screen drawn)
+        run: tools/native-harness/run.sh native-screens
+
       - name: Live-site behaviour (the mod's website engine vs a slow / down / stalled stand-in site)
         run: tools/live-harness/run.sh "$(command -v google-chrome || command -v chromium)"
 
@@ -62,5 +65,5 @@ jobs:
           body: |
             Flappy Crix for Gorilla Tag ${{ github.ref_name }}.
             🤖 This mod was made with AI (Claude by Anthropic).
-            Unzip into `Gorilla Tag/BepInEx/plugins/`. The website runs in the Microsoft Edge (or Chrome) already on
-            your PC, hidden - nothing else to install. See the README.
+            Unzip into `Gorilla Tag/BepInEx/plugins/` (the whole FlappyCrix folder - the Web folder has the sounds).
+            The in-game version of Flappy Crix is built in: nothing else to install. See the README.

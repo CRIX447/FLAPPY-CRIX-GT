@@ -446,11 +446,15 @@ namespace FlappyCrix.Web
         public void Back() => Exec("FlappyCrixBridge.back()");
         public void Navigate(int dx, int dy) => Exec("FlappyCrixBridge.navigate(" + dx + "," + dy + ")");
         public void StartButton() => Exec("FlappyCrixBridge.startButton()");
+        /// <summary>SELECT is for menus only: it never flaps.</summary>
         public void Select()
         {
-            if (Screen == "playing") { Flap(); return; }
+            if (Screen == "playing") return;
             Exec("FlappyCrixBridge.select()");
         }
+
+        /// <summary>Hidden screen = the website goes quiet (music, sound effects, everything).</summary>
+        public void SetVisible(bool visible) => Exec("FlappyCrixBridge.setMuted(" + (visible ? "false" : "true") + ")");
 
         private Vector2 lastPointer = new Vector2(-1, -1);
         public void PointerMove(Vector2 uv)

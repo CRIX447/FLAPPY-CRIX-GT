@@ -40,6 +40,41 @@
         } catch (e) {}
     }
 
+    // ---- Quiet while the in-game screen is hidden ----
+    // Every <audio>/<video> the page plays (in the page or not) and every Web Audio context is
+    // tracked, so hiding the screen silences all of it and opening it brings back exactly what
+    // was playing.
+    var muted = false, media = [], ourMuted = [], contexts = [];
+    try {
+        var origPlay = HTMLMediaElement.prototype.play;
+        HTMLMediaElement.prototype.play = function () {
+            if (media.indexOf(this) < 0) { media.push(this); if (media.length > 400) media.shift(); }
+            if (muted && !this.muted) { this.muted = true; ourMuted.push(this); }
+            return origPlay.apply(this, arguments);
+        };
+        ['AudioContext', 'webkitAudioContext'].forEach(function (name) {
+            var Orig = window[name];
+            if (!Orig) return;
+            var Wrapped = function () {
+                var ctx = new (Function.prototype.bind.apply(Orig, [null].concat([].slice.call(arguments))))();
+                contexts.push(ctx);
+                if (muted) { try { ctx.suspend(); } catch (e) {} }
+                return ctx;
+            };
+            Wrapped.prototype = Orig.prototype;
+            window[name] = Wrapped;
+        });
+    } catch (e) {}
+    function setMuted(m) {
+        if (m === muted) return;
+        muted = m;
+        var all = media.slice();
+        try { [].forEach.call(document.querySelectorAll('audio,video'), function (el) { if (all.indexOf(el) < 0) all.push(el); }); } catch (e) {}
+        if (m) all.forEach(function (el) { if (!el.muted) { el.muted = true; ourMuted.push(el); } });
+        else { ourMuted.forEach(function (el) { el.muted = false; }); ourMuted = []; }
+        contexts.forEach(function (c) { try { m ? c.suspend() : c.resume(); } catch (e) {} });
+    }
+
     // ---- Everything that isn't the game opens on the PC desktop ----
     // Only the Flappy Crix game page stays in the in-game panel. Sign-in,
     // socials (Discord/YouTube/TikTok/shop) and the site's other pages are
@@ -66,12 +101,7 @@
         if (now - lastExternal < 1000) return;            // one press = one tab
         lastExternal = now;
         var target = desktopUrl(url);
-        send('OpenExternal', target);
-        var t = (typeof toast === 'function') ? toast : (typeof window.toast === 'function' ? window.toast : null);
-        try {
-            if (t) t({ kind: 'info', title: '🖥️ Opened on your PC',
-                       body: (why || target.replace(/^https?:\/\//, '').slice(0, 60)) + ' — take your headset off to see it.' });
-        } catch (err) {}
+        send('OpenExternal', target);           // no message on the screen about it
     }
 
     document.addEventListener('click', function (e) {
@@ -292,6 +322,9 @@
         reportSelfTest: function () { send('SelfTest', api.selfTest()); return 'sent'; },
 
         // A message from the mod, shown with the site's own toast (e.g. "playing the offline copy").
+        // The screen was hidden (B) or opened again (Y): silence or restore every sound.
+        setMuted: function (m) { setMuted(!!m); return muted ? 'muted' : 'unmuted'; },
+
         notice: function (kind, title, body) { siteToast(kind || 'info', String(title || ''), String(body || '')); return 'shown'; },
         drain: function () { var q = queue.slice(); queue.length = 0; return q; },
 

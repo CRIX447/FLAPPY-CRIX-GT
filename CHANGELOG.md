@@ -94,3 +94,21 @@ The version stays at 1.0.0 until CRIX decides to change it.
   never flaps.
 - Fixed: a missing `Web` folder made the previous build wrongly mark working browsers as "can't run hidden";
   only real browser start-up failures are remembered now (old list ignored).
+
+### Changed after the sixth request
+
+- **The in-game version is back as the default** (`UseWebsite = false`), rebuilt to play like the website with
+  its own layout: the site's game rules tick for tick, its pictures, font, music and sounds, plus everything
+  the site has offline — Store (power-ups, hats, trails), Locker, Daily rewards, 16 awards, levels, Settings,
+  How to play, pause with quick-buy, game over. Progress is saved in `%LOCALAPPDATA%\FlappyCrix\save.txt`
+  (the old native best score carries over).
+- **Seasonal themes** on the site's dates (Sydney time): Halloween (bats, moon, pumpkins, cobwebs, the witch,
+  Trick or Treat calendar), Christmas (snow, Santa's sleigh, Advent calendar), Easter (eggs, Egg Hunt),
+  Birthday (confetti, party hat on 18 March), each with its music and calendar prizes. Settings can choose a
+  season or turn them off.
+- **Silent while hidden**: B stops the music and sounds, Y brings them back — in website mode too.
+- No sign-in, multiplayer, voice or text chat, and nothing opens in the browser — so no "opened on your PC"
+  message (removed from website mode as well).
+- The in-game version runs and draws on its own thread, so it doesn't cost Gorilla Tag frames.
+- Website mode: SELECT no longer flaps during a run (it is for menus only).
+
