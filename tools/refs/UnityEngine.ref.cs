@@ -268,6 +268,7 @@ namespace UnityEngine
         public bool loop { get { return false; } set { } }
         public float volume { get { return 0; } set { } }
         public bool isPlaying { get { return false; } }
+        public bool mute { get; set; }
         public void Play() { }
         public void Pause() { }
         public void UnPause() { }

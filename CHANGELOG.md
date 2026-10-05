@@ -137,3 +137,9 @@ The version stays at 1.0.0 until CRIX decides to change it.
   the highlight moves (joystick or laser), `click.mp3` when you press a button, `swoosh.mp3` between screens, as
   well as the site's `woosh`/`pop`/`error`. Settings > "Menu sounds" (on).
 
+
+### Fixed after the ninth test
+- Sounds could still be heard after hiding the screen with B. Every sound source is now
+  muted and stopped (music paused) whenever the screen isn't showing, checked every frame,
+  so nothing plays however the screen was hidden. The log says "Sound off (screen hidden)."
+  and "Sound on (screen showing)." when this changes.

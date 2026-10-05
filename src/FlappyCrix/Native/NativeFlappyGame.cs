@@ -171,6 +171,9 @@ namespace FlappyCrix.Native
 
         public void Tick()
         {
+            // Silent whenever the screen isn't showing - whatever hid it - not only when SetVisible(false) was called.
+            bool shown = visible && audioRoot != null && audioRoot.activeInHierarchy;
+            if (shown != audible) SetAudible(shown);
             if (visible) runner.Nudge();
             if (early.Count > 0) { foreach (var m in early.ToArray()) Log?.Invoke(m); early.Clear(); }
 
@@ -188,7 +191,7 @@ namespace FlappyCrix.Native
             logBuf.Clear();
 
             runner.TakeSounds(soundBuf);
-            if (visible) foreach (var s in soundBuf) PlaySound(s.Key, s.Value);
+            if (audible) foreach (var s in soundBuf) PlaySound(s.Key, s.Value);
             soundBuf.Clear();
 
             UpdateMusic();
@@ -212,7 +215,7 @@ namespace FlappyCrix.Native
                 if (!monoSources.TryGetValue(name, out src))
                 {
                     src = audioRoot.AddComponent<AudioSource>();
-                    src.playOnAwake = false; src.spatialBlend = 0.6f; src.clip = clip;
+                    src.playOnAwake = false; src.spatialBlend = 0.6f; src.clip = clip; src.mute = !audible;
                     monoSources[name] = src;
                 }
                 src.Stop();
@@ -225,7 +228,7 @@ namespace FlappyCrix.Native
         private void UpdateMusic()
         {
             string want = runner.MusicTrack;
-            bool play = visible && runner.MusicShouldPlay;
+            bool play = audible && runner.MusicShouldPlay;
             AudioClip clip = null;
             if (play && !clips.TryGetValue(want, out clip))
             {
@@ -250,15 +253,32 @@ namespace FlappyCrix.Native
         /// <summary>Screen hidden = silent (music paused, sounds cut) and the game stops drawing.</summary>
         public void SetVisible(bool v)
         {
-            if (visible == v) return;
             visible = v;
-            runner.Visible = v;
-            if (!v)
+            SetAudible(v && audioRoot != null && audioRoot.activeInHierarchy);
+        }
+
+        private bool audible = true;
+
+        /// <summary>Every sound source muted and stopped (or unmuted), and the game told not to make sounds.</summary>
+        private void SetAudible(bool on)
+        {
+            bool changed = on != audible;
+            audible = on;
+            runner.Visible = on;
+            foreach (var src in AllSources())
             {
-                if (music.isPlaying) music.Pause();
-                effects.Stop();
-                foreach (var s in monoSources.Values) s.Stop();
+                src.mute = !on;
+                if (!on && src != music) src.Stop();
             }
+            if (!on && music.isPlaying) music.Pause();
+            if (changed) early.Add(on ? "Sound on (screen showing)." : "Sound off (screen hidden).");
+        }
+
+        private IEnumerable<AudioSource> AllSources()
+        {
+            if (music != null) yield return music;
+            if (effects != null) yield return effects;
+            foreach (var s in monoSources.Values) yield return s;
         }
 
         // ------------------------------------------------------------------ input
