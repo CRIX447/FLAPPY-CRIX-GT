@@ -226,7 +226,9 @@ What was verified, how, and what still needs a real headset: [TESTING.md](TESTIN
 
 - Flappy Crix game, art, sounds and music © CRIX — [CRIX447/crix-website](https://github.com/CRIX447/crix-website).
   The UI font is Bubble Sans (SIL OFL 1.1); emoji are Noto Color Emoji (Apache 2.0).
-- Mod source code: MIT licence ([LICENSE](LICENSE)). Website content in `mod/FlappyCrix/Web/` is **not** covered by the MIT licence.
+- Mod source code: MIT licence ([LICENSE](LICENSE)). The MIT licence covers the mod's own code and tools only: the
+  Flappy Crix game content (art, sounds, music and the site's game code, in `mod/FlappyCrix/Web/`, the `.bin`/`.mp3`
+  files under `src/` and built into the DLL) belongs to CRIX and is **not** MIT-licensed.
 - Made with AI: Claude by Anthropic.
 - Third-party components: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
