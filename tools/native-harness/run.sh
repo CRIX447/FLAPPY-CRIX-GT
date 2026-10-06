@@ -22,7 +22,7 @@ import glob, os, sys
 try:
     from PIL import Image
 except ImportError:
-    sys.exit("(Pillow isn't installed: the screens stay as raw .rgba files, 960x640)")
+    print("(Pillow isn't installed: the screens stay as raw .rgba files, 960x640)"); sys.exit(0)
 for f in sorted(glob.glob(os.path.join(sys.argv[1], "*.rgba"))):
     Image.frombytes("RGBA", (960, 640), open(f, "rb").read()).convert("RGB").save(f[:-5] + ".png")
     os.remove(f)
