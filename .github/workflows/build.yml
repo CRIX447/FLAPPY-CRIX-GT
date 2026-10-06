@@ -65,5 +65,5 @@ jobs:
           body: |
             Flappy Crix for Gorilla Tag ${{ github.ref_name }}.
             🤖 This mod was made with AI (Claude by Anthropic).
-            Unzip into `Gorilla Tag/BepInEx/plugins/` (the whole FlappyCrix folder - the Web folder has the sounds).
+            Unzip into `Gorilla Tag/BepInEx/plugins/`. Sounds, pictures and the font are built into FlappyCrix.dll.
             The in-game version of Flappy Crix is built in: nothing else to install. See the README.
