@@ -143,3 +143,7 @@ The version stays at 1.0.0 until CRIX decides to change it.
   muted and stopped (music paused) whenever the screen isn't showing, checked every frame,
   so nothing plays however the screen was hidden. The log says "Sound off (screen hidden)."
   and "Sound on (screen showing)." when this changes.
+
+### Changed after the tenth request
+- Seasonal themes follow the calendar only (Sydney time, like the site). The season picker is
+  gone from Settings, which now just shows today's theme; a season picked in an older save is ignored.

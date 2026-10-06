@@ -27,7 +27,7 @@ website.
     (Reindeer Ears, Tinsel Trail, Santa's Hat).
   - **Easter** (Palm Sunday – Easter Monday): eggs and the **Egg Hunt** (Bunny Ears, Pastel Trail).
   - **Birthday** (March, from 2027): confetti, and the Golden Party Hat on 18 March.
-  - Settings can pick a season or turn them off.
+  - Themes follow the calendar only; nobody can pick or turn off a season.
 - **Arcade cabinet**: joystick to move through the menus, **FLAP**, **SELECT** (menus only — it never flaps),
   **START**, **PAUSE**, **− / +** to resize. Press the buttons with your fingertip. The laser pointer clicks too.
 - **Portable**: opens in front of you when you load in. **B** hides it, **Y** brings it back.
@@ -144,7 +144,7 @@ engine live in `%LOCALAPPDATA%\FlappyCrix`.
 | `ShaderOverride` | empty | Advanced: if the screen or deck is invisible, a shader name to use instead (see the log). |
 | Website mode only: `UseRemoteWebsite`, `UseOfflineCopy`, `AutoFallbackToNative`, `ResolutionWidth/Height` (1280×800), `BrowserPath`, `DownloadEngine`, `BrowserFrameRate`, `StreamQuality`, `OpenLinksOnDesktop` | | See the descriptions in the settings file. |
 
-Music, sound volumes, the light theme, reduced motion and the seasonal theme are set in the game's own
+Music, sound volumes, the light theme, and reduced motion are set in the game's own
 **Settings** menu (saved with your progress).
 
 ## If something's wrong

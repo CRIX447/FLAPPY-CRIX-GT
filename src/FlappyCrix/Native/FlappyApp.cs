@@ -147,7 +147,7 @@ namespace FlappyCrix.Native
         {
             seasonCheckedAt = now;
             today = Season.SydneyToday(Clock());
-            var s = Season.Pick(Save.SeasonChoice, today);
+            var s = Season.Auto(today);   // themes follow the calendar only - nobody can pick one
             if (s != Season || force)
             {
                 Season = s;
@@ -159,8 +159,7 @@ namespace FlappyCrix.Native
         }
 
         /// <summary>For the settings screen and tests: pick the season now.</summary>
-        public void SetSeasonChoice(string choice) { Save.SeasonChoice = choice; Save.Dirty = true; RefreshSeason(true); }
-
+        
         // ------------------------------------------------------------------ game events
 
         void StartRun()
@@ -454,7 +453,7 @@ namespace FlappyCrix.Native
             Flush();
         }
 
-        bool SeasonForced => !string.IsNullOrEmpty(Save.SeasonChoice) && Save.SeasonChoice != "auto";
+        const bool SeasonForced = false;
         int CalendarDoorToday => Season != null ? Season.CalendarToday(today, SeasonForced) : 0;
         HashSet<int> CalendarClaimed => Save.CalendarDoors(Season.Id, LocalNow.Year);
 
@@ -751,7 +750,7 @@ namespace FlappyCrix.Native
             {
                 Icon(Season.Emoji, x + 34, y + 32, 40);
                 C.Text(Season.Name.ToUpperInvariant(), x + 62, y + 12, 20, Accent);
-                C.Text(SeasonForced ? "Chosen in Settings" : "Seasonal theme is on", x + 62, y + 36, 13, Muted);
+                C.Text("Seasonal theme is on", x + 62, y + 36, 13, Muted);
                 if (Season.CalendarDoors > 0)
                 {
                     int open = CalendarDoorToday, waiting = 0;
@@ -1158,15 +1157,6 @@ namespace FlappyCrix.Native
             defaultFocus = "back";
         }
 
-        static readonly string[] SeasonChoices = { "auto", "spooky", "christmas", "easter", "birthday", "off" };
-
-        string SeasonChoiceName(string c)
-        {
-            if (c == "auto") { var s = Season.Auto(today); return "AUTOMATIC (" + (s != null ? s.Name.ToUpperInvariant() : "NONE TODAY") + ")"; }
-            if (c == "off") return "OFF";
-            var se = Season.ById(c); return se != null ? se.Name.ToUpperInvariant() : c;
-        }
-
         void SettingsScreen()
         {
             ModalFrame("SETTINGS", "2699", "Saved on this PC");
@@ -1189,16 +1179,14 @@ namespace FlappyCrix.Native
             SettingRow("motion", x2, y + 92, w, "Reduced motion", Save.ReducedMotion, v => { Save.ReducedMotion = v; Sim.ReducedMotion = v; });
             C.RoundRect(x2, y + 150, w, 104, 12, Panel2);
             C.Text("Seasonal theme", x2 + 16, y + 160, 16, White);
-            int idx = Math.Max(0, Array.IndexOf(SeasonChoices, Save.SeasonChoice));
-            Button("season_prev", x2 + 12, y + 192, 50, 50, "<", null, Style.Normal, true, () => { SetSeasonChoice(SeasonChoices[(idx + SeasonChoices.Length - 1) % SeasonChoices.Length]); Sfx("pop", 0.4f); }, 26);
-            Button("season_next", x2 + w - 62, y + 192, 50, 50, ">", null, Style.Normal, true, () => { SetSeasonChoice(SeasonChoices[(idx + 1) % SeasonChoices.Length]); Sfx("pop", 0.4f); }, 26);
-            string name = SeasonChoiceName(Save.SeasonChoice);
-            C.Text(name, x2 + w / 2, y + 206, name.Length > 22 ? 13 : 16, Accent, 1, Align.Centre);
+            C.Text(Season != null ? Season.Name.ToUpperInvariant() : "NONE TODAY", x2 + 16, y + 186, 16, Accent);
+            C.TextWrapped("Themes follow the calendar (Sydney time): Halloween, Christmas, Easter and the birthday.",
+                          x2 + 16, y + 210, w - 32, 13, Muted);
 
             C.RoundRect(x2, y + 266, w, 130, 12, Panel2);
             C.Text("ABOUT", x2 + 16, y + 276, 16, Muted);
             C.TextWrapped("Flappy Crix for Gorilla Tag " + Version + ". The in-game version of crixgamingvr.com/flappycrix: the same game, coins, store, " +
-                          "seasons and awards. Sign-in, multiplayer and chat aren't in VR. This mod was made with AI (Claude by Anthropic).",
+                          "seasons, awards and multiplayer. Voice and text chat aren't in VR. This mod was made with AI (Claude by Anthropic).",
                           x2 + 16, y + 300, w - 32, 13, Muted);
             defaultFocus = "music";
         }
