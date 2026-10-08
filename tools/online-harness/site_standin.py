@@ -93,8 +93,8 @@ class H(BaseHTTPRequestHandler):
         calls.append("GET " + u.path)
         if u.path == "/api.json":
             return self.reply(200, {"youtube": {"apiKey": "not-for-the-mod"}, "firebase": {"apiKey": KEY, "projectId": "flappy-crix"},
-                                    "photon": {"appId": "56ff5627-b073-412c-ac63-95fd3dc28484", "appVersion": "1.0", "region": "us"},
-                                    "playfab": {"titleId": "17CF2A"}})
+                                    "photon": {"appId": "test-photon-app", "appVersion": "1.0", "region": "us"},
+                                    "playfab": {"titleId": "TEST01"}})
         if u.path.startswith("/test/doc/"):
             return self.reply(200, docs.get(u.path[10:], {}))
         if u.path.startswith("/v1/projects/flappy-crix/databases/(default)/documents/"):

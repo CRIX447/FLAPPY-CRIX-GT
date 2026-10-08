@@ -20,7 +20,8 @@ class OnlineUiTest
 
     static FlappyApp Make(string name, DateTime when)
     {
-        var cfg = new SiteConfig { PhotonNameServer = "wss://127.0.0.1:19093", Site = "http://127.0.0.1:9" };   // no account service: guests
+        var cfg = new SiteConfig { PhotonNameServer = "wss://127.0.0.1:19093", Site = "http://127.0.0.1:9",   // no account service: guests
+                                PhotonAppId = "test-photon-app" };                                         // the stand-in takes any app
         string dir = Path.Combine(Path.GetTempPath(), "fc-ui-" + name + "-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(dir);
         var online = new OnlineServices(cfg, dir, m => { if (m.Contains("Multiplayer")) Console.WriteLine("     [" + name + "] " + m); });

@@ -1,7 +1,7 @@
 # Third-party notices
 
 ## Flappy Crix website (packaged in `Web/`)
-From <https://github.com/CRIX447/crix-website> (commit recorded in `Web/FLAPPYCRIX_MANIFEST.json`).
+From crixgamingvr.com's own source (CRIX447/crix-website, a private repository; the commit is recorded in `Web/FLAPPYCRIX_MANIFEST.json`).
 Game code, art, sounds and music belong to CRIX / the repository owner and are
 included with the mod for offline play and the in-game version's sounds. The site's UI font (`img/font.otf`, which the site calls
 `CrixCustom`) is Bubble Sans, under the SIL Open Font License 1.1 (see below). The repository has no licence file, so redistribution relies on the

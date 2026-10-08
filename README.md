@@ -117,7 +117,10 @@ Gorilla Tag ─ BepInEx ─ FlappyCrix.dll
   the save is the site's `users/{uid}` document in its format (only the game's own fields are written, so the
   site's other fields are untouched); multiplayer uses the site's Photon app, room names (`crix_XXXX`), room
   properties, event codes and payloads, and its seeded pipe generator, so website and VR players share rooms.
-  The site's public settings are read from `crixgamingvr.com/api.json` when the game starts.
+  The site's public settings (Firebase project, Photon app, PlayFab title) are read from
+  `crixgamingvr.com/api.json` when the game starts; none of them are built into the mod or this repository.
+  Until the site has answered, the online features say they can't reach it and keep trying; offline play
+  is never affected.
 - **Limits that come from the site:** the Photon app is on a plan with a limit of players online at once
   (website and mod together); nothing on the site's servers checks coins or results, so the mod only ever
   applies the website's own rules and never claims staff roles or sends host commands unless it is the host.
@@ -224,7 +227,7 @@ What was verified, how, and what still needs a real headset: [TESTING.md](TESTIN
 
 ## Credits & licences
 
-- Flappy Crix game, art, sounds and music © CRIX — [CRIX447/crix-website](https://github.com/CRIX447/crix-website).
+- Flappy Crix game, art, sounds and music © CRIX — [crixgamingvr.com](https://crixgamingvr.com).
   The UI font is Bubble Sans (SIL OFL 1.1); emoji are Noto Color Emoji (Apache 2.0).
 - Mod source code: MIT licence ([LICENSE](LICENSE)). The MIT licence covers the mod's own code and tools only: the
   Flappy Crix game content (art, sounds, music and the site's game code, in `mod/FlappyCrix/Web/`, the `.bin`/`.mp3`

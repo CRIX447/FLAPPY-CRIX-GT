@@ -288,6 +288,17 @@ namespace FlappyCrix.Online
 
         private void ConnectNameServer()
         {
+            // The Photon app comes from crixgamingvr.com, not from the mod (see SiteConfig)
+            if (!Config.HasPhotonSettings)
+            {
+                bool loaded = false;
+                try { loaded = Config.EnsureLoaded(Log); } catch (Exception e) { Log("Site settings: " + e.Message); }
+                if (!loaded || !Config.HasPhotonSettings)
+                {
+                    Fail(loaded ? "multiplayer isn't set up on crixgamingvr.com" : "couldn't reach crixgamingvr.com (check your internet)");
+                    return;
+                }
+            }
             Error = null;
             Status = State.ConnectingNameServer;
             Log("Multiplayer: connecting to Photon (" + Config.PhotonRegion + ")");
