@@ -59,6 +59,9 @@ namespace FlappyCrix.Online
         public int PingMs;
         public string Nickname = "Player";
         public Func<Dictionary<string, object>> Identity;   // the NAME_UPDATE payload (name, level, hat, trail...)
+        public Func<string, int, string> PassFor;            // a signed room pass from the website, if signed in (blocking)
+        private string passRoom, pass;                        // ours, for this room
+        private volatile bool passArrived;
 
         /// <summary>Messages for the player: title, text.</summary>
         public event Action<string, string> Notice;
@@ -245,6 +248,9 @@ namespace FlappyCrix.Online
                     else if (!p.Me && !string.IsNullOrEmpty(kv.Value) && p.Name.StartsWith("Player", StringComparison.Ordinal)) p.Name = kv.Value;
                 }
 
+            // our room pass came back: tell everyone again, with it
+            if (passArrived) { passArrived = false; SendIdentity(); }
+
             // ping (the site measures its own echo of event 26 once a second)
             if (now - lastPing >= 1) { lastPing = now; Send(EvPing, Args("t", now * 1000.0), true); }
 
@@ -368,6 +374,7 @@ namespace FlappyCrix.Online
             MatchInProgressOnJoin = !created && Client.RoomProps.TryGetValue("matchInProgress", out mip) && mip is bool && (bool)mip;
             State = Phase.Room;
             SendIdentity();
+            RequestPass();
             Sound?.Invoke("unlock", 0.5f);
         }
 
@@ -568,9 +575,27 @@ namespace FlappyCrix.Online
             for (int i = 0; i < ids.Count; i++) Players[ids[i]].Seat = i;
         }
 
+        // The website's players only let a signed-in player chat and show their tags when the
+        // server has vouched for them; without a pass we show up as a guest to them.
+        private void RequestPass()
+        {
+            pass = null; passRoom = null;
+            var get = PassFor;
+            string room = Client.RoomName; int actor = Me;
+            if (get == null || string.IsNullOrEmpty(room)) return;
+            new System.Threading.Thread(() =>
+            {
+                string p = null;
+                try { p = get(room, actor); } catch { }
+                if (p == null || room != Client.RoomName || actor != Me) return;
+                pass = p; passRoom = room; passArrived = true;
+            }) { IsBackground = true, Name = "FlappyCrix room pass" }.Start();
+        }
+
         private void SendIdentity()
         {
             var id = Identity != null ? Identity() : new Dictionary<string, object>();
+            if (pass != null && passRoom == Client.RoomName) id["pass"] = pass;
             id["name"] = Nickname;
             id["platform"] = "windows";
             id["colour"] = Colours[((Me % 12) + 12) % 12];

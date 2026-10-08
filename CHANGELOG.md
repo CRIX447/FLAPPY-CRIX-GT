@@ -10,6 +10,9 @@ The version stays at 1.0.0 until CRIX decides to change it.
   the online features say they can't reach the site and try again every 15 seconds. Offline play is unchanged.
   The test kits use made-up ids.
 - `tools/online-harness/run.sh` takes the path to a crix-website checkout (the repository is private now).
+- **Room passes.** A signed-in player gets a pass for each room from the website (`/api/identity`) and sends it with
+  their details, so the website's players see their real name and tags. Without one the website treats a player as a
+  guest: shown as "Guest" and a number, and not able to chat or kick.
 - **Safe PlayFab sign-in.** The mod signs in to PlayFab through the website (`/api/playfab-login`) with the
   player's Firebase sign-in, the same as the website now does, instead of straight to PlayFab with the account id
   (which anyone who knew it could use). Until the website switches it on, the old way is used. Bans still show.

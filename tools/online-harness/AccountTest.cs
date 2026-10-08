@@ -96,6 +96,7 @@ class AccountTest
         Check(Firestore.Str(eq, "hat") == "cap" && Firestore.List(d, "owned").Contains("cap") && Firestore.List(d, "achievements").Count == 16,
               "owned, equipped and all 16 awards in the website's format");
         Check(Firestore.Long(Firestore.Map(d, "stats"), "level") == 2, "the stats mirror (level) is written");
+        Check(acct.RoomPass("crix_TEST", 3) == "pass-u1-crix_TEST-3", "a signed-in game gets a room pass from the website (api/identity)");
         var calls = Calls();
         Check(calls.Contains("POST /api/playfab-login") && !calls.Contains("POST /Client/LoginWithCustomID"),
               "PlayFab sign-in goes through the website (api/playfab-login), not straight to PlayFab with the account id");

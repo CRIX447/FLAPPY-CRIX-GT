@@ -402,6 +402,20 @@ namespace FlappyCrix.Online
                 }
         }
 
+        /// <summary>
+        /// A signed pass for one room (the website's api/identity.js). The website's games only believe
+        /// a player is signed in — and so let them chat, and show their tags — when they have one.
+        /// Blocking: call it off the game thread.
+        /// </summary>
+        public string RoomPass(string room, int actor)
+        {
+            string tok = idToken, pf = playFabTicket;
+            if (tok == null || string.IsNullOrEmpty(room) || actor < 1) return null;
+            var r = Http.PostJson(Config.Site + "/api/identity", MiniJson.Args("idToken", tok, "pfTicket", pf, "room", room, "actor", actor));
+            if (!r.Ok) { Log("Account: no room pass (" + r + ")"); return null; }
+            return MiniJson.Str(r.Json, "pass");
+        }
+
         private Dictionary<string, object> PlayFab(string op, object body)
         {
             if (playFabTicket == null) return null;
