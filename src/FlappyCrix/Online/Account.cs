@@ -352,20 +352,43 @@ namespace FlappyCrix.Online
         private void PlayFabLogin(string name, ref int level, ref int xp, ref int best)
         {
             if (!Config.HasPlayFabSettings) { Log("Account: no PlayFab title from crixgamingvr.com; skipping PlayFab"); return; }
-            var r = Http.PostJson(Config.PlayFab + "/Client/LoginWithCustomID",
-                MiniJson.Args("TitleId", Config.PlayFabTitle, "CustomId", Uid, "CreateAccount", true));
-            var j = r.Json;
-            if (!r.Ok)
+            // The website signs in to PlayFab for us (api/playfab-login.js), with an id only its
+            // server knows — so knowing someone's account id is no longer enough to get into their
+            // PlayFab account. It needs the Firebase sign-in, which only this player has.
+            var data = (Dictionary<string, object>)null;
+            var r = Http.PostJson(Config.Site + "/api/playfab-login", MiniJson.Args("idToken", idToken));
+            if (r.Ok) data = r.Json;
+            else if (r.Status == 403 && MiniJson.Str(r.Json, "error") == "AccountBanned")
             {
-                if (MiniJson.Str(j, "error") == "AccountBanned")
-                {
-                    Banned = true; BanReason = MiniJson.Str(j, "errorMessage") ?? "banned";
-                    Log("Account: this account is banned on PlayFab");
-                }
-                else Log("Account: PlayFab sign-in skipped (" + r + ")");
+                var ban = MiniJson.Child(r.Json, "ban");
+                Banned = true; BanReason = MiniJson.Str(ban, "reason") ?? "banned";
+                Log("Account: this account is banned on PlayFab");
                 return;
             }
-            var data = MiniJson.Child(j, "data");
+            else if (r.Status == 503 || r.Status == 404)
+            {
+                // The website hasn't switched it on yet: the old way, which is all there is until then
+                r = Http.PostJson(Config.PlayFab + "/Client/LoginWithCustomID",
+                    MiniJson.Args("TitleId", Config.PlayFabTitle, "CustomId", Uid, "CreateAccount", true));
+                var j = r.Json;
+                if (!r.Ok)
+                {
+                    if (MiniJson.Str(j, "error") == "AccountBanned")
+                    {
+                        Banned = true; BanReason = MiniJson.Str(j, "errorMessage") ?? "banned";
+                        Log("Account: this account is banned on PlayFab");
+                    }
+                    else Log("Account: PlayFab sign-in skipped (" + r + ")");
+                    return;
+                }
+                data = MiniJson.Child(j, "data");
+            }
+            else
+            {
+                // Never fall back here: once an account has moved, the old way would make a new, empty one
+                Log("Account: PlayFab sign-in skipped (" + r + ")");
+                return;
+            }
             playFabTicket = MiniJson.Str(data, "SessionTicket");
             playFabId = MiniJson.Str(data, "PlayFabId");
             var st = PlayFab("GetPlayerStatistics", MiniJson.Args("StatisticNames", new List<object> { "level", "xp", "highScore" }));
