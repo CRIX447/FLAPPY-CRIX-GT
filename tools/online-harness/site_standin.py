@@ -4,7 +4,7 @@
 (accounts:signInWithCustomToken, accounts:lookup, securetoken token refresh), Firestore REST
 (users/{uid} GET + PATCH with update masks, typed values) and PlayFab Client (LoginWithCustomID,
 Get/UpdatePlayerStatistics). Test helpers: POST /test/claim {code, uid} (the phone approving),
-GET/POST /test/doc/{uid}.
+GET/POST /test/doc/{uid}, POST /test/pfserver {on} (api/playfab-login switched on or not).
 
   python3 site_standin.py --port 8091
 Part of Flappy Crix for Gorilla Tag - made with AI (Claude by Anthropic).
@@ -30,6 +30,7 @@ docs = {}           # uid -> {"fields": {...}}
 pf_stats = {}       # uid -> {name: value}
 revoked = set()
 calls = []
+pf_server = {"on": True}   # api/playfab-login switched on (PLAYFAB_SECRET_KEY set on the site)
 
 
 def jwt(uid):
@@ -171,6 +172,19 @@ class H(BaseHTTPRequestHandler):
             return self.reply(200, {})
         if u.path == "/test/calls":
             return self.reply(200, calls)
+        if u.path == "/test/pfserver":
+            pf_server["on"] = bool(b.get("on"))
+            return self.reply(200, {})
+        if u.path == "/api/playfab-login":
+            # like api/playfab-login.js: the Firebase sign-in in, the PlayFab session out
+            if not pf_server["on"]:
+                return self.reply(503, {"error": "not configured"})
+            uid = uid_from_auth("Bearer " + (b.get("idToken") or ""))
+            if not uid:
+                return self.reply(401, {"error": "Not signed in"})
+            if uid == "banned":
+                return self.reply(403, {"error": "AccountBanned", "ban": {"reason": "Cheating", "until": "Indefinite"}})
+            return self.reply(200, {"SessionTicket": "t-" + uid, "PlayFabId": "PF" + uid})
         if u.path.startswith("/v1/") and q.get("key", [""])[0] != KEY:
             return self.reply(400, {"error": {"code": 400, "message": "API key not valid. Please pass a valid API key."}})
         if u.path == "/v1/accounts:signInWithCustomToken":

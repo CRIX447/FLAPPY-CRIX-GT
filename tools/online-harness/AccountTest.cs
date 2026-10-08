@@ -31,6 +31,11 @@ class AccountTest
     }
 
     static void Post(string path, object body) => Http.PostJson(Base + path, body);
+    static List<string> Calls()
+    {
+        var l = MiniJson.Parse(Http.PostJson(Base + "/test/calls", MiniJson.Args()).Body) as List<object>;
+        return l == null ? new List<string>() : l.ConvertAll(o => o as string);
+    }
 
     static bool Pump(FlappyApp app, Func<bool> until, double secs)
     {
@@ -91,6 +96,9 @@ class AccountTest
         Check(Firestore.Str(eq, "hat") == "cap" && Firestore.List(d, "owned").Contains("cap") && Firestore.List(d, "achievements").Count == 16,
               "owned, equipped and all 16 awards in the website's format");
         Check(Firestore.Long(Firestore.Map(d, "stats"), "level") == 2, "the stats mirror (level) is written");
+        var calls = Calls();
+        Check(calls.Contains("POST /api/playfab-login") && !calls.Contains("POST /Client/LoginWithCustomID"),
+              "PlayFab sign-in goes through the website (api/playfab-login), not straight to PlayFab with the account id");
 
         // 3. the website has other fields; saves must not wipe them
         d = Doc("u1");
@@ -160,6 +168,17 @@ class AccountTest
         var app3 = NewApp(dir, out online);
         Pump(app3, () => online.Account.Status == Account.State.SignedOut && online.Account.Message != null, 8);
         Check(!app3.SignedIn && online.Account.Message != null && online.Account.Message.Contains("signed out"), "a revoked sign-in signs the game out", online.Account.Message ?? "");
+        online.Dispose();
+
+        // 9. a website that hasn't switched the safe sign-in on yet: the old way still works
+        Post("/test/pfserver", MiniJson.Args("on", false));
+        var app4 = NewApp(dir, out online);
+        app4.OpenForTest("account"); app4.Render();
+        app4.PressForTest("link");
+        Pump(app4, () => online.Account.Status == Account.State.ShowingCode, 5);
+        Post("/test/claim", MiniJson.Args("code", online.Account.Code, "uid", "u2"));
+        Check(Pump(app4, () => app4.SignedIn, 10) && Calls().Contains("POST /Client/LoginWithCustomID"),
+              "until the website switches it on, PlayFab sign-in falls back to the old way");
         online.Dispose();
 
         Console.WriteLine(fails == 0 ? "ALL PASSED" : fails + " FAILED");
