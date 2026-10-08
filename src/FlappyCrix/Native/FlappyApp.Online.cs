@@ -56,6 +56,8 @@ namespace FlappyCrix.Native
             {
                 { "level", Save.Level }, { "hat", Save.Hat == "" ? null : Save.Hat }, { "trail", Save.Trail == "" ? null : Save.Trail },
             };
+            Mp.PassFor = (room, actor) =>
+                Online.Account != null && Online.Account.Status == Account.State.SignedIn ? Online.Account.RoomPass(room, actor) : null;
             Mp.Notice += (t, b) => AddToast(null, t, b, Accent);
             Mp.Sound += (n, v) => Sfx(n, v);
             Mp.Reward += (coins, xp) =>

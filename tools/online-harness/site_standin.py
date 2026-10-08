@@ -175,6 +175,12 @@ class H(BaseHTTPRequestHandler):
         if u.path == "/test/pfserver":
             pf_server["on"] = bool(b.get("on"))
             return self.reply(200, {})
+        if u.path == "/api/identity":
+            # like api/identity.js: a pass for one room, for a signed-in player
+            uid = uid_from_auth("Bearer " + (b.get("idToken") or ""))
+            if not uid:
+                return self.reply(401, {"error": "Not signed in"})
+            return self.reply(200, {"pass": "pass-%s-%s-%s" % (uid, b.get("room"), b.get("actor")), "roles": []})
         if u.path == "/api/playfab-login":
             # like api/playfab-login.js: the Firebase sign-in in, the PlayFab session out
             if not pf_server["on"]:
