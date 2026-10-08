@@ -3,6 +3,14 @@
 All versions of this mod were made with AI (Claude by Anthropic).
 The version stays at 1.0.0 until CRIX decides to change it.
 
+## Unreleased
+
+- **No keys or IDs in the mod.** The Firebase key and project, the Photon app id and the PlayFab title are no
+  longer built in: the mod reads them from `crixgamingvr.com/api.json` (as before), and until that has worked
+  the online features say they can't reach the site and try again every 15 seconds. Offline play is unchanged.
+  The test kits use made-up ids.
+- `tools/online-harness/run.sh` takes the path to a crix-website checkout (the repository is private now).
+
 ## 1.0.0 — 2026-10-04
 
 - The real Flappy Crix website game on an in-game screen. The website engine is the Microsoft Edge that ships

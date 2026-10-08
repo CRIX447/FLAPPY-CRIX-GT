@@ -1,14 +1,19 @@
 #!/bin/sh
 # The mod's online features against stand-ins, and its multiplayer against the website's own
 # multiplayer code (needs mono, python3 with websockets + playwright, Chromium, openssl).
-#   tools/online-harness/run.sh [path to a crix-website checkout]
+#   tools/online-harness/run.sh <path to a crix-website checkout>
 # Part of Flappy Crix for Gorilla Tag - made with AI (Claude by Anthropic).
 set -e
 HERE=$(dirname "$(realpath "$0")")
 ROOT="$HERE/../.."
 W=$(mktemp -d)
-SITE=${1:-$W/crix-website}
-[ -d "$SITE" ] || git clone -q --depth 1 https://github.com/CRIX447/crix-website.git "$SITE"
+# crix-website is a private repository: pass the path to your own checkout of it
+SITE=${1:-}
+if [ -z "$SITE" ] || [ ! -f "$SITE/flappycrix.html" ]; then
+    echo "usage: tools/online-harness/run.sh <path to your crix-website checkout>"
+    echo "(crix-website is private, so it can't be downloaded here)"
+    exit 2
+fi
 openssl req -x509 -newkey rsa:2048 -nodes -keyout "$W/key.pem" -out "$W/cert.pem" -days 2 -subj "/CN=ns.photonengine.io" \
     -addext "subjectAltName=DNS:ns.photonengine.io,DNS:localhost,IP:127.0.0.1" 2>/dev/null
 N="$ROOT/src/FlappyCrix/Native"; O="$ROOT/src/FlappyCrix/Online"; C="$ROOT/src/FlappyCrix/Web/Cdp"

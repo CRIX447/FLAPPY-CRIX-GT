@@ -97,7 +97,7 @@ namespace FlappyCrix.Online
 
         private void Loop()
         {
-            try { Config.Refresh(Log); } catch (Exception e) { Log("Site settings: " + e.Message); }
+            try { Config.EnsureLoaded(Log); } catch (Exception e) { Log("Site settings: " + e.Message); }
             Restore();
             while (running)
             {
@@ -115,6 +115,19 @@ namespace FlappyCrix.Online
             lock (gate) { link = wantLink; cancel = wantCancel; signOut = wantSignOut; wantLink = wantCancel = wantSignOut = false; }
 
             if (signOut) { DoSignOut(); return; }
+
+            // Nothing below can work without crixgamingvr.com's settings (none are built in).
+            // Keep asking for them; a link request that can't go anywhere says why.
+            if (!Config.HasAccountSettings)
+            {
+                bool loaded = false;
+                try { loaded = Config.EnsureLoaded(Log); } catch (Exception e) { Log("Site settings: " + e.Message); }
+                if (!loaded || !Config.HasAccountSettings)
+                {
+                    if (link) Set(State.Error, "Can't reach crixgamingvr.com right now. Check your internet and try again.");
+                    return;
+                }
+            }
             if (cancel && (Status == State.ShowingCode || Status == State.GettingCode || Status == State.Error))
             { linkToken = null; Code = null; Set(Uid != null ? State.SignedIn : State.SignedOut); }
             if (link && Status != State.SignedIn) CreateCode();
@@ -338,6 +351,7 @@ namespace FlappyCrix.Online
 
         private void PlayFabLogin(string name, ref int level, ref int xp, ref int best)
         {
+            if (!Config.HasPlayFabSettings) { Log("Account: no PlayFab title from crixgamingvr.com; skipping PlayFab"); return; }
             var r = Http.PostJson(Config.PlayFab + "/Client/LoginWithCustomID",
                 MiniJson.Args("TitleId", Config.PlayFabTitle, "CustomId", Uid, "CreateAccount", true));
             var j = r.Json;

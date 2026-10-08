@@ -23,7 +23,7 @@ class ModBot
     static void Main(string[] a)
     {
         WebSocketClient.AcceptAnyCertificate = true;
-        var cfg = new SiteConfig { PhotonNameServer = a.Length > 0 ? a[0] : "wss://127.0.0.1:19093" };
+        var cfg = new SiteConfig { PhotonNameServer = a.Length > 0 ? a[0] : "wss://127.0.0.1:19093", PhotonAppId = "test-photon-app" };
         var client = new PhotonClient(cfg) { Log = m => Console.Error.WriteLine("[mod] " + m) };
         var sim = new NativeSim(7);
         mp = new Multiplayer(client, sim) { Nickname = "VR Gorilla" };

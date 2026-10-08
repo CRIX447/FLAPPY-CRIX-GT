@@ -5,10 +5,8 @@ any of these problems, but you should know about them.
 
 ## Security
 
-1. **Pairing codes can be collected by anyone after approval.** In `api/device-link.js`, `pair-poll` checks
-   `d.pending?.requestToken !== requestToken && !d.approved`. Once a request is approved, the `&& !d.approved`
-   part lets *any* request token through, so anyone who knows the pairing code can collect the sign-in token
-   for that account. Fix: always require the matching `requestToken`.
+1. ~~**Pairing codes can be collected by anyone after approval.**~~ **Fixed on the site** (crix-website PR #56):
+   `pair-poll` now always requires the requester's own `requestToken`, and a denial reaches the requester.
 2. **PlayFab accounts can be logged into with someone else's account id.** The site logs into PlayFab with
    `LoginWithCustomID` and `CustomId = Firebase uid`, and every signed-in user can read every other user's uid
    (the `users` read rule in `firestore.rules`, presence data, friend requests). Knowing a uid is enough to
