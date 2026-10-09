@@ -72,7 +72,7 @@ namespace FlappyCrix.Online
         private readonly ChatFilter filter;
         private uint seed;
         private double now, lastPosSent = -1, lastPing, deathAt = -1, matchStartedAt = -99, lastHostCheck;
-        private bool forcePos, respawnPending, restartPending, endSent;
+        private bool forcePos, respawnPending, rejoinPending, endSent;
         private float tickAcc;
         private readonly Random rng = new Random();
 
@@ -225,7 +225,7 @@ namespace FlappyCrix.Online
             deathAt = now;
             if (Mode == "lastone") { Spectating = true; if (IsHost) CheckLastOne(); }
             else if (Mode == "race") respawnPending = true;
-            else { restartPending = true; if (Mode == "coinrush") respawnPending = true; }
+            else rejoinPending = true;                  // Freemode, Coin Rush: back in level with the group
         }
 
         // ------------------------------------------------------------------ every frame
@@ -257,14 +257,18 @@ namespace FlappyCrix.Online
             if (MatchActive)
             {
                 MatchClock = now - matchStartedAt;
-                // crashed: back in the same world (Race, Coin Rush) or the lane from the start (Freeplay, Coin Rush)
-                if (restartPending && now - deathAt >= 0.8)
+                // crashed in Freemode or Coin Rush: the lane kept moving while I was down (below), and
+                // I come back level with whoever is furthest on - a hitch drops ticks, so catch up too
+                if (rejoinPending && now - deathAt >= 0.8)
                 {
-                    restartPending = false;
-                    int coins = Sim.CoinsThisMatch;
-                    Sim.StartMp(seed, Mode == "coinrush", false);
-                    Sim.CoinsThisMatch = coins;
-                    Players[Me].Score = Mode == "coinrush" ? coins : 0; Players[Me].Dead = false;
+                    rejoinPending = false;
+                    float target = Sim.Travelled;
+                    foreach (var p in Players.Values) if (!p.Me && !p.Dead && Visible(p)) target = Math.Max(target, p.Travelled);
+                    for (int n = 0; n < 3600 && Sim.Travelled + NativeSim.Speed <= target; n++) Sim.LaneOnlyStep();
+                    Sim.Rejoin();
+                    Players[Me].Score = Mode == "coinrush" ? Sim.CoinsThisMatch : 0; Players[Me].Dead = false;
+                    Send(EvRespawn, Args("actor", Me), false);
+                    forcePos = true;
                 }
                 if (respawnPending && now - deathAt >= 1.2) { respawnPending = false; if (Sim.Screen != "playing") Sim.Respawn(); Players[Me].Dead = false; Send(EvRespawn, Args("actor", Me), false); }
 
@@ -284,7 +288,12 @@ namespace FlappyCrix.Online
             // other birds, 60 ticks a second
             tickAcc += dt;
             int steps = 0;
-            while (tickAcc >= TickMs / 1000f && steps < 5) { tickAcc -= TickMs / 1000f; steps++; foreach (var p in Players.Values) if (!p.Me) RemoteStep(p); }
+            while (tickAcc >= TickMs / 1000f && steps < 5)
+            {
+                tickAcc -= TickMs / 1000f; steps++;
+                foreach (var p in Players.Values) if (!p.Me) RemoteStep(p);
+                if (rejoinPending && MatchActive && Sim.Screen == "dead") Sim.LaneOnlyStep();   // my lane, while I'm down
+            }
             if (steps >= 5) tickAcc = 0;
             foreach (var p in Players.Values) if (!p.Me) p.DrawY += (p.SimY - p.DrawY) * Math.Min(1f, dt * 30f);
         }
@@ -483,7 +492,7 @@ namespace FlappyCrix.Online
             Mode = mode; seed = s;
             MatchActive = true; Spectating = false; MatchInProgressOnJoin = false; Results = null; Winner = 0;
             matchStartedAt = now; MatchClock = 0;
-            restartPending = respawnPending = endSent = false;
+            rejoinPending = respawnPending = endSent = false;
             foreach (var p in Players.Values) { p.Score = 0; p.Coins = 0; p.Dead = false; p.Travelled = p.TravTarget = 0; p.SimY = p.DrawY = 300; p.SimVel = 0; }
             Sim.StartMp(s, mode == "coinrush", true);
             State = Phase.Playing;
