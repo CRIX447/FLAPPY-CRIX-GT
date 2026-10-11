@@ -246,45 +246,11 @@ namespace FlappyCrix.Native
             }
         }
 
-        // ------------------------------------------------------------------ staying with the group
-        // In a Freemode or Coin Rush room a crash used to restart the lane from the very start
-        // while everyone else flew on, so from the first crash you were somewhere else in the
-        // level - off their screens and they off yours. Now the lane carries on while you're
-        // down, exactly as theirs does, and you come back where they are (the site does the same).
-        private bool ghost;
-
-        /// <summary>One tick of the lane with nobody in it: while I'm down in a room.</summary>
-        public void LaneOnlyStep()
-        {
-            if (!Mp) return;
-            ghost = true;
-            try
-            {
-                BgOffset += SceneryStep;
-                Travelled += Speed;
-                Ticks++;
-                SpawnLane();
-                for (int i = 0; i < Pipes.Count; i++)
-                {
-                    var p = Pipes[i];
-                    p.X -= Speed;
-                    if (p.X + PipeWidth < BirdX) p.Scored = true;      // flown past while down: no points
-                    if (p.X + PipeWidth < 0) Pipes.RemoveAt(i--);
-                }
-                for (int i = 0; i < CoinList.Count; i++)
-                {
-                    CoinList[i].X -= Speed;
-                    if (CoinList[i].X + 20 < 0) CoinList.RemoveAt(i--);
-                }
-                Frame++;
-                if (Halloween) StepPumpkins();
-            }
-            finally { ghost = false; }
-        }
+        private bool ghost;     // a tick of the lane with nobody in it: no hits, no prizes
 
         /// <summary>The tick a bird crashes on stops short: its distance has moved on but the lane after
-        /// the crash point hasn't. In a room the lane carries on, so it finishes the tick (with nobody in
-        /// it) - otherwise every crash left this lane a step out from everyone else's.</summary>
+        /// the crash point hasn't. Where the lane carries on after a crash (Race), it finishes the tick
+        /// (with nobody in it) - otherwise every crash left this lane a step out from everyone else's.</summary>
         private void FinishCrashTick(int fromPipe, bool spawn)
         {
             if (!Mp) return;
@@ -308,13 +274,6 @@ namespace FlappyCrix.Native
                 if (Halloween) StepPumpkins();
             }
             finally { ghost = false; }
-        }
-
-        /// <summary>Back in after a crash, in the same lane: a new run (score 0), bird at the start height.</summary>
-        public void Rejoin()
-        {
-            Score = 0; RunCoins = 0; Trail.Clear(); HatAngle = HatVel = 0;
-            Respawn();
         }
 
         /// <summary>One 60 Hz tick (updateGame).</summary>

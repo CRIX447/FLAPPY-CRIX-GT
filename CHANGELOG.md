@@ -5,12 +5,13 @@ The version stays at 1.0.0 until CRIX decides to change it.
 
 ## Unreleased
 
-- **Back in with everyone after a crash.** In a Freemode or Coin Rush room a crash used to restart the lane from the
-  very start while everyone else flew on, so from the first crash you were in a different part of the level and
-  couldn't see each other (and in Coin Rush you came back to a lane already stripped of coins). Now the lane keeps
-  moving while you're down and you come back level with whoever is furthest on, catching up if a hitch had left you
-  behind. The tick you crash on now finishes for the lane too, so a game that carries on (Race as well) stays in
-  step with everyone else's instead of slipping 2.5 px per crash. Same change on the website.
+- **Coin Rush shows other players where they really are.** Someone who crashed and started again from the
+  beginning was drawn right on top of you, wherever they really were in the level. Now they're placed by how far
+  they've flown, as in the other modes. (A crash still sends you back to the start of the level in Freemode and
+  Coin Rush.) Same on the website.
+- **The lane stays in step after a crash in Race.** The tick you crash on stopped short (your distance moved on,
+  the lane didn't), so a lane that carries on after a crash slipped 2.5 px out of step with everyone else's for
+  every crash. It now finishes that tick. Same on the website.
 - **No keys or IDs in the mod.** The Firebase key and project, the Photon app id and the PlayFab title are no
   longer built in: the mod reads them from `crixgamingvr.com/api.json` (as before), and until that has worked
   the online features say they can't reach the site and try again every 15 seconds. Offline play is unchanged.
