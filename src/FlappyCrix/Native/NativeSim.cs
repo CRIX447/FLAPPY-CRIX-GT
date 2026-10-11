@@ -212,11 +212,115 @@ namespace FlappyCrix.Native
             Powerups[id] = Math.Max(left, seconds);
         }
 
+        /// <summary>What arrives at the right-hand edge this tick (steps 5 and 6 of updateGame): drawn
+        /// from the shared generator in a fixed order, so every player in a room lays the identical lane.</summary>
+        private void SpawnLane()
+        {
+            // 5. pipes, the top chosen one beat early
+            if (Frame % PipeTicks == 0)
+            {
+                float gap = Gap();
+                float top = pendingTop >= 0 ? pendingTop : NextTop(gap);
+                lastTop = top; lastPipeBeat = Frame;
+                int web = 0;
+                if (Halloween && PropRnd() < 0.45f)
+                {
+                    int[] corners = { 1, 2, 4, 8 };
+                    web = corners[PropNext(4)];
+                    if (PropRnd() < 0.35f) web |= corners[PropNext(4)];
+                }
+                Pipes.Add(new Pipe { X = W, Top = top, Bottom = top + Gap(), Web = web });
+                pendingTop = NextTop(gap);
+            }
+
+            // 6. coins
+            if (Frame % (CoinRush ? 18 : CoinTicks) == 0)
+            {
+                float gap = Gap();
+                float spread = gap * 0.30f;
+                float y = Pipes.Count > 0 ? LaneCentre() + (Rnd() - 0.5f) * spread * 2 : Rnd() * (H - 200) + 100;
+                var coin = new Coin { X = W, Y = Math.Max(60, Math.Min(H - 90, y)) - 10, Id = ++coinSeq };
+                long went;
+                if (Mp && taken.TryGetValue(coin.Id, out went)) coin.HiddenUntil = CoinRush ? long.MaxValue : went + CoinRespawnTicks;
+                CoinList.Add(coin);
+            }
+        }
+
+        // ------------------------------------------------------------------ staying with the group
+        // In a Freemode or Coin Rush room a crash used to restart the lane from the very start
+        // while everyone else flew on, so from the first crash you were somewhere else in the
+        // level - off their screens and they off yours. Now the lane carries on while you're
+        // down, exactly as theirs does, and you come back where they are (the site does the same).
+        private bool ghost;
+
+        /// <summary>One tick of the lane with nobody in it: while I'm down in a room.</summary>
+        public void LaneOnlyStep()
+        {
+            if (!Mp) return;
+            ghost = true;
+            try
+            {
+                BgOffset += SceneryStep;
+                Travelled += Speed;
+                Ticks++;
+                SpawnLane();
+                for (int i = 0; i < Pipes.Count; i++)
+                {
+                    var p = Pipes[i];
+                    p.X -= Speed;
+                    if (p.X + PipeWidth < BirdX) p.Scored = true;      // flown past while down: no points
+                    if (p.X + PipeWidth < 0) Pipes.RemoveAt(i--);
+                }
+                for (int i = 0; i < CoinList.Count; i++)
+                {
+                    CoinList[i].X -= Speed;
+                    if (CoinList[i].X + 20 < 0) CoinList.RemoveAt(i--);
+                }
+                Frame++;
+                if (Halloween) StepPumpkins();
+            }
+            finally { ghost = false; }
+        }
+
+        /// <summary>The tick a bird crashes on stops short: its distance has moved on but the lane after
+        /// the crash point hasn't. In a room the lane carries on, so it finishes the tick (with nobody in
+        /// it) - otherwise every crash left this lane a step out from everyone else's.</summary>
+        private void FinishCrashTick(int fromPipe, bool spawn)
+        {
+            if (!Mp) return;
+            ghost = true;
+            try
+            {
+                if (spawn) SpawnLane();
+                for (int i = fromPipe; i < Pipes.Count; i++)
+                {
+                    var p = Pipes[i];
+                    p.X -= Speed;
+                    if (p.X + PipeWidth < BirdX) p.Scored = true;
+                    if (p.X + PipeWidth < 0) Pipes.RemoveAt(i--);
+                }
+                for (int i = 0; i < CoinList.Count; i++)
+                {
+                    CoinList[i].X -= Speed;
+                    if (CoinList[i].X + 20 < 0) CoinList.RemoveAt(i--);
+                }
+                Frame++;
+                if (Halloween) StepPumpkins();
+            }
+            finally { ghost = false; }
+        }
+
+        /// <summary>Back in after a crash, in the same lane: a new run (score 0), bird at the start height.</summary>
+        public void Rejoin()
+        {
+            Score = 0; RunCoins = 0; Trail.Clear(); HatAngle = HatVel = 0;
+            Respawn();
+        }
+
         /// <summary>One 60 Hz tick (updateGame).</summary>
         public void Step()
         {
             if (Screen != "playing") return;
-            float gap;
 
             // 1. scenery and trail
             BgOffset += SceneryStep;
@@ -245,37 +349,11 @@ namespace FlappyCrix.Native
             if (BirdY > FloorY)
             {
                 if (shield) { BirdY = FloorY; Velocity = -Math.Abs(Velocity) * 0.5f; }
-                else { Die(); return; }
+                else { Die(); FinishCrashTick(0, true); return; }
             }
 
-            // 5. pipes, the top chosen one beat early
-            if (Frame % PipeTicks == 0)
-            {
-                gap = Gap();
-                float top = pendingTop >= 0 ? pendingTop : NextTop(gap);
-                lastTop = top; lastPipeBeat = Frame;
-                int web = 0;
-                if (Halloween && PropRnd() < 0.45f)
-                {
-                    int[] corners = { 1, 2, 4, 8 };
-                    web = corners[PropNext(4)];
-                    if (PropRnd() < 0.35f) web |= corners[PropNext(4)];
-                }
-                Pipes.Add(new Pipe { X = W, Top = top, Bottom = top + Gap(), Web = web });
-                pendingTop = NextTop(gap);
-            }
-
-            // 6. coins
-            if (Frame % (CoinRush ? 18 : CoinTicks) == 0)
-            {
-                gap = Gap();
-                float spread = gap * 0.30f;
-                float y = Pipes.Count > 0 ? LaneCentre() + (Rnd() - 0.5f) * spread * 2 : Rnd() * (H - 200) + 100;
-                var coin = new Coin { X = W, Y = Math.Max(60, Math.Min(H - 90, y)) - 10, Id = ++coinSeq };
-                long went;
-                if (Mp && taken.TryGetValue(coin.Id, out went)) coin.HiddenUntil = CoinRush ? long.MaxValue : went + CoinRespawnTicks;
-                CoinList.Add(coin);
-            }
+            // 5-6. pipes and coins arrive
+            SpawnLane();
 
             // 7. pipes move, hit, score
             float rx = BirdSize * HitRX, ry = BirdSize * HitRY;
@@ -285,7 +363,7 @@ namespace FlappyCrix.Native
                 p.X -= Speed;
                 if (!shield && (HitsRectE(BirdX, BirdY, rx, ry, p.X, -1000, PipeWidth, p.Top + 1000) ||
                                 HitsRectE(BirdX, BirdY, rx, ry, p.X, p.Bottom, PipeWidth, H - p.Bottom + 20)))
-                { Die(); return; }
+                { Die(); FinishCrashTick(i + 1, false); return; }
                 if (p.X + PipeWidth < BirdX && !p.Scored)
                 {
                     p.Scored = true; Score++;
@@ -347,7 +425,7 @@ namespace FlappyCrix.Native
                 }
                 p.X -= Speed;
                 float dx = BirdX - p.X, dy = BirdY - p.Y;
-                if (dx * dx / (brx * brx) + dy * dy / (bry * bry) < 1) Smash(p);
+                if (!ghost && dx * dx / (brx * brx) + dy * dy / (bry * bry) < 1) Smash(p);
                 else if (p.X < -40) Pumpkins.RemoveAt(i--);
             }
         }
