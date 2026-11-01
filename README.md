@@ -61,6 +61,12 @@ website.
 (Pictures from `tools/native-harness` and `tools/online-harness`, which run the in-game version's code outside
 the game; the account picture shows a test server's address instead of crixgamingvr.com/link.)
 
+## Unity SDK: Flappy Crix Arcade (for your own VR game)
+
+Making a VR game or a Gorilla Tag fan game? [`unity-sdk/`](unity-sdk/README.md) has Flappy Crix as a
+drop-in arcade cabinet package: single player (attract mode, coins, high scores with initials) or
+linked cabinets where nearby players race each other over your existing Photon room (no extra CCU).
+
 ## Install
 
 1. Install [BepInEx 5](https://github.com/BepInEx/BepInEx/releases) (x64) into Gorilla Tag and run the game once.

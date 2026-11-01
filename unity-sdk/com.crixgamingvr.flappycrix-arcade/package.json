@@ -1,0 +1,15 @@
+{
+  "name": "com.crixgamingvr.flappycrix-arcade",
+  "version": "1.0.0",
+  "displayName": "Flappy Crix Arcade",
+  "description": "A playable Flappy Crix arcade cabinet for VR games and Gorilla Tag fan games. Single-player arcade machine (attract mode, free play or coins, high scores with initials) or linked cabinets where players standing nearby race each other, through the room your game already uses - no extra Photon CCU.",
+  "unity": "2021.3",
+  "author": { "name": "CRIXGAMING VR", "email": "cgvr@crixgamingvr.com", "url": "https://crixgamingvr.com" },
+  "keywords": ["arcade", "vr", "gorilla tag", "flappy", "minigame", "photon"],
+  "documentationUrl": "https://github.com/CRIX447/FLAPPY-CRIX-GT/tree/main/unity-sdk",
+  "samples": [
+    { "displayName": "Photon PUN 2", "description": "Races and shared high scores over your PUN 2 room (RaiseEvent, no extra CCU).", "path": "Samples~/Photon PUN 2" },
+    { "displayName": "Photon Fusion 2", "description": "Races and shared high scores over your Fusion 2 session (reliable data, no extra CCU).", "path": "Samples~/Photon Fusion 2" },
+    { "displayName": "Gorilla Tag Fan Game", "description": "Gives a fan game's local gorilla arcade fingertips with controller buzz.", "path": "Samples~/Gorilla Tag Fan Game" }
+  ]
+}
