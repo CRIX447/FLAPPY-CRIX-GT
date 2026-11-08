@@ -1185,7 +1185,7 @@ namespace FlappyCrix.Native
 
             C.RoundRect(x2, y + 266, w, 130, 12, Panel2);
             C.Text("ABOUT", x2 + 16, y + 276, 16, Muted);
-            C.TextWrapped("Flappy Crix for Gorilla Tag " + Version + ". The in-game version of crixgamingvr.com/flappycrix: the same game, coins, store, " +
+            C.TextWrapped("Flappy Crix for Gorilla Tag " + Version + ". The in-game version of flappycrix.vercel.app: the same game, coins, store, " +
                           "seasons, awards and multiplayer. Voice and text chat aren't in VR. This mod was made with AI (Claude by Anthropic).",
                           x2 + 16, y + 300, w - 32, 13, Muted);
             defaultFocus = "music";

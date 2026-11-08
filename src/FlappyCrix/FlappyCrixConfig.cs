@@ -79,12 +79,12 @@ namespace FlappyCrix
             const string G = "1. General", D = "2. Display", I = "3. Input", J = "4. Arcade deck", W = "5. Website";
 
             UseWebsite = cfg.Bind(G, "UseWebsite", false,
-                "false (default) = the in-game version built into the mod: the website's game with its store, locker, daily rewards, seasonal themes and awards, in the mod's own layout. true = stream the real crixgamingvr.com/flappycrix from a hidden browser instead.");
+                "false (default) = the in-game version built into the mod: the website's game with its store, locker, daily rewards, seasonal themes and awards, in the mod's own layout. true = stream the real flappycrix.vercel.app from a hidden browser instead.");
             Engine = cfg.Bind(G, "Engine", WebEngine.Auto,
                 "What runs the website. Auto/SystemBrowser = the Microsoft Edge (or Chrome) already on your PC, started hidden - no window opens, the page is streamed onto the in-game screen. UnityWebBrowser = optional bundled engine (see README).");
             UseRemoteWebsite = cfg.Bind(G, "UseRemoteWebsite", true,
-                "true = play the live page at RemoteUrl (crixgamingvr.com/flappycrix). false = the copy packaged with the mod (works offline). The live page falls back to the packaged copy if it can't load.");
-            RemoteUrl = cfg.Bind(G, "RemoteUrl", "https://crixgamingvr.com/flappycrix", "Live site used when UseRemoteWebsite = true.");
+                "true = play the live page at RemoteUrl (flappycrix.vercel.app). false = the copy packaged with the mod (works offline). The live page falls back to the packaged copy if it can't load.");
+            RemoteUrl = cfg.Bind(G, "RemoteUrl", "https://flappycrix.vercel.app/", "Live site used when UseRemoteWebsite = true.");
             RemoteTimeoutSeconds = cfg.Bind(G, "RemoteTimeoutSeconds", 30f, new ConfigDescription(
                 "How long the live site gets to START loading (counted from when the hidden browser is up) before it counts as unreachable (then it retries, or shows the packaged copy if UseOfflineCopy = true). Once the live page has started loading it gets as long as it needs.",
                 new AcceptableValueRange<float>(5f, 120f)));
@@ -92,7 +92,7 @@ namespace FlappyCrix
                 "If the live site couldn't be reached and the packaged (offline) copy is showing, check this often whether crixgamingvr.com can be reached again, and switch back to it when you're not mid-run. 0 = never.",
                 new AcceptableValueRange<float>(0f, 600f)));
             AutoFallbackToNative = cfg.Bind(G, "AutoFallbackToNative", false,
-                "false (default) = only ever show the real crixgamingvr.com/flappycrix. true = if no website engine can run at all, play the mod's own Unity remake instead.");
+                "false (default) = only ever show the real flappycrix.vercel.app. true = if no website engine can run at all, play the mod's own Unity remake instead.");
             UseOfflineCopy = cfg.Bind(G, "UseOfflineCopy", false,
                 "false (default) = only the live page; if it can't be reached the screen says so and keeps retrying. true = show the copy packaged with the mod (the site's offline mode) meanwhile.");
             ShowOnStart = cfg.Bind(G, "ShowOnStart", true, "Open the screen in front of you when you load in.");
