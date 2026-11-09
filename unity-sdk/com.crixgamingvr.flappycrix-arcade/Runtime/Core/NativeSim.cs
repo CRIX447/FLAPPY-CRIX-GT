@@ -1,7 +1,7 @@
 // Flappy Crix game rules, ported tick for tick from the website (flappycrix.html: PHYS,
 // resetGame, updateGame, nextPipeTop, laneCentreForSpawn, the Halloween pumpkins and cobwebs):
 // 400x600 playfield, 60 Hz ticks, the ellipse hitbox, 120-tick pipe beat, the gap that narrows
-// with score, coins every 50 ticks, power-ups, death below y = 590 (the bird sinks into the
+// with score, coins every 50 ticks, power-ups, death when the bird touches the drawn ground (it used to sink into the
 // drawn ground first, as on the site) and no ceiling death.
 // One deliberate fix: the site forgets to save the best score after a pipe death; here every
 // death counts.
@@ -19,8 +19,10 @@ namespace CrixArcade.Core
         public const float Gravity = 0.52f, FallGrav = 0.25f, FlapV = -8.8f, MaxFall = 7.5f;
         public const float HitRX = 0.40f, HitRY = 0.467f, BirdSize = 30f, BirdX = 100f;
         public const int GraceTicks = 24, PipeTicks = 120, CoinTicks = 50, TrailPoints = 44;
-        public const float PipeWidth = 50f, Speed = 2.5f, FloorY = H - 10, SceneryStep = 0.4f;
+        public const float PipeWidth = 50f, Speed = 2.5f, SceneryStep = 0.4f;
         public const int GroundH = 66, SkyH = H - GroundH;          // drawn ground: round(600 * 0.11)
+        /// <summary>The ground is solid: you crash when the bird's bottom touches the drawn ground (the website's floorY()).</summary>
+        public const float FloorY = SkyH - BirdSize * HitRY;
 
         public sealed class Pipe { public float X, Top, Bottom; public bool Scored; public int Web; }
         public sealed class Coin { public float X, Y; public bool Taken; }
