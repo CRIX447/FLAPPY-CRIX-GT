@@ -4,7 +4,7 @@
 > with Claude (an AI model by Anthropic), directed and tested by CRIX. Please report anything that
 > doesn't work in [Issues](../../issues).
 
-Play **Flappy Crix** ([flappycrix.vercel.app](https://flappycrix.vercel.app/)) on a screen inside
+Play **Flappy Crix** ([crixgamingvr.com/flappycrix](https://crixgamingvr.com/flappycrix)) on a screen inside
 Gorilla Tag, with an arcade control deck in front of it. It's the website's game — same physics, coins, store,
 cosmetics, daily rewards, seasonal themes and awards — built into the mod with its own VR-friendly layout. Link
 your crixgamingvr.com account to share your progress with the website, and play multiplayer with people on the
@@ -47,7 +47,7 @@ website.
   room modes stay on the website; voice chat isn't possible in the mod and nothing is typed.
 - Nothing opens in your desktop browser unless you press **OPEN ON THIS PC** on the account screen.
 - Local-only, no colliders (nothing can be climbed), no dependency on Gorilla Tag's internal code.
-- **Website mode** (optional, `UseWebsite = true`): streams the real flappycrix.vercel.app from a hidden
+- **Website mode** (optional, `UseWebsite = true`): streams the real crixgamingvr.com/flappycrix from a hidden
   browser instead (see [How it works](#website-mode)).
 
 | | |
@@ -133,7 +133,7 @@ Gorilla Tag ─ BepInEx ─ FlappyCrix.dll
 
 ### Website mode
 
-With `UseWebsite = true`, the real flappycrix.vercel.app is streamed instead: a browser already on your
+With `UseWebsite = true`, the real crixgamingvr.com/flappycrix is streamed instead: a browser already on your
 PC that can run hidden (Edge, Chrome, Brave, Vivaldi, Chromium... — or, if there's none, Google's Chrome for
 Testing headless shell, downloaded once) loads the page with no window, and the frames are streamed onto the
 screen over the DevTools protocol. Input goes into the page as real key and mouse events; only the game page
@@ -144,7 +144,7 @@ engine live in `%LOCALAPPDATA%\FlappyCrix`.
 
 | Setting | Default | |
 |---|---|---|
-| `UseWebsite` | `false` | `false` = the in-game version. `true` = website mode (streams flappycrix.vercel.app). |
+| `UseWebsite` | `false` | `false` = the in-game version. `true` = website mode (streams crixgamingvr.com/flappycrix). |
 | `Width` / `Distance` / `HeightOffset` | 0.6 m / 0.75 m / −0.43 m | Screen size, distance, and its **bottom edge** height (just above the deck, like an arcade cabinet). The deck's − / + change `Width`; the screen grows upwards. |
 | `InGameFrameRate` | 30 | Pictures per second of the in-game version (drawn on its own thread). |
 | `FlapStartsGame` | `true` | FLAP on the main menu starts a run. |

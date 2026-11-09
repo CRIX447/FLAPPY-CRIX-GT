@@ -57,7 +57,7 @@ static class LoadCheck
         {
             var cfgFile = new BepInEx.Configuration.ConfigFile(cfgPath, true);
             config = Activator.CreateInstance(asm.GetType("FlappyCrix.FlappyCrixConfig"), cfgFile);
-            Check(File.Exists(cfgPath) && File.ReadAllText(cfgPath).Contains("SettingsRevision = 6"), "settings bind against the real BepInEx ConfigFile and are written");
+            Check(File.Exists(cfgPath) && File.ReadAllText(cfgPath).Contains("SettingsRevision = 7") && File.ReadAllText(cfgPath).Contains("RemoteUrl = https://crixgamingvr.com/flappycrix"), "settings bind against the real BepInEx ConfigFile and are written");
             var useWebsite = config.GetType().GetField("UseWebsite").GetValue(config);
             Check(!(bool)useWebsite.GetType().GetProperty("Value").GetValue(useWebsite), "the in-game version is the default (UseWebsite = false)");
         }
