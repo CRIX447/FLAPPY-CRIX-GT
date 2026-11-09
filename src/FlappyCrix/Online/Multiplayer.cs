@@ -305,7 +305,7 @@ namespace FlappyCrix.Online
             if (p.Dead || !MatchActive) return;
             p.SimVel += p.SimVel < 0 ? NativeSim.Gravity : NativeSim.FallGrav;
             if (p.SimVel > NativeSim.MaxFall) p.SimVel = NativeSim.MaxFall;
-            p.SimY = Math.Max(15, Math.Min(590, p.SimY + p.SimVel));
+            p.SimY = Math.Max(15, Math.Min(NativeSim.FloorY, p.SimY + p.SimVel));
             p.Travelled += NativeSim.Speed;
             p.TravTarget += NativeSim.Speed;
             p.Travelled += (p.TravTarget - p.Travelled) * 0.1f;

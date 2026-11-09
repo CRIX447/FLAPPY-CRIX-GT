@@ -281,7 +281,7 @@ namespace CrixArcade.Net
             r.LocalDone = true; r.LocalScore = score;
             if (Online) Send(new List<string>(r.Racers.Keys), true, "F", r.Group, r.Seed.ToString(Inv), score.ToString(Inv));
             // one last position so ghosts on other cabinets show we're out
-            if (Online) Send(BirdTargets(r), false, "B", r.Group, r.Seed.ToString(Inv), "590", "0", score.ToString(Inv));
+            if (Online) Send(BirdTargets(r), false, "B", r.Group, r.Seed.ToString(Inv), ((int)NativeSim.FloorY).ToString(Inv), "0", score.ToString(Inv));
             presenceDirty = true;
         }
 
